@@ -1,9 +1,14 @@
 import json
 import os
+import base64
+from cryptography.fernet import Fernet
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.primitives import hashes
 
 # path to the master password storage file
 MASTER_PASSWORD_FILE = "data/master.json"
 PASSWORDS_FILE = "data/passwords.json"
+SALT = b"azertyuiop123456"
 
 def init_storage():
     """Create the master.json file if it does not exist."""
@@ -70,6 +75,17 @@ def view_passwords():
         print(f"Username : {credentials['username']}")
         print(f"Password : {credentials['password']}")
         print("-" * 30)
+
+def derive_key(master_password: str) -> Fernet:
+    """Derive a Fernet key from a master password."""
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=SALT,
+        iterations=100_000,
+    )
+    key = base64.urlsafe_b64encode(kdf.derive(master_password.encode()))
+    return Fernet(key)
 
 if __name__ == "__main__":
     init_storage()
