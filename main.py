@@ -56,14 +56,37 @@ def add_password():
     save_passwords(passwords)
     print(f"Password saved for {entry_name}.")
 
+def view_passwords():
+    """View all passwords registered."""
+    passwords = load_passwords()
+    if not passwords:
+        print("No passwords found.")
+        return
+
+    print("\nPasswords registered : ")
+    for entry_name, credentials in passwords.items():
+        print(f"Entry name : {entry_name}")
+        print(f"Website/apply path : {credentials['website']}")
+        print(f"Username : {credentials['username']}")
+        print(f"Password : {credentials['password']}")
+        print("-" * 30)
+
 if __name__ == "__main__":
     init_storage()
     ensure_password_file()
-    print("\nMenu :")
-    print("1. Add a new entry")
-    print("2. Exit")
-    choice = input("Make a choice : ")
-    if choice == "1":
-        add_password()
-    else:
-        print("Thank you for using this program.")
+    while True:
+        print("\n Menu : ")
+        print("1. Add a new entry")
+        print("2. View all passwords registered")
+        print("3. Exit")
+
+        choice = input("Enter your choice : ")
+        if choice == "1":
+            add_password()
+        elif choice == "2":
+            view_passwords()
+        elif choice == "3":
+            print("Goodbye.")
+            break
+        else:
+            print("Invalid choice. Try again.")
