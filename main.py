@@ -29,6 +29,12 @@ def load_passwords():
     with open(PASSWORDS_FILE, "r") as f:
         return json.load(f)
 
+def ensure_password_file():
+    """Ensure the password file is created."""
+    if not os.path.exists(PASSWORDS_FILE):
+        with open(PASSWORDS_FILE, "w") as f:
+            json.dump({}, f)
+
 def save_passwords(passwords):
     """Save the password dictionary in the passwords.json file."""
     with open(PASSWORDS_FILE, "w") as f:
@@ -52,6 +58,7 @@ def add_password():
 
 if __name__ == "__main__":
     init_storage()
+    ensure_password_file()
     print("\nMenu :")
     print("1. Add a new entry")
     print("2. Exit")
