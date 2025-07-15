@@ -24,7 +24,7 @@ def init_storage():
 
 def load_passwords():
     """Load the passwords.json file if it exists."""
-    if not os.path.exists(PASSWORDS_FILE):
+    if not os.path.exists(PASSWORDS_FILE) or os.path.getsize(PASSWORDS_FILE) == 0:
         return {} # No passwords already registered.
     with open(PASSWORDS_FILE, "r") as f:
         return json.load(f)
@@ -34,8 +34,29 @@ def save_passwords(passwords):
     with open(PASSWORDS_FILE, "w") as f:
         json.dump(passwords, f, indent=4)
 
+def add_password():
+    """Add a new password for a website in the passwords.json file."""
+    entry_name = input("New entry name : ").strip()
+    website = input("New website url of application path : ").strip()
+    username = input("New username : ").strip()
+    pwd = input("New password : ").strip()
 
-
+    passwords = load_passwords()
+    passwords[entry_name] = {
+        "website" : website,
+        "username" : username,
+        "password" : pwd
+    }
+    save_passwords(passwords)
+    print(f"Password saved for {entry_name}.")
 
 if __name__ == "__main__":
     init_storage()
+    print("\nMenu :")
+    print("1. Add a new entry")
+    print("2. Exit")
+    choice = input("Make a choice : ")
+    if choice == "1":
+        add_password()
+    else:
+        print("Thank you for using this program.")
