@@ -1,25 +1,41 @@
 import json
 import os
 
-# chemin vers le fichier de stockage du master password
+# path to the master password storage file
 MASTER_PASSWORD_FILE = "data/master.json"
+PASSWORDS_FILE = "data/passwords.json"
 
 def init_storage():
-    """Créer le fichier master.json si celui-ci n'existe pas."""
+    """Create the master.json file if it does not exist."""
     if not os.path.exists(MASTER_PASSWORD_FILE):
-        print("Aucun mot de passe maître trouvé.")
-        master = input("Créez votre mot de passe maître : ")
+        print("No master password found, creating it.")
+        master = input("Create your master password : ")
         with open(MASTER_PASSWORD_FILE, "w") as f:
             json.dump({"master_password": master}, f)
-        print("Le mot de passe maître est enregistré.")
+        print("Master password has been created.")
     else:
         with open(MASTER_PASSWORD_FILE, "r") as f:
             data = json.load(f)
-        trial = input("Entrez le mot de passe maître : ")
+        trial = input("Enter the master password : ")
         if trial == data["master_password"]:
             print("access granted.")
         else:
             print("access denied.")
+
+def load_passwords():
+    """Load the passwords.json file if it exists."""
+    if not os.path.exists(PASSWORDS_FILE):
+        return {} # No passwords already registered.
+    with open(PASSWORDS_FILE, "r") as f:
+        return json.load(f)
+
+def save_passwords(passwords):
+    """Save the password dictionary in the passwords.json file."""
+    with open(PASSWORDS_FILE, "w") as f:
+        json.dump(passwords, f, indent=4)
+
+
+
 
 if __name__ == "__main__":
     init_storage()
