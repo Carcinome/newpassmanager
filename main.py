@@ -2,6 +2,7 @@ import json
 import os
 import base64
 from cryptography.fernet import Fernet
+from cryptography.fernet import InvalidToken
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
 
@@ -14,18 +15,18 @@ def init_storage():
     """Create the master.json file if it does not exist."""
     if not os.path.exists(MASTER_PASSWORD_FILE):
         print("No master password found, creating it.")
-        master = input("Create your master password : ")
+        master_password = input("Create your master password : ")
         with open(MASTER_PASSWORD_FILE, "w") as f:
-            json.dump({"master_password": master}, f)
+            json.dump({"master_password": master_password}, f)
         print("Master password has been created.")
     else:
         with open(MASTER_PASSWORD_FILE, "r") as f:
             data = json.load(f)
-        trial = input("Enter the master password : ")
-        if trial == data["master_password"]:
-            print("access granted.")
-        else:
-            print("access denied.")
+        master_password = input("Enter the master password : ")
+        if master_password != data["master_password"]:
+            print("Wrong password.")
+            exit()
+    return derive_key(master_password)
 
 def load_passwords():
     """Load the passwords.json file if it exists."""
@@ -45,23 +46,25 @@ def save_passwords(passwords):
     with open(PASSWORDS_FILE, "w") as f:
         json.dump(passwords, f, indent=4)
 
-def add_password():
+def add_password(fernet_instance):
     """Add a new password for a website in the passwords.json file."""
     entry_name = input("New entry name : ").strip()
     website = input("New website url of application path : ").strip()
     username = input("New username : ").strip()
     pwd = input("New password : ").strip()
 
+    encrypted_password = fernet_instance.encrypt(pwd.encode()).decode()
+
     passwords = load_passwords()
     passwords[entry_name] = {
         "website" : website,
         "username" : username,
-        "password" : pwd
+        "password" : encrypted_password
     }
     save_passwords(passwords)
-    print(f"Password saved for {entry_name}.")
+    print(f"Password crypted and saved for {entry_name}.")
 
-def view_passwords():
+def view_passwords(fernet_instance):
     """View all passwords registered."""
     passwords = load_passwords()
     if not passwords:
@@ -70,10 +73,15 @@ def view_passwords():
 
     print("\nPasswords registered : ")
     for entry_name, credentials in passwords.items():
+        try:
+            decrypted_password = fernet_instance.decrypt(credentials["password"].encode()).decode()
+        except InvalidToken:
+            decrypted_password = "Passwords unreadable, wrong key."
+
         print(f"Entry name : {entry_name}")
         print(f"Website/apply path : {credentials['website']}")
         print(f"Username : {credentials['username']}")
-        print(f"Password : {credentials['password']}")
+        print(f"Password : {decrypted_password}")
         print("-" * 30)
 
 def derive_key(master_password: str) -> Fernet:
@@ -88,8 +96,9 @@ def derive_key(master_password: str) -> Fernet:
     return Fernet(key)
 
 if __name__ == "__main__":
-    init_storage()
+    fernet = init_storage()
     ensure_password_file()
+
     while True:
         print("\n Menu : ")
         print("1. Add a new entry")
@@ -98,9 +107,9 @@ if __name__ == "__main__":
 
         choice = input("Enter your choice : ")
         if choice == "1":
-            add_password()
+            add_password(fernet)
         elif choice == "2":
-            view_passwords()
+            view_passwords(fernet)
         elif choice == "3":
             print("Goodbye.")
             break
