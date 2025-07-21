@@ -11,6 +11,7 @@ MASTER_PASSWORD_FILE = "data/master.json"
 PASSWORDS_FILE = "data/passwords.json"
 SALT = b"azertyuiop123456"
 
+
 def init_storage():
     """Create the master.json file if it does not exist."""
     if not os.path.exists(MASTER_PASSWORD_FILE):
@@ -28,6 +29,7 @@ def init_storage():
             exit()
     return derive_key(master_password)
 
+
 def load_passwords():
     """Load the passwords.json file if it exists."""
     if not os.path.exists(PASSWORDS_FILE) or os.path.getsize(PASSWORDS_FILE) == 0:
@@ -35,16 +37,19 @@ def load_passwords():
     with open(PASSWORDS_FILE, "r") as f:
         return json.load(f)
 
+
 def ensure_password_file():
     """Ensure the password file is created."""
     if not os.path.exists(PASSWORDS_FILE):
         with open(PASSWORDS_FILE, "w") as f:
             json.dump({}, f)
 
+
 def save_passwords(passwords):
     """Save the password dictionary in the passwords.json file."""
     with open(PASSWORDS_FILE, "w") as f:
         json.dump(passwords, f, indent=4)
+
 
 def add_password(fernet_instance):
     """Add a new password for a website in the passwords.json file."""
@@ -63,6 +68,54 @@ def add_password(fernet_instance):
     }
     save_passwords(passwords)
     print(f"Password crypted and saved for {entry_name}.")
+
+
+def delete_password():
+    passwords = load_passwords()
+    if not passwords:
+        print("No passwords found.")
+        return
+
+    entry_name = input("Entry to delete : ").strip()
+
+    if entry_name in passwords:
+        deleting_confirmation = input(f"Are you sure you want to delete this : {entry_name}? (y/n) ").lower()
+        if deleting_confirmation == "y":
+            del passwords[entry_name]
+            save_passwords(passwords)
+            print (f"Password deleted successfully for {entry_name}.")
+        else:
+            print("Password not deleted.")
+    else:
+        print(f"No password found for {entry_name}.")
+
+
+def modify_password(fernet_instance):
+    passwords = load_passwords()
+    if not passwords:
+        print("No passwords found.")
+        return
+
+    entry_name = input("Entry to edit password : ").strip()
+
+    if entry_name in passwords:
+        print(f"Entry found : {entry_name}.")
+        print(f"Current username : {passwords[entry_name]['username']}")
+
+        new_username = input("New username (leave blank to not change) : ").strip()
+        new_pwd = input("New password (leave blank to not change) : ").strip()
+
+        if new_username:
+            passwords[entry_name]['username'] = new_username
+        if new_pwd:
+            encrypted_password = fernet_instance.encrypt(new_pwd.encode()).decode()
+            passwords[entry_name]['pwd'] = encrypted_password
+
+        save_passwords(passwords)
+        print(f"Password changed successfully for {entry_name}.")
+    else:
+        print(f"No password found for {entry_name}.")
+
 
 def view_passwords(fernet_instance):
     """View all passwords registered."""
@@ -84,6 +137,7 @@ def view_passwords(fernet_instance):
         print(f"Password : {decrypted_password}")
         print("-" * 30)
 
+
 def derive_key(master_password: str) -> Fernet:
     """Derive a Fernet key from a master password."""
     kdf = PBKDF2HMAC(
@@ -95,6 +149,7 @@ def derive_key(master_password: str) -> Fernet:
     key = base64.urlsafe_b64encode(kdf.derive(master_password.encode()))
     return Fernet(key)
 
+
 if __name__ == "__main__":
     fernet = init_storage()
     ensure_password_file()
@@ -102,8 +157,10 @@ if __name__ == "__main__":
     while True:
         print("\n Menu : ")
         print("1. Add a new entry")
-        print("2. View all passwords registered")
-        print("3. Exit")
+        print("2. View all entry registered")
+        print("3. Edit an entry")
+        print("4. Delete an entry")
+        print("5. Exit")
 
         choice = input("Enter your choice : ")
         if choice == "1":
@@ -111,6 +168,10 @@ if __name__ == "__main__":
         elif choice == "2":
             view_passwords(fernet)
         elif choice == "3":
+            modify_password(fernet)
+        elif choice == "4":
+            delete_password()
+        elif choice == "5":
             print("Goodbye.")
             break
         else:
