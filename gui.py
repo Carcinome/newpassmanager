@@ -4,52 +4,158 @@ import json
 import os
 import tkinter as tk
 from tkinter import messagebox
+from tkinter import ttk
 
 
-MASTER_PASSWORD_FILE = "data/master.json"
+PRIMARY_PASSWORD_FILE = "data/primary_password.json"
+
+
+class InitiatePrimaryWindow:
+    """For creating a primary password if it doesn't exist."""
+    def __init__(self, primary):
+        self.primary = primary
+        self.primary.title("Create a primary password")
+        self.primary.geometry("400x300")
+        self.primary.resizable(False, False)
+
+        # Main text
+        self.label = tk.Label(primary, text="Create your primary password", font=("Arial", 15))
+        self.label.pack(pady=10)
+
+        # Field 1 - password
+        self.pwd_entry = tk.Entry(primary, show="*", width=40)
+        self.pwd_entry.pack(pady=10)
+
+        # Field 2 - confirmation
+        self.confirm_entry = tk.Entry(primary, show="*", width=40)
+        self.confirm_entry.pack(pady=10)
+
+        # "Save" button
+        self.save_button = tk.Button(primary, text="Save", command=self.save_primary_password)
+        self.save_button.pack(pady=15)
+
+    def save_primary_password(self):
+        """For saving primary password."""
+        password = self.pwd_entry.get()
+        password_confirmation = self.confirm_entry.get()
+
+        if not password or not password_confirmation:
+            messagebox.showerror("Error", "All fields are required.")
+            return
+
+        if password != password_confirmation:
+            messagebox.showerror("Error", "Passwords do not match.")
+            return
+
+        os.makedirs("data", exist_ok=True) # For creating the data folder if it doesn't exist.
+
+        with open(PRIMARY_PASSWORD_FILE, "w") as f:
+            json.dump({"primary_password": password},f)
+
+        messagebox.showinfo("Success", "Primary password saved.")
+        self.primary.destroy() # close the window
+
+        # Open the connection window
+        save_primary_pwd_root = tk.Tk()
+        save_primary_pwd_app = WindowLogin(save_primary_pwd_root)
+        save_primary_pwd_root.mainloop()
 
 
 class WindowLogin:
     """Login screen."""
-    def __init__(self, master):
-        self.master = master
-        self.master.title("Connection - Password manager")
-        self.master.geometry("400x300")
-        self.master.resizable(False, False)
+    def __init__(self, primary):
+        self.primary = primary
+        self.primary.title("Connection - Password manager")
+        self.primary.geometry("400x300")
+        self.primary.resizable(False, False)
 
         # Main text
-        self.label = tk.Label(master, text="Enter your master password :", font=("Arial", 20))
+        self.label = tk.Label(primary, text="Enter your primary password :", font=("Arial", 15))
         self.label.pack(pady=20)
 
         # Password entry (hide with *)
-        self.password_entry = tk.Entry(master, show="*", width=20)
+        self.password_entry = tk.Entry(primary, show="*", width=20)
         self.password_entry.pack()
 
         # "Connect" button
-        self.login_button = (tk.Button(master, text="Connect", command=self.check_password))
+        self.login_button = (tk.Button(primary, text="Connect", command=self.check_password))
         self.login_button.pack(pady=20)
 
     def check_password(self):
-        """A  check for master password before the access to databases."""
+        """A check for primary password before the access to databases."""
         entered_password = self.password_entry.get()
 
-        if not os.path.exists(MASTER_PASSWORD_FILE):
-            messagebox.showerror("Error", "master password file not found.")
+        if not os.path.exists(PRIMARY_PASSWORD_FILE):
+            messagebox.showerror("Error", "primary password file not found.")
             return
 
-        with open(MASTER_PASSWORD_FILE, "r") as f:
+        with open(PRIMARY_PASSWORD_FILE, "r") as f:
             data = json.load(f)
 
-        if entered_password == data.get("master_password"):
+        if entered_password == data.get("primary_password"):
             messagebox.showinfo("Success", "Connection approved.")
-            self.master.destroy() # close the window
-            # Here for open main interface later
+            self.primary.destroy() # close the window
+
+            window_login_root = tk.Tk()
+            window_login_app = MainWindow(window_login_root)
+            window_login_root.mainloop()
+
         else:
             messagebox.showerror("Error", "Wrong password.")
 
+class MainWindow:
+    """The main window with the menu."""
+    def __init__(self, primary):
+        self.primary = primary
+        self.primary.title("Password Manager")
+        self.primary.geometry("600x400")
+        self.primary.resizable(False, False)
+
+        # Title
+        title_label = tk.Label(primary, text="welcome to your Password Manager", font=('Arial', 14))
+        title_label.pack(pady=20)
+
+        # Passwords' array
+        columns = ("entry", "website", "username", "password")
+        self.tree = ttk.Treeview(primary, columns=columns, show="headings")
+        self.tree.heading("entry", text="Entry")
+        self.tree.heading("website", text="Website")
+        self.tree.heading("username", text="Username")
+        self.tree.heading("password", text="Password")
+
+        self.tree.pack(pady=10, fill="both", expand=True)
+
+        # Buttons
+        button_frame = tk.Frame(primary)
+        button_frame.pack(pady=10)
+
+        self.add_button = tk.Button(button_frame, text="Add", width=15, command=self.add_entry)
+        self.add_button.pack(side="left", padx=5)
+
+        self.edit_button = tk.Button(button_frame, text="Edit", width=15, command=self.edit_entry)
+        self.edit_button.pack(side="left", padx=5)
+
+        self.delete_button = tk.Button(button_frame, text="Delete", width=15, command=self.delete_entry)
+        self.delete_button.pack(side="left", padx=5)
+
+    def add_entry(self):
+        pass # To define later
+
+    def edit_entry(self):
+        pass # To define later
+
+    def delete_entry(self):
+        pass # To define later
+
+
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = WindowLogin(root)
+    if not os.path.exists(PRIMARY_PASSWORD_FILE):
+        root = tk.Tk()
+        app = InitiatePrimaryWindow(root)
+    else:
+        root = tk.Tk()
+        app = WindowLogin(root)
+
     root.mainloop()
 

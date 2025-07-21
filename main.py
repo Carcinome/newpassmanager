@@ -1,4 +1,4 @@
-"""Here, the main code for the passwords manager."""
+"""Here, the main code for the passwords' manager."""
 
 import json
 import os
@@ -9,28 +9,28 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
 
 
-# path to the master password storage file
-MASTER_PASSWORD_FILE = "data/master.json"
+# path to the primary password storage file
+PRIMARY_PASSWORD_FILE = "data/primary_password.json"
 PASSWORDS_FILE = "data/passwords.json"
 SALT = b"azertyuiop123456"
 
 
 def init_storage():
-    """Create the master.json file if it does not exist."""
-    if not os.path.exists(MASTER_PASSWORD_FILE):
-        print("No master password found, creating it.")
-        master_password = input("Create your master password : ")
-        with open(MASTER_PASSWORD_FILE, "w") as f:
-            json.dump({"master_password": master_password}, f)
-        print("Master password has been created.")
+    """Create the primary_password.json file if it does not exist."""
+    if not os.path.exists(PRIMARY_PASSWORD_FILE):
+        print("No primary password found, creating it.")
+        primary_password = input("Create your primary password : ")
+        with open(PRIMARY_PASSWORD_FILE, "w") as f:
+            json.dump({"primary_password": primary_password}, f)
+        print("Primary password has been created.")
     else:
-        with open(MASTER_PASSWORD_FILE, "r") as f:
+        with open(PRIMARY_PASSWORD_FILE, "r") as f:
             data = json.load(f)
-        master_password = input("Enter the master password : ")
-        if master_password != data["master_password"]:
+        primary_password = input("Enter the primary password : ")
+        if primary_password != data["primary_password"]:
             print("Wrong password.")
             exit()
-    return derive_key(master_password)
+    return derive_key(primary_password)
 
 
 def load_passwords():
@@ -143,15 +143,15 @@ def view_passwords(fernet_instance):
         print("-" * 30)
 
 
-def derive_key(master_password: str) -> Fernet:
-    """Derive a Fernet key from a master password."""
+def derive_key(primary_password: str) -> Fernet:
+    """Derive a Fernet key from a primary password."""
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=32,
         salt=SALT,
         iterations=100_000,
     )
-    key = base64.urlsafe_b64encode(kdf.derive(master_password.encode()))
+    key = base64.urlsafe_b64encode(kdf.derive(primary_password.encode()))
     return Fernet(key)
 
 
