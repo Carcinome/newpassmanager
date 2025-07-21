@@ -6,6 +6,7 @@ from cryptography.fernet import InvalidToken
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
 
+
 # path to the master password storage file
 MASTER_PASSWORD_FILE = "data/master.json"
 PASSWORDS_FILE = "data/passwords.json"
