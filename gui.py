@@ -108,7 +108,7 @@ class MainWindow:
     def __init__(self, primary):
         self.primary = primary
         self.primary.title("Password Manager")
-        self.primary.geometry("600x400")
+        self.primary.geometry("1000x650")
         self.primary.resizable(False, False)
 
         # Title

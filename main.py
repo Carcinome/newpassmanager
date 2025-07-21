@@ -114,7 +114,7 @@ def modify_password(fernet_instance):
             passwords[entry_name]['username'] = new_username
         if new_pwd:
             encrypted_password = fernet_instance.encrypt(new_pwd.encode()).decode()
-            passwords[entry_name]['pwd'] = encrypted_password
+            passwords[entry_name]['password'] = encrypted_password
 
         save_passwords(passwords)
         print(f"Password changed successfully for {entry_name}.")
