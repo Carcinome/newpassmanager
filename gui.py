@@ -1,3 +1,5 @@
+"""This file si for making a Graphic User Interface, for avoid command lines interface for customers."""
+
 import json
 import os
 import tkinter as tk
@@ -8,6 +10,7 @@ MASTER_PASSWORD_FILE = "data/master.json"
 
 
 class WindowLogin:
+    """Login screen."""
     def __init__(self, master):
         self.master = master
         self.master.title("Connection - Password manager")
@@ -27,6 +30,7 @@ class WindowLogin:
         self.login_button.pack(pady=20)
 
     def check_password(self):
+        """A  check for master password before the access to databases."""
         entered_password = self.password_entry.get()
 
         if not os.path.exists(MASTER_PASSWORD_FILE):

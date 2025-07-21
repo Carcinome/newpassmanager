@@ -72,6 +72,7 @@ def add_password(fernet_instance):
 
 
 def delete_password():
+    """Delete an entry from the passwords.json file."""
     passwords = load_passwords()
     if not passwords:
         print("No passwords found.")
@@ -92,6 +93,7 @@ def delete_password():
 
 
 def modify_password(fernet_instance):
+    """Modify an entry from the passwords.json file."""
     passwords = load_passwords()
     if not passwords:
         print("No passwords found.")
