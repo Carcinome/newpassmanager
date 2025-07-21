@@ -1,3 +1,5 @@
+"""Here, the main code for the passwords manager."""
+
 import json
 import os
 import base64
