@@ -98,7 +98,7 @@
       <workItem from="1753101098214" duration="160000" />
       <workItem from="1753101266809" duration="10352000" />
       <workItem from="1753166296371" duration="2588000" />
-      <workItem from="1753168981249" duration="6695000" />
+      <workItem from="1753168981249" duration="12731000" />
     </task>
     <servers />
   </component>
@@ -117,7 +117,7 @@
     </option>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/newpassmanager$gui.coverage" NAME="gui Coverage Results" MODIFIED="1753183415575" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/newpassmanager$gui.coverage" NAME="gui Coverage Results" MODIFIED="1753189545933" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/newpassmanager$main.coverage" NAME="main Coverage Results" MODIFIED="1753108558119" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
