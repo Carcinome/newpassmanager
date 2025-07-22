@@ -1,5 +1,6 @@
 """This file si for making a Graphic User Interface, for avoid command lines interface for customers."""
 
+
 import json
 import os
 import tkinter as tk
@@ -103,6 +104,7 @@ class WindowLogin:
         else:
             messagebox.showerror("Error", "Wrong password.")
 
+
 class MainWindow:
     """The main window with the menu."""
     def __init__(self, primary):
@@ -160,7 +162,7 @@ class MainWindow:
         username_entry = tk.Entry(popup)
         username_entry.pack()
 
-        # Field - password
+        # Field - Password
         tk.Label(popup, text="Password :").pack(pady=(10, 0))
         pwd_entry = tk.Entry(popup, show="*")
         pwd_entry.pack()
@@ -184,11 +186,76 @@ class MainWindow:
 
 
     def edit_entry(self):
-        pass # To define later
+        selected_entry = self.tree.selection()
+
+        if not selected_entry:
+            messagebox.showwarning("No entry selected", "Please select an entry.")
+            return
+
+        # Take values from selected line
+        values = self.tree.item(selected_entry, "values")
+        entry_old, website_old, username_old, pwd_old = values
+
+        # Create the popup window
+        popup = tk.Toplevel(self.primary)
+        popup.title("Edit entry")
+        popup.geometry("500x400")
+        popup.resizable(True, True)
+
+        # Field - Entry
+        tk.Label(popup, text="Edit Entry :").pack(pady=(10, 0))
+        entryname_entry = tk.Entry(popup)
+        entryname_entry.insert(0, entry_old)
+        entryname_entry.pack()
+
+        # Field - Website/application path
+        tk.Label(popup, text="Website :").pack(pady=(10, 0))
+        website_entry = tk.Entry(popup)
+        website_entry.insert(0, website_old)
+        website_entry.pack()
+
+        # Field - Username
+        tk.Label(popup, text="Username :").pack(pady=(10, 0))
+        username_entry = tk.Entry(popup)
+        username_entry.insert(0, username_old)
+        username_entry.pack()
+
+        # Field - Password
+        tk.Label(popup, text="Password :").pack(pady=(10,0))
+        pwd_entry = tk.Entry(popup, show="*")
+        pwd_entry.insert(0, pwd_old)
+        pwd_entry.pack()
+
+        # Function for saving modifications
+        def save():
+            entry_new = entryname_entry.get().strip()
+            website_new = website_entry.get().strip()
+            username_new = username_entry.get().strip()
+            pwd_new = pwd_entry.get().strip()
+
+            if not entry_new or not website_new or not username_new or not pwd_new:
+                messagebox.showwarning("Fields missing!", "Please fill all fields before saving.")
+
+            # Update selected line
+            self.tree.item(selected_entry, values=(entry_new, website_new, username_new, pwd_new))
+            popup.destroy()
+
+        # "Save" button
+        tk.Button(popup, text="Save", command=save).pack(pady=15)
+
 
     def delete_entry(self):
-        pass # To define later
+        # Take the selected element
+        selected_entry = self.tree.selection()
 
+        if not selected_entry:
+            messagebox.showwarning("No entry selected", "Please select an entry.")
+            return
+
+        confirm = messagebox.askyesno("Confirm deleting", "Would you really want to delete this entry?")
+
+        if confirm:
+            self.tree.delete(selected_entry)
 
 
 if __name__ == "__main__":
