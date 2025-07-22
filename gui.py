@@ -109,7 +109,7 @@ class MainWindow:
         self.primary = primary
         self.primary.title("Password Manager")
         self.primary.geometry("1000x650")
-        self.primary.resizable(False, False)
+        self.primary.resizable(True, True)
 
         # Title
         title_label = tk.Label(primary, text="welcome to your Password Manager", font=('Arial', 14))
@@ -139,7 +139,49 @@ class MainWindow:
         self.delete_button.pack(side="left", padx=5)
 
     def add_entry(self):
-        pass # To define later
+        # Create a new window for add an entry
+        popup = tk.Toplevel(self.primary)
+        popup.title("Add Entry")
+        popup.geometry("500x400")
+        popup.resizable(True, True)
+
+        # Field - Entry
+        tk.Label(popup, text="Add Entry :").pack(pady=(10, 0))
+        entryname_entry = tk.Entry(popup)
+        entryname_entry.pack()
+
+        # Field - Website/application path
+        tk.Label(popup, text="Website/Application path :").pack(pady=(10, 0))
+        website_entry = tk.Entry(popup)
+        website_entry.pack()
+
+        # Field - Username
+        tk.Label(popup, text="Username :").pack(pady=(10, 0))
+        username_entry = tk.Entry(popup)
+        username_entry.pack()
+
+        # Field - password
+        tk.Label(popup, text="Password :").pack(pady=(10, 0))
+        pwd_entry = tk.Entry(popup, show="*")
+        pwd_entry.pack()
+
+        # "Save" button
+        def save():
+            entry = entryname_entry.get().strip()
+            website = website_entry.get().strip()
+            username = username_entry.get().strip()
+            pwd = pwd_entry.get().strip()
+
+            if not entry or not website or not username or not pwd:
+                messagebox.showerror("Fields must be filled!", "Please fill all fields before saving.")
+                return
+
+            self.tree.insert("", "end", values=(entry, website, username, pwd))
+            popup.destroy()
+
+        save_button = tk.Button(popup, text="Save", command=save)
+        save_button.pack(pady=15)
+
 
     def edit_entry(self):
         pass # To define later
