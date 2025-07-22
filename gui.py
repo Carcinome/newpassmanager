@@ -25,7 +25,7 @@ class InitiatePrimaryWindow:
 
         # Field 1 - password
         self.pwd_entry = tk.Entry(primary, show="*", width=40)
-        self.pwd_entry.pack(pady=10)g
+        self.pwd_entry.pack(pady=10)
 
         # Field 2 - confirmation
         self.confirm_entry = tk.Entry(primary, show="*", width=40)
@@ -116,7 +116,7 @@ class MainWindow:
         self.primary.resizable(True, True)
 
         # Title
-        title_label = tk.Label(primary, text="welcome to your Password Manager", font=('Arial', 14))
+        title_label = tk.Label(primary, text="Welcome to your Password Manager", font=('Arial', 14))
         title_label.pack(pady=20)
 
         # Passwords' array
