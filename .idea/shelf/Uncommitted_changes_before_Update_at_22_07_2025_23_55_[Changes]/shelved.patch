@@ -1,0 +1,352 @@
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_21_07_2025_21_27__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_21_07_2025_21_27__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Update_at_21_07_2025_21_27__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_21_07_2025_21_27__Changes_.xml	(revision 946d62bd6fde06d36422ae0fd623aabe31fb3a43)
++++ /dev/null	(revision 946d62bd6fde06d36422ae0fd623aabe31fb3a43)
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Update_at_21_07_2025_21_27_[Changes]" date="1753126065202" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_21_07_2025_21_27_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Update at 21/07/2025 21:27 [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_21_07_2025_21_27_[Changes]/shelved.patch
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_21_07_2025_21_27_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Update_at_21_07_2025_21_27_[Changes]/shelved.patch
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_21_07_2025_21_27_[Changes]/shelved.patch	(revision 946d62bd6fde06d36422ae0fd623aabe31fb3a43)
++++ /dev/null	(revision 946d62bd6fde06d36422ae0fd623aabe31fb3a43)
+@@ -1,179 +0,0 @@
+-Index: .idea/inspectionProfiles/Project_Default.xml
+-===================================================================
+-diff --git a/.idea/inspectionProfiles/Project_Default.xml b/.idea/inspectionProfiles/Project_Default.xml
+-deleted file mode 100644
+---- a/.idea/inspectionProfiles/Project_Default.xml	(revision ed78fb71318f451e12ebf9ee658ab152fa43f684)
+-+++ /dev/null	(revision ed78fb71318f451e12ebf9ee658ab152fa43f684)
+-@@ -1,12 +0,0 @@
+--<component name="InspectionProjectProfileManager">
+--  <profile version="1.0">
+--    <option name="myName" value="Project Default" />
+--    <inspection_tool class="PyPep8Inspection" enabled="true" level="INFORMATION" enabled_by_default="true">
+--      <option name="ignoredErrors">
+--        <list>
+--          <option value="E302" />
+--        </list>
+--      </option>
+--    </inspection_tool>
+--  </profile>
+--</component>
+-\ No newline at end of file
+-Index: .idea/newpassmanager.iml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<module version=\"4\">\r\n  <component name=\"PyDocumentationSettings\">\r\n    <option name=\"format\" value=\"PLAIN\" />\r\n    <option name=\"myDocStringFormat\" value=\"Plain\" />\r\n  </component>\r\n</module>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/.idea/newpassmanager.iml b/.idea/newpassmanager.iml
+---- a/.idea/newpassmanager.iml	(revision ed78fb71318f451e12ebf9ee658ab152fa43f684)
+-+++ b/.idea/newpassmanager.iml	(date 1753126050635)
+-@@ -1,5 +1,12 @@
+- <?xml version="1.0" encoding="UTF-8"?>
+--<module version="4">
+-+<module type="PYTHON_MODULE" version="4">
+-+  <component name="NewModuleRootManager">
+-+    <content url="file://$MODULE_DIR$">
+-+      <excludeFolder url="file://$MODULE_DIR$/.venv" />
+-+    </content>
+-+    <orderEntry type="jdk" jdkName="Python 3.13 (newpassmanager)" jdkType="Python SDK" />
+-+    <orderEntry type="sourceFolder" forTests="false" />
+-+  </component>
+-   <component name="PyDocumentationSettings">
+-     <option name="format" value="PLAIN" />
+-     <option name="myDocStringFormat" value="Plain" />
+-Index: .idea/misc.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"Black\">\r\n    <option name=\"sdkName\" value=\"Python 3.13 (newpassmanager)\" />\r\n  </component>\r\n  <component name=\"ProjectRootManager\" version=\"2\" project-jdk-name=\"Python 3.13 (newpassmanager)\" project-jdk-type=\"Python SDK\" />\r\n</project>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/.idea/misc.xml b/.idea/misc.xml
+---- a/.idea/misc.xml	(revision ed78fb71318f451e12ebf9ee658ab152fa43f684)
+-+++ b/.idea/misc.xml	(date 1753126050645)
+-@@ -1,7 +1,4 @@
+- <?xml version="1.0" encoding="UTF-8"?>
+- <project version="4">
+--  <component name="Black">
+--    <option name="sdkName" value="Python 3.13 (newpassmanager)" />
+--  </component>
+-   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.13 (newpassmanager)" project-jdk-type="Python SDK" />
+- </project>
+-\ No newline at end of file
+-Index: .idea/material_theme_project_new.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/.idea/material_theme_project_new.xml b/.idea/material_theme_project_new.xml
+-new file mode 100644
+---- /dev/null	(date 1753126050695)
+-+++ b/.idea/material_theme_project_new.xml	(date 1753126050695)
+-@@ -0,0 +1,10 @@
+-+<?xml version="1.0" encoding="UTF-8"?>
+-+<project version="4">
+-+  <component name="MaterialThemeProjectNewConfig">
+-+    <option name="metadata">
+-+      <MTProjectMetadataState>
+-+        <option name="userId" value="-124fb4ec:1982e738df8:-7ffd" />
+-+      </MTProjectMetadataState>
+-+    </option>
+-+  </component>
+-+</project>
+-\ No newline at end of file
+-Index: .idea/workspace.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"29ce88e8-9a5f-4364-9259-5d20d8186681\" name=\"Changes\" comment=\"\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/main.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/main.py\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 1\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"2zvc6qw3PylyO12SXz5meypmkNt\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">{\r\n  &quot;keyToString&quot;: {\r\n    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,\r\n    &quot;Python.main.executor&quot;: &quot;Run&quot;,\r\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,\r\n    &quot;git-widget-placeholder&quot;: &quot;main&quot;,\r\n    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,\r\n    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,\r\n    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,\r\n    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,\r\n    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,\r\n    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,\r\n    &quot;settings.editor.selected.configurable&quot;: &quot;discord-application&quot;,\r\n    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;\r\n  }\r\n}</component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-js-predefined-d6986cc7102b-09060db00ec0-JavaScript-PY-251.26927.90\" />\r\n        <option value=\"bundled-python-sdk-41e8cd69c857-64d779b69b7a-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.26927.90\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"29ce88e8-9a5f-4364-9259-5d20d8186681\" name=\"Changes\" comment=\"\" />\r\n      <created>1752614814662</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1752614814662</updated>\r\n      <workItem from=\"1752614815771\" duration=\"850000\" />\r\n      <workItem from=\"1752693346730\" duration=\"27000\" />\r\n      <workItem from=\"1752693380349\" duration=\"722000\" />\r\n      <workItem from=\"1752697957492\" duration=\"657000\" />\r\n      <workItem from=\"1752787162819\" duration=\"2996000\" />\r\n      <workItem from=\"1752795670902\" duration=\"15000\" />\r\n      <workItem from=\"1752796035206\" duration=\"6000\" />\r\n      <workItem from=\"1752833210286\" duration=\"607000\" />\r\n      <workItem from=\"1752840007727\" duration=\"2000\" />\r\n      <workItem from=\"1752874624012\" duration=\"795000\" />\r\n      <workItem from=\"1752884035019\" duration=\"167000\" />\r\n      <workItem from=\"1752933247059\" duration=\"626000\" />\r\n      <workItem from=\"1752983199864\" duration=\"2307000\" />\r\n    </task>\r\n    <servers />\r\n  </component>\r\n  <component name=\"TypeScriptGeneratedFilesManager\">\r\n    <option name=\"version\" value=\"3\" />\r\n  </component>\r\n  <component name=\"com.intellij.coverage.CoverageDataManagerImpl\">\r\n    <SUITE FILE_PATH=\"coverage/newpassmanager$main.coverage\" NAME=\"main Coverage Results\" MODIFIED=\"1752693479487\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\r\n  </component>\r\n</project>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+---- a/.idea/workspace.xml	(revision ed78fb71318f451e12ebf9ee658ab152fa43f684)
+-+++ b/.idea/workspace.xml	(date 1753125982296)
+-@@ -1,82 +1,4 @@
+- <?xml version="1.0" encoding="UTF-8"?>
+- <project version="4">
+--  <component name="AutoImportSettings">
+--    <option name="autoReloadType" value="SELECTIVE" />
+--  </component>
+--  <component name="ChangeListManager">
+--    <list default="true" id="29ce88e8-9a5f-4364-9259-5d20d8186681" name="Changes" comment="">
+--      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+--      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+--    </list>
+--    <option name="SHOW_DIALOG" value="false" />
+--    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+--    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+--    <option name="LAST_RESOLUTION" value="IGNORE" />
+--  </component>
+--  <component name="Git.Settings">
+--    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+--  </component>
+--  <component name="ProjectColorInfo">{
+--  &quot;associatedIndex&quot;: 1
+--}</component>
+--  <component name="ProjectId" id="2zvc6qw3PylyO12SXz5meypmkNt" />
+--  <component name="ProjectViewState">
+--    <option name="hideEmptyMiddlePackages" value="true" />
+--    <option name="showLibraryContents" value="true" />
+--  </component>
+--  <component name="PropertiesComponent">{
+--  &quot;keyToString&quot;: {
+--    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+--    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+--    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+--    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+--    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+--    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+--    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+--    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+--    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+--    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+--    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+--    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+--    &quot;settings.editor.selected.configurable&quot;: &quot;discord-application&quot;,
+--    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+--  }
+--}</component>
+--  <component name="SharedIndexes">
+--    <attachedChunks>
+--      <set>
+--        <option value="bundled-js-predefined-d6986cc7102b-09060db00ec0-JavaScript-PY-251.26927.90" />
+--        <option value="bundled-python-sdk-41e8cd69c857-64d779b69b7a-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.26927.90" />
+--      </set>
+--    </attachedChunks>
+--  </component>
+--  <component name="TaskManager">
+--    <task active="true" id="Default" summary="Default task">
+--      <changelist id="29ce88e8-9a5f-4364-9259-5d20d8186681" name="Changes" comment="" />
+--      <created>1752614814662</created>
+--      <option name="number" value="Default" />
+--      <option name="presentableId" value="Default" />
+--      <updated>1752614814662</updated>
+--      <workItem from="1752614815771" duration="850000" />
+--      <workItem from="1752693346730" duration="27000" />
+--      <workItem from="1752693380349" duration="722000" />
+--      <workItem from="1752697957492" duration="657000" />
+--      <workItem from="1752787162819" duration="2996000" />
+--      <workItem from="1752795670902" duration="15000" />
+--      <workItem from="1752796035206" duration="6000" />
+--      <workItem from="1752833210286" duration="607000" />
+--      <workItem from="1752840007727" duration="2000" />
+--      <workItem from="1752874624012" duration="795000" />
+--      <workItem from="1752884035019" duration="167000" />
+--      <workItem from="1752933247059" duration="626000" />
+--      <workItem from="1752983199864" duration="2307000" />
+--    </task>
+--    <servers />
+--  </component>
+--  <component name="TypeScriptGeneratedFilesManager">
+--    <option name="version" value="3" />
+--  </component>
+--  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+--    <SUITE FILE_PATH="coverage/newpassmanager$main.coverage" NAME="main Coverage Results" MODIFIED="1752693479487" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+--  </component>
+-+  <component name="PropertiesComponent">{}</component>
+- </project>
+-\ No newline at end of file
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"Black\">\r\n    <option name=\"sdkName\" value=\"Python 3.13 (newpassmanager)\" />\r\n  </component>\r\n  <component name=\"ProjectRootManager\" version=\"2\" project-jdk-name=\"Python 3.13 (newpassmanager)\" project-jdk-type=\"Python SDK\" />\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+--- a/.idea/misc.xml	(revision 946d62bd6fde06d36422ae0fd623aabe31fb3a43)
++++ b/.idea/misc.xml	(date 1753221292922)
+@@ -1,7 +1,4 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+-  <component name="Black">
+-    <option name="sdkName" value="Python 3.13 (newpassmanager)" />
+-  </component>
+   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.13 (newpassmanager)" project-jdk-type="Python SDK" />
+ </project>
+\ No newline at end of file
+Index: .idea/material_theme_project_new.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"MaterialThemeProjectNewConfig\">\r\n    <option name=\"metadata\">\r\n      <MTProjectMetadataState>\r\n        <option name=\"migrated\" value=\"true\" />\r\n        <option name=\"pristineConfig\" value=\"false\" />\r\n        <option name=\"userId\" value=\"73fceb3c:1982e6fc359:-7ffe\" />\r\n      </MTProjectMetadataState>\r\n    </option>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/material_theme_project_new.xml b/.idea/material_theme_project_new.xml
+--- a/.idea/material_theme_project_new.xml	(revision 946d62bd6fde06d36422ae0fd623aabe31fb3a43)
++++ b/.idea/material_theme_project_new.xml	(date 1753221276287)
+@@ -3,9 +3,7 @@
+   <component name="MaterialThemeProjectNewConfig">
+     <option name="metadata">
+       <MTProjectMetadataState>
+-        <option name="migrated" value="true" />
+-        <option name="pristineConfig" value="false" />
+-        <option name="userId" value="73fceb3c:1982e6fc359:-7ffe" />
++        <option name="userId" value="-4b6fa399:198342198d5:-7ffd" />
+       </MTProjectMetadataState>
+     </option>
+   </component>
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"29ce88e8-9a5f-4364-9259-5d20d8186681\" name=\"Changes\" comment=\"\">\r\n      <change afterPath=\"$PROJECT_DIR$/.idea/modules.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/material_theme_project_new.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/material_theme_project_new.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/misc.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/misc.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/newpassmanager.iml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/newpassmanager.iml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/data/passwords.json\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/data/passwords.json\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/main.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/main.py\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 1\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"2zvc6qw3PylyO12SXz5meypmkNt\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">{\r\n  &quot;keyToString&quot;: {\r\n    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,\r\n    &quot;Python.gui.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python.main.executor&quot;: &quot;Run&quot;,\r\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,\r\n    &quot;git-widget-placeholder&quot;: &quot;main&quot;,\r\n    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,\r\n    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,\r\n    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,\r\n    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,\r\n    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,\r\n    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,\r\n    &quot;settings.editor.selected.configurable&quot;: &quot;discord-application&quot;,\r\n    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;\r\n  }\r\n}</component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-js-predefined-d6986cc7102b-09060db00ec0-JavaScript-PY-251.26927.90\" />\r\n        <option value=\"bundled-python-sdk-41e8cd69c857-64d779b69b7a-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.26927.90\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"29ce88e8-9a5f-4364-9259-5d20d8186681\" name=\"Changes\" comment=\"\" />\r\n      <created>1752614814662</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1752614814662</updated>\r\n      <workItem from=\"1752614815771\" duration=\"850000\" />\r\n      <workItem from=\"1752693346730\" duration=\"27000\" />\r\n      <workItem from=\"1752693380349\" duration=\"722000\" />\r\n      <workItem from=\"1752697957492\" duration=\"657000\" />\r\n      <workItem from=\"1752787162819\" duration=\"2996000\" />\r\n      <workItem from=\"1752795670902\" duration=\"15000\" />\r\n      <workItem from=\"1752796035206\" duration=\"6000\" />\r\n      <workItem from=\"1752833210286\" duration=\"607000\" />\r\n      <workItem from=\"1752840007727\" duration=\"2000\" />\r\n      <workItem from=\"1752874624012\" duration=\"795000\" />\r\n      <workItem from=\"1752884035019\" duration=\"167000\" />\r\n      <workItem from=\"1752933247059\" duration=\"626000\" />\r\n      <workItem from=\"1752983199864\" duration=\"2307000\" />\r\n      <workItem from=\"1753126389113\" duration=\"611000\" />\r\n      <workItem from=\"1753133531251\" duration=\"1714000\" />\r\n    </task>\r\n    <servers />\r\n  </component>\r\n  <component name=\"TypeScriptGeneratedFilesManager\">\r\n    <option name=\"version\" value=\"3\" />\r\n  </component>\r\n  <component name=\"com.intellij.coverage.CoverageDataManagerImpl\">\r\n    <SUITE FILE_PATH=\"coverage/newpassmanager$gui.coverage\" NAME=\"gui Coverage Results\" MODIFIED=\"1753135250116\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\r\n    <SUITE FILE_PATH=\"coverage/newpassmanager$main.coverage\" NAME=\"main Coverage Results\" MODIFIED=\"1753134267737\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 946d62bd6fde06d36422ae0fd623aabe31fb3a43)
++++ b/.idea/workspace.xml	(date 1753221276137)
+@@ -1,92 +1,26 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+-  <component name="AutoImportSettings">
+-    <option name="autoReloadType" value="SELECTIVE" />
+-  </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="29ce88e8-9a5f-4364-9259-5d20d8186681" name="Changes" comment="">
+-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/newpassmanager.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/newpassmanager.iml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/data/passwords.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/passwords.json" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+-    </list>
++    <list default="true" id="1fdf82fc-eed2-4e7c-baac-3568a36660a0" name="Changes" comment="" />
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+     <option name="LAST_RESOLUTION" value="IGNORE" />
+   </component>
+-  <component name="Git.Settings">
+-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+-  </component>
+-  <component name="ProjectColorInfo">{
+-  &quot;associatedIndex&quot;: 1
+-}</component>
+-  <component name="ProjectId" id="2zvc6qw3PylyO12SXz5meypmkNt" />
+-  <component name="ProjectViewState">
+-    <option name="hideEmptyMiddlePackages" value="true" />
+-    <option name="showLibraryContents" value="true" />
+-  </component>
+-  <component name="PropertiesComponent">{
+-  &quot;keyToString&quot;: {
+-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+-    &quot;Python.gui.executor&quot;: &quot;Run&quot;,
+-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+-    &quot;settings.editor.selected.configurable&quot;: &quot;discord-application&quot;,
+-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+-  }
+-}</component>
+-  <component name="SharedIndexes">
+-    <attachedChunks>
+-      <set>
+-        <option value="bundled-js-predefined-d6986cc7102b-09060db00ec0-JavaScript-PY-251.26927.90" />
+-        <option value="bundled-python-sdk-41e8cd69c857-64d779b69b7a-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.26927.90" />
+-      </set>
+-    </attachedChunks>
+-  </component>
++  <component name="ProjectId" id="30FRL7menZ48WLv4dYqIPxOgQsT" />
++  <component name="PropertiesComponent"><![CDATA[{
++  "keyToString": {
++    "nodejs_package_manager_path": "npm"
++  }
++}]]></component>
+   <component name="TaskManager">
+     <task active="true" id="Default" summary="Default task">
+-      <changelist id="29ce88e8-9a5f-4364-9259-5d20d8186681" name="Changes" comment="" />
+-      <created>1752614814662</created>
++      <changelist id="1fdf82fc-eed2-4e7c-baac-3568a36660a0" name="Changes" comment="" />
++      <created>1753221275947</created>
+       <option name="number" value="Default" />
+       <option name="presentableId" value="Default" />
+-      <updated>1752614814662</updated>
+-      <workItem from="1752614815771" duration="850000" />
+-      <workItem from="1752693346730" duration="27000" />
+-      <workItem from="1752693380349" duration="722000" />
+-      <workItem from="1752697957492" duration="657000" />
+-      <workItem from="1752787162819" duration="2996000" />
+-      <workItem from="1752795670902" duration="15000" />
+-      <workItem from="1752796035206" duration="6000" />
+-      <workItem from="1752833210286" duration="607000" />
+-      <workItem from="1752840007727" duration="2000" />
+-      <workItem from="1752874624012" duration="795000" />
+-      <workItem from="1752884035019" duration="167000" />
+-      <workItem from="1752933247059" duration="626000" />
+-      <workItem from="1752983199864" duration="2307000" />
+-      <workItem from="1753126389113" duration="611000" />
+-      <workItem from="1753133531251" duration="1714000" />
++      <updated>1753221275947</updated>
+     </task>
+     <servers />
+   </component>
+-  <component name="TypeScriptGeneratedFilesManager">
+-    <option name="version" value="3" />
+-  </component>
+-  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+-    <SUITE FILE_PATH="coverage/newpassmanager$gui.coverage" NAME="gui Coverage Results" MODIFIED="1753135250116" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+-    <SUITE FILE_PATH="coverage/newpassmanager$main.coverage" NAME="main Coverage Results" MODIFIED="1753134267737" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+-  </component>
+ </project>
+\ No newline at end of file
