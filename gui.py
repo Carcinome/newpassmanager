@@ -252,6 +252,7 @@ class MainWindow:
         popup = tk.Toplevel(self.primary)
         popup.title("Edit entry")
         popup.geometry("500x400")
+        popup.grab_set()
         popup.resizable(True, True)
 
         # Field - Entry
