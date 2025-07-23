@@ -1,0 +1,142 @@
+Index: gui.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>\"\"\"This file si for making a Graphic User Interface, for avoid command lines interface for customers.\"\"\"\n\n\nimport json\nimport os\nimport tkinter as tk\nfrom tkinter import messagebox\nfrom tkinter import ttk\n\n\nPRIMARY_PASSWORD_FILE = \"data/primary_password.json\"\n\n\nclass InitiatePrimaryWindow:\n    \"\"\"For creating a primary password if it doesn't exist.\"\"\"\n    def __init__(self, primary):\n        self.primary = primary\n        self.primary.title(\"Create a primary password\")\n        self.primary.geometry(\"400x300\")\n        self.primary.resizable(False, False)\n\n        # Main text\n        self.label = tk.Label(primary, text=\"Create your primary password\", font=(\"Arial\", 15))\n        self.label.pack(pady=10)\n\n        # Field 1 - password\n        self.pwd_entry = tk.Entry(primary, show=\"*\", width=40)\n        self.pwd_entry.pack(pady=10)g\n\n        # Field 2 - confirmation\n        self.confirm_entry = tk.Entry(primary, show=\"*\", width=40)\n        self.confirm_entry.pack(pady=10)\n\n        # \"Save\" button\n        self.save_button = tk.Button(primary, text=\"Save\", command=self.save_primary_password)\n        self.save_button.pack(pady=15)\n\n\n    def save_primary_password(self):\n        \"\"\"For saving primary password.\"\"\"\n        password = self.pwd_entry.get()\n        password_confirmation = self.confirm_entry.get()\n\n        if not password or not password_confirmation:\n            messagebox.showerror(\"Error\", \"All fields are required.\")\n            return\n\n        if password != password_confirmation:\n            messagebox.showerror(\"Error\", \"Passwords do not match.\")\n            return\n\n        os.makedirs(\"data\", exist_ok=True) # For creating the data folder if it doesn't exist.\n\n        with open(PRIMARY_PASSWORD_FILE, \"w\") as f:\n            json.dump({\"primary_password\": password},f)\n\n        messagebox.showinfo(\"Success\", \"Primary password saved.\")\n        self.primary.destroy() # close the window\n\n        # Open the connection window\n        save_primary_pwd_root = tk.Tk()\n        save_primary_pwd_app = WindowLogin(save_primary_pwd_root)\n        save_primary_pwd_root.mainloop()\n\n\nclass WindowLogin:\n    \"\"\"Login screen.\"\"\"\n    def __init__(self, primary):\n        self.primary = primary\n        self.primary.title(\"Connection - Password manager\")\n        self.primary.geometry(\"400x300\")\n        self.primary.resizable(False, False)\n\n        # Main text\n        self.label = tk.Label(primary, text=\"Enter your primary password :\", font=(\"Arial\", 15))\n        self.label.pack(pady=20)\n\n        # Password entry (hide with *)\n        self.password_entry = tk.Entry(primary, show=\"*\", width=20)\n        self.password_entry.pack()\n\n        # \"Connect\" button\n        self.login_button = (tk.Button(primary, text=\"Connect\", command=self.check_password))\n        self.login_button.pack(pady=20)\n\n\n    def check_password(self):\n        \"\"\"A check for primary password before the access to databases.\"\"\"\n        entered_password = self.password_entry.get()\n\n        if not os.path.exists(PRIMARY_PASSWORD_FILE):\n            messagebox.showerror(\"Error\", \"primary password file not found.\")\n            return\n\n        with open(PRIMARY_PASSWORD_FILE, \"r\") as f:\n            data = json.load(f)\n\n        if entered_password == data.get(\"primary_password\"):\n            messagebox.showinfo(\"Success\", \"Connection approved.\")\n            self.primary.destroy() # close the window\n\n            window_login_root = tk.Tk()\n            window_login_app = MainWindow(window_login_root)\n            window_login_root.mainloop()\n\n        else:\n            messagebox.showerror(\"Error\", \"Wrong password.\")\n\n\nclass MainWindow:\n    \"\"\"The main window with the menu.\"\"\"\n    def __init__(self, primary):\n        self.primary = primary\n        self.primary.title(\"Password Manager\")\n        self.primary.geometry(\"1000x650\")\n        self.primary.resizable(True, True)\n\n        # Title\n        title_label = tk.Label(primary, text=\"welcome to your Password Manager\", font=('Arial', 14))\n        title_label.pack(pady=20)\n\n        # Passwords' array\n        columns = (\"entry\", \"website\", \"username\", \"password\")\n        self.tree = ttk.Treeview(primary, columns=columns, show=\"headings\")\n        self.tree.heading(\"entry\", text=\"Entry\")\n        self.tree.heading(\"website\", text=\"Website\")\n        self.tree.heading(\"username\", text=\"Username\")\n        self.tree.heading(\"password\", text=\"Password\")\n\n        self.tree.pack(pady=10, fill=\"both\", expand=True)\n\n        self.load_data()\n\n        # Buttons\n        button_frame = tk.Frame(primary)\n        button_frame.pack(pady=10)\n\n        self.add_button = tk.Button(button_frame, text=\"Add\", width=15, command=self.add_entry)\n        self.add_button.pack(side=\"left\", padx=5)\n\n        self.edit_button = tk.Button(button_frame, text=\"Edit\", width=15, command=self.edit_entry)\n        self.edit_button.pack(side=\"left\", padx=5)\n\n        self.delete_button = tk.Button(button_frame, text=\"Delete\", width=15, command=self.delete_entry)\n        self.delete_button.pack(side=\"left\", padx=5)\n\n\n    def load_data(self):\n        filepath = \"data/passwords.json\"\n\n        # If the .json file doesn't exit, create an empty file\n        if not os.path.exists(filepath):\n            with open(filepath, \"w\") as f:\n                json.dump({}, f)\n\n        try:\n            with open(filepath, \"r\") as f:\n                datas = json.load(f)\n                for entry_name, data in datas.items():\n                    self.tree.insert(\"\", \"end\", values=(\n                        entry_name,\n                        data[\"website\"],\n                        data[\"username\"],\n                        data[\"password\"]\n                    ))\n        except (json.JSONDecodeError, KeyError) as e:\n            messagebox.showerror(\"Error\", f\"Loading .json file {e} impossible.\")\n\n\n    def add_entry(self):\n        # Create a new window for add an entry\n        popup = tk.Toplevel(self.primary)\n        popup.title(\"Add Entry\")\n        popup.geometry(\"500x400\")\n        popup.resizable(True, True)\n\n        # Field - Entry\n        tk.Label(popup, text=\"Add Entry :\").pack(pady=(10, 0))\n        entryname_entry = tk.Entry(popup)\n        entryname_entry.pack()\n\n        # Field - Website/application path\n        tk.Label(popup, text=\"Website/Application path :\").pack(pady=(10, 0))\n        website_entry = tk.Entry(popup)\n        website_entry.pack()\n\n        # Field - Username\n        tk.Label(popup, text=\"Username :\").pack(pady=(10, 0))\n        username_entry = tk.Entry(popup)\n        username_entry.pack()\n\n        # Field - Password\n        tk.Label(popup, text=\"Password :\").pack(pady=(10, 0))\n        pwd_entry = tk.Entry(popup, show=\"*\")\n        pwd_entry.pack()\n\n\n        # \"Save\" button\n        def save():\n            entry = entryname_entry.get().strip()\n            website = website_entry.get().strip()\n            username = username_entry.get().strip()\n            pwd = pwd_entry.get().strip()\n\n            if not entry or not website or not username or not pwd:\n                messagebox.showerror(\"Fields must be filled!\", \"Please fill all fields before saving.\")\n                return\n\n            self.tree.insert(\"\", \"end\", values=(entry, website, username, pwd))\n            popup.destroy()\n\n        save_button = tk.Button(popup, text=\"Save\", command=save)\n        save_button.pack(pady=15)\n\n\n    def edit_entry(self):\n        selected_entry = self.tree.selection()\n\n        if not selected_entry:\n            messagebox.showwarning(\"No entry selected\", \"Please select an entry.\")\n            return\n\n        # Take values from selected line\n        values = self.tree.item(selected_entry, \"values\")\n        entry_old, website_old, username_old, pwd_old = values\n\n        # Create the popup window\n        popup = tk.Toplevel(self.primary)\n        popup.title(\"Edit entry\")\n        popup.geometry(\"500x400\")\n        popup.resizable(True, True)\n\n        # Field - Entry\n        tk.Label(popup, text=\"Edit Entry :\").pack(pady=(10, 0))\n        entryname_entry = tk.Entry(popup)\n        entryname_entry.insert(0, entry_old)\n        entryname_entry.pack()\n\n        # Field - Website/application path\n        tk.Label(popup, text=\"Website :\").pack(pady=(10, 0))\n        website_entry = tk.Entry(popup)\n        website_entry.insert(0, website_old)\n        website_entry.pack()\n\n        # Field - Username\n        tk.Label(popup, text=\"Username :\").pack(pady=(10, 0))\n        username_entry = tk.Entry(popup)\n        username_entry.insert(0, username_old)\n        username_entry.pack()\n\n        # Field - Password\n        tk.Label(popup, text=\"Password :\").pack(pady=(10,0))\n        pwd_entry = tk.Entry(popup, show=\"*\")\n        pwd_entry.insert(0, pwd_old)\n        pwd_entry.pack()\n\n\n        # Function for saving modifications\n        def save():\n            entry_new = entryname_entry.get().strip()\n            website_new = website_entry.get().strip()\n            username_new = username_entry.get().strip()\n            pwd_new = pwd_entry.get().strip()\n\n            if not entry_new or not website_new or not username_new or not pwd_new:\n                messagebox.showwarning(\"Fields missing!\", \"Please fill all fields before saving.\")\n\n            # Update selected line\n            self.tree.item(selected_entry, values=(entry_new, website_new, username_new, pwd_new))\n            popup.destroy()\n\n        # \"Save\" button\n        tk.Button(popup, text=\"Save\", command=save).pack(pady=15)\n\n\n    def delete_entry(self):\n        # Take the selected element\n        selected_entry = self.tree.selection()\n\n        if not selected_entry:\n            messagebox.showwarning(\"No entry selected\", \"Please select an entry.\")\n            return\n\n        confirm = messagebox.askyesno(\"Confirm deleting\", \"Would you really want to delete this entry?\")\n\n        if confirm:\n            self.tree.delete(selected_entry)\n\n\n    def save_json(self):\n        filepath = \"data/passwords.json\"\n        datas = []\n\n        for child in self.tree.get_children():\n            values = self.tree.item(child)[\"values\"]\n            datas.append({\n                \"entry\": values[0],\n                \"website\": values[1],\n                \"username\": values[2],\n                \"password\": values[3]\n            })\n\n        try:\n            with open(filepath, \"w\") as f:\n                json.dump(datas, f, indent=4)\n        except IOError as e:\n            messagebox.showerror(\"Error\", f\"Error when saving password file: {e}\")\n\n\nif __name__ == \"__main__\":\n    if not os.path.exists(PRIMARY_PASSWORD_FILE):\n        root = tk.Tk()\n        app = InitiatePrimaryWindow(root)\n    else:\n        root = tk.Tk()\n        app = WindowLogin(root)\n\n    root.mainloop()\n\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/gui.py b/gui.py
+--- a/gui.py	(revision 76449dd8a6a26e7d39b18b5fa123a272f8793b95)
++++ b/gui.py	(date 1753271913188)
+@@ -25,7 +25,7 @@
+ 
+         # Field 1 - password
+         self.pwd_entry = tk.Entry(primary, show="*", width=40)
+-        self.pwd_entry.pack(pady=10)g
++        self.pwd_entry.pack(pady=10)
+ 
+         # Field 2 - confirmation
+         self.confirm_entry = tk.Entry(primary, show="*", width=40)
+@@ -172,6 +172,7 @@
+         popup = tk.Toplevel(self.primary)
+         popup.title("Add Entry")
+         popup.geometry("500x400")
++        popup.grab_set()
+         popup.resizable(True, True)
+ 
+         # Field - Entry
+@@ -207,6 +208,29 @@
+                 return
+ 
+             self.tree.insert("", "end", values=(entry, website, username, pwd))
++
++            # Read the .json file if it exists.
++            if os.path.exists("data/passwords.json"):
++                with open("data/passwords.json", "r") as f:
++                    try:
++                        data = json.load(f)
++                    except json.JSONDecodeError:
++                        data = {}
++
++            else:
++                data = {}
++
++            # Add new entry
++            data[entry] = {
++                "website": website,
++                "username": username,
++                "password": pwd
++            }
++
++            # Save in .json file
++            with open("data/passwords.json", "w") as f:
++                json.dump(data, f, indent=4)
++
+             popup.destroy()
+ 
+         save_button = tk.Button(popup, text="Save", command=save)
+Index: data/passwords.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>{\n    \"fnac\": {\n        \"website\": \"www.fnac.fr\",\n        \"username\": \"carci\",\n        \"password\": \"gAAAAABofG_qrxACgYTDIKel0mNKXSN7RPHO8t5Qfq_TkhC3c3HwV2tNiZYqdZ64uoNgc_Lndsyqd2Dmr8MVp7Mf1YO4KiPF4Q==\"\n    },\n    \"github\": {\n        \"website\": \"www.github.com\",\n        \"username\": \"carci\",\n        \"password\": \"gAAAAABofgFX3kGkr4z9Xrg42FwqFvATOhlIZjzpCrLYWOLPHtVJX8Mop3ue44KEfiwrbt5AUNmTXFIbTlvf7ZJWi0uYei840A==\"\n    },\n    \"google\": {\n        \"website\": \"www.google.com\",\n        \"username\": \"carci\",\n        \"password\": \"gAAAAABofrUsuaFTIRnFaIqYewQSoyZ8pV2NdCDGC8-KFPHNKbuFSiIc8JRqRaSjZOkWvhw9qaeM0kqJoMIGP23RHDUMuybOlQ==\"\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/data/passwords.json b/data/passwords.json
+--- a/data/passwords.json	(revision 76449dd8a6a26e7d39b18b5fa123a272f8793b95)
++++ b/data/passwords.json	(date 1753272229355)
+@@ -13,5 +13,10 @@
+         "website": "www.google.com",
+         "username": "carci",
+         "password": "gAAAAABofrUsuaFTIRnFaIqYewQSoyZ8pV2NdCDGC8-KFPHNKbuFSiIc8JRqRaSjZOkWvhw9qaeM0kqJoMIGP23RHDUMuybOlQ=="
++    },
++    "facebook": {
++        "website": "www.facebook.fr",
++        "username": "carci",
++        "password": "carci1"
+     }
+ }
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"AutoImportSettings\">\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\n  </component>\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"29ce88e8-9a5f-4364-9259-5d20d8186681\" name=\"Changes\" comment=\"\">\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/gui.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/gui.py\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"FileTemplateManagerImpl\">\n    <option name=\"RECENT_TEMPLATES\">\n      <list>\n        <option value=\"Python Script\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"GitHubPullRequestSearchHistory\">{\n  &quot;lastFilter&quot;: {\n    &quot;state&quot;: &quot;OPEN&quot;,\n    &quot;assignee&quot;: &quot;Carcinome&quot;\n  }\n}</component>\n  <component name=\"GithubPullRequestsUISettings\">{\n  &quot;selectedUrlAndAccountId&quot;: {\n    &quot;url&quot;: &quot;https://github.com/Carcinome/newpassmanager.git&quot;,\n    &quot;accountId&quot;: &quot;03de154d-2118-49c6-88bc-44f57c834600&quot;\n  }\n}</component>\n  <component name=\"ProblemsViewState\">\n    <option name=\"selectedTabId\" value=\"CurrentFile\" />\n  </component>\n  <component name=\"ProjectColorInfo\">{\n  &quot;associatedIndex&quot;: 1\n}</component>\n  <component name=\"ProjectId\" id=\"2zvc6qw3PylyO12SXz5meypmkNt\" />\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\"><![CDATA[{\n  \"keyToString\": {\n    \"ModuleVcsDetector.initialDetectionPerformed\": \"true\",\n    \"Python.gui.executor\": \"Run\",\n    \"Python.main.executor\": \"Run\",\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\n    \"RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager\": \"true\",\n    \"RunOnceActivity.git.unshallow\": \"true\",\n    \"SHARE_PROJECT_CONFIGURATION_FILES\": \"true\",\n    \"git-widget-placeholder\": \"main\",\n    \"ignore.virus.scanning.warn.message\": \"true\",\n    \"node.js.detected.package.eslint\": \"true\",\n    \"node.js.detected.package.tslint\": \"true\",\n    \"node.js.selected.package.eslint\": \"(autodetect)\",\n    \"node.js.selected.package.tslint\": \"(autodetect)\",\n    \"nodejs_package_manager_path\": \"npm\",\n    \"settings.editor.selected.configurable\": \"settings.sync\",\n    \"vue.rearranger.settings.migration\": \"true\"\n  }\n}]]></component>\n  <component name=\"SharedIndexes\">\n    <attachedChunks>\n      <set>\n        <option value=\"bundled-js-predefined-d6986cc7102b-09060db00ec0-JavaScript-PY-251.26927.90\" />\n        <option value=\"bundled-python-sdk-41e8cd69c857-64d779b69b7a-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.26927.90\" />\n      </set>\n    </attachedChunks>\n  </component>\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"29ce88e8-9a5f-4364-9259-5d20d8186681\" name=\"Changes\" comment=\"\" />\n      <created>1752614814662</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1752614814662</updated>\n      <workItem from=\"1752614815771\" duration=\"850000\" />\n      <workItem from=\"1752693346730\" duration=\"27000\" />\n      <workItem from=\"1752693380349\" duration=\"722000\" />\n      <workItem from=\"1752697957492\" duration=\"657000\" />\n      <workItem from=\"1752787162819\" duration=\"2996000\" />\n      <workItem from=\"1752795670902\" duration=\"15000\" />\n      <workItem from=\"1752796035206\" duration=\"6000\" />\n      <workItem from=\"1752833210286\" duration=\"607000\" />\n      <workItem from=\"1752840007727\" duration=\"2000\" />\n      <workItem from=\"1752874624012\" duration=\"795000\" />\n      <workItem from=\"1752884035019\" duration=\"167000\" />\n      <workItem from=\"1752933247059\" duration=\"626000\" />\n      <workItem from=\"1752983199864\" duration=\"2307000\" />\n      <workItem from=\"1753082473082\" duration=\"11041000\" />\n      <workItem from=\"1753101098214\" duration=\"160000\" />\n      <workItem from=\"1753101266809\" duration=\"10352000\" />\n      <workItem from=\"1753166296371\" duration=\"2588000\" />\n      <workItem from=\"1753168981249\" duration=\"12731000\" />\n    </task>\n    <servers />\n  </component>\n  <component name=\"TypeScriptGeneratedFilesManager\">\n    <option name=\"version\" value=\"3\" />\n  </component>\n  <component name=\"Vcs.Log.Tabs.Properties\">\n    <option name=\"TAB_STATES\">\n      <map>\n        <entry key=\"MAIN\">\n          <value>\n            <State />\n          </value>\n        </entry>\n      </map>\n    </option>\n  </component>\n  <component name=\"com.intellij.coverage.CoverageDataManagerImpl\">\n    <SUITE FILE_PATH=\"coverage/newpassmanager$gui.coverage\" NAME=\"gui Coverage Results\" MODIFIED=\"1753189545933\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\n    <SUITE FILE_PATH=\"coverage/newpassmanager$main.coverage\" NAME=\"main Coverage Results\" MODIFIED=\"1753108558119\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 76449dd8a6a26e7d39b18b5fa123a272f8793b95)
++++ b/.idea/workspace.xml	(date 1753272240288)
+@@ -6,6 +6,7 @@
+   <component name="ChangeListManager">
+     <list default="true" id="29ce88e8-9a5f-4364-9259-5d20d8186681" name="Changes" comment="">
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/data/passwords.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/passwords.json" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/gui.py" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+@@ -38,9 +39,9 @@
+   <component name="ProblemsViewState">
+     <option name="selectedTabId" value="CurrentFile" />
+   </component>
+-  <component name="ProjectColorInfo">{
+-  &quot;associatedIndex&quot;: 1
+-}</component>
++  <component name="ProjectColorInfo"><![CDATA[{
++  "associatedIndex": 4
++}]]></component>
+   <component name="ProjectId" id="2zvc6qw3PylyO12SXz5meypmkNt" />
+   <component name="ProjectViewState">
+     <option name="hideEmptyMiddlePackages" value="true" />
+@@ -62,7 +63,7 @@
+     "node.js.selected.package.eslint": "(autodetect)",
+     "node.js.selected.package.tslint": "(autodetect)",
+     "nodejs_package_manager_path": "npm",
+-    "settings.editor.selected.configurable": "settings.sync",
++    "settings.editor.selected.configurable": "editor.preferences.fonts.default",
+     "vue.rearranger.settings.migration": "true"
+   }
+ }]]></component>
+@@ -98,7 +99,11 @@
+       <workItem from="1753101098214" duration="160000" />
+       <workItem from="1753101266809" duration="10352000" />
+       <workItem from="1753166296371" duration="2588000" />
+-      <workItem from="1753168981249" duration="12731000" />
++      <workItem from="1753168981249" duration="14133000" />
++      <workItem from="1753252019166" duration="1234000" />
++      <workItem from="1753254595644" duration="96000" />
++      <workItem from="1753254711728" duration="237000" />
++      <workItem from="1753254965829" duration="3744000" />
+     </task>
+     <servers />
+   </component>
+@@ -117,7 +122,7 @@
+     </option>
+   </component>
+   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+-    <SUITE FILE_PATH="coverage/newpassmanager$gui.coverage" NAME="gui Coverage Results" MODIFIED="1753189545933" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
++    <SUITE FILE_PATH="coverage/newpassmanager$gui.coverage" NAME="gui Coverage Results" MODIFIED="1753195840804" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+     <SUITE FILE_PATH="coverage/newpassmanager$main.coverage" NAME="main Coverage Results" MODIFIED="1753108558119" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+   </component>
+ </project>
+\ No newline at end of file

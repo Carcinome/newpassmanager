@@ -116,7 +116,7 @@ class MainWindow:
         self.primary.resizable(True, True)
 
         # Title
-        title_label = tk.Label(primary, text="Welcome to your Password Manager", font=('Arial', 14))
+        title_label = tk.Label(primary, text="welcome to your Password Manager", font=('Arial', 14))
         title_label.pack(pady=20)
 
         # Passwords' array
@@ -172,6 +172,7 @@ class MainWindow:
         popup = tk.Toplevel(self.primary)
         popup.title("Add Entry")
         popup.geometry("500x400")
+        popup.grab_set()
         popup.resizable(True, True)
 
         # Field - Entry
@@ -207,6 +208,29 @@ class MainWindow:
                 return
 
             self.tree.insert("", "end", values=(entry, website, username, pwd))
+
+            # Read the .json file if it exists.
+            if os.path.exists("data/passwords.json"):
+                with open("data/passwords.json", "r") as f:
+                    try:
+                        data = json.load(f)
+                    except json.JSONDecodeError:
+                        data = {}
+
+            else:
+                data = {}
+
+            # Add new entry
+            data[entry] = {
+                "website": website,
+                "username": username,
+                "password": pwd
+            }
+
+            # Save in .json file
+            with open("data/passwords.json", "w") as f:
+                json.dump(data, f, indent=4)
+
             popup.destroy()
 
         save_button = tk.Button(popup, text="Save", command=save)
