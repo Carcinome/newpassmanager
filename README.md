@@ -9,5 +9,5 @@ Faire en sorte que le mot de passe passe de crypté à non crypté en graphique 
 Continuer en modifiant add_entry, edit_entry et delete_entry pour que ça modifie directement le .json\
 main.py en tronc d'arbre et le reste en branche
 
-![img.png](data/img.png)
+![img.png](data/genericTaskList.png)
 

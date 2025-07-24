@@ -6,6 +6,7 @@ import os
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
+from utils import load_passwords, save_passwords
 
 
 PRIMARY_PASSWORD_FILE = "data/primary_password.json"
@@ -216,27 +217,14 @@ class MainWindow:
 
             self.tree.insert("", "end", values=(entry, website, username, pwd))
 
-            # Read the .json file if it exists.
-            if os.path.exists("data/passwords.json"):
-                with open("data/passwords.json", "r") as f:
-                    try:
-                        data = json.load(f)
-                    except json.JSONDecodeError:
-                        data = {}
-            else:
-                data = {}
-
-            # Add new entry
-            data[entry] = {
+            # Load the passwords.json file via utils.py's function.
+            data = load_passwords()
+            data["entry"] = {
                 "website": website,
                 "username": username,
-                "password": pwd
+                "password":pwd
             }
-
-            # Save in .json file.
-            with open("data/passwords.json", "w") as f:
-                json.dump(data, f, indent=4)
-
+            save_passwords(data)
             popup.destroy()
 
         save_button = tk.Button(popup, text="Save", command=save)
@@ -245,14 +233,12 @@ class MainWindow:
 
     def edit_entry(self):
         selected_entry = self.tree.selection()
-
         if not selected_entry:
             messagebox.showwarning("No entry selected", "Please select an entry.")
             return
 
         # Take values from selected line.
-        values = self.tree.item(selected_entry, "values")
-        entry_old, website_old, username_old, pwd_old = values
+        entry_old, website_old, username_old, pwd_old = self.tree.item(selected_entry, "values")
 
         # Create the popup window.
         popup = tk.Toplevel(self.primary)
@@ -299,36 +285,18 @@ class MainWindow:
             # Update selected line.
             self.tree.item(selected_entry, values=(entry_new, website_new, username_new, pwd_new))
 
-            if os.path.exists("data/passwords.json"):
-                try:
-                    with open("data/passwords.json", "r") as f:
-                        data = json.load(f)
-                except json.JSONDecodeError:
-                    data = {}
-            else:
-                data = {}
+            # Load the passwords.json file via utils.py's function.
+            data = load_passwords()
 
-            # Search the right entry to modify.
-            for key, entry in data.items():
-                if (key == entry_old and
-                    entry["website"] == website_old and
-                    entry["username"] == username_old and
-                    entry["password"] == pwd_old):
+            if entry_new != entry_old and entry_old in data:
+                del data[entry_old]
 
-                    data[entry_new] = {
-                        "website": website_new,
-                        "username": username_new,
-                        "password": pwd_new
-                    }
-
-                    if entry_new != key:
-                        del data[key]
-                    break
-
-            # Write in .json file.
-            with open("data/passwords.json", "w") as f:
-                json.dump(data, f, indent=4)
-
+            data[entry_new] = {
+                "website": website_new,
+                "username": username_new,
+                "password":pwd_new
+            }
+            save_passwords(data)
             popup.destroy()
 
         # "Save" button

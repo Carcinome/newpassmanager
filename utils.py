@@ -39,7 +39,7 @@ def derive_fernet_key(primary_password: str) -> Fernet:
 
 
 # Storage initialization and reception of Fernet.
-def init_storage() -> Fernet:
+def init_storage_primary_password() -> Fernet:
 
     """
     1. Create data directory
@@ -63,3 +63,34 @@ def init_storage() -> Fernet:
                 raise SystemExit("Wrong primary password. The program will exit.")
     # Derivation of the key and push it again.
     return derive_fernet_key(attempt_primary_password)
+
+
+# Load and read the passwords.
+def load_passwords() -> dict:
+
+    """
+    Read passwords.json and returns a Python dictionary.
+    If the file doesn't exist, or it is empty, return an empty dictionary.
+    """
+
+    create_data_dir()
+    if not os.path.exists(PASSWORDS_FILE):
+        return {}
+    try:
+        with open(PASSWORDS_FILE, "r") as f:
+            return json.load(f)
+    except json.JSONDecodeError:
+        return {}
+
+
+# Write the passwords in passwords.json file.
+def save_passwords(passwords: dict):
+
+    """
+    Take the Python dictionary and save it in passwords.json file.
+    """
+
+    create_data_dir()
+    with open(PASSWORDS_FILE, "w") as f:
+        json.dump(passwords, f, indent=4)
+
