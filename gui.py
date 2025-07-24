@@ -12,7 +12,9 @@ PRIMARY_PASSWORD_FILE = "data/primary_password.json"
 
 
 class InitiatePrimaryWindow:
+
     """For creating a primary password if it doesn't exist."""
+
     def __init__(self, primary):
         self.primary = primary
         self.primary.title("Create a primary password")
@@ -55,7 +57,7 @@ class InitiatePrimaryWindow:
             json.dump({"primary_password": password},f)
 
         messagebox.showinfo("Success", "Primary password saved.")
-        self.primary.destroy() # close the window
+        self.primary.destroy() # close the window.
 
         # Open the connection window
         save_primary_pwd_root = tk.Tk()
@@ -64,7 +66,9 @@ class InitiatePrimaryWindow:
 
 
 class WindowLogin:
+
     """Login screen."""
+
     def __init__(self, primary):
         self.primary = primary
         self.primary.title("Connection - Password manager")
@@ -85,7 +89,9 @@ class WindowLogin:
 
 
     def check_password(self):
+
         """A check for primary password before the access to databases."""
+
         entered_password = self.password_entry.get()
 
         if not os.path.exists(PRIMARY_PASSWORD_FILE):
@@ -107,7 +113,9 @@ class WindowLogin:
 
 
 class MainWindow:
+
     """The main window with the menu."""
+
     def __init__(self, primary):
         self.primary = primary
         self.primary.title("Password Manager")
@@ -147,7 +155,7 @@ class MainWindow:
     def load_data(self):
         filepath = "data/passwords.json"
 
-        # If the .json file doesn't exit, create an empty file
+        # If the .json file doesn't exit, create an empty file.
         if not os.path.exists(filepath):
             with open(filepath, "w") as f:
                 json.dump({}, f)
@@ -167,7 +175,7 @@ class MainWindow:
 
 
     def add_entry(self):
-        # Create a new window for add an entry
+        # Create a new window for add an entry.
         popup = tk.Toplevel(self.primary)
         popup.title("Add Entry")
         popup.geometry("500x400")
@@ -225,7 +233,7 @@ class MainWindow:
                 "password": pwd
             }
 
-            # Save in .json file
+            # Save in .json file.
             with open("data/passwords.json", "w") as f:
                 json.dump(data, f, indent=4)
 
@@ -242,11 +250,11 @@ class MainWindow:
             messagebox.showwarning("No entry selected", "Please select an entry.")
             return
 
-        # Take values from selected line
+        # Take values from selected line.
         values = self.tree.item(selected_entry, "values")
         entry_old, website_old, username_old, pwd_old = values
 
-        # Create the popup window
+        # Create the popup window.
         popup = tk.Toplevel(self.primary)
         popup.title("Edit entry")
         popup.geometry("500x400")
@@ -278,7 +286,7 @@ class MainWindow:
         pwd_entry.pack()
 
 
-        # Function for saving modifications
+        # Function for saving modifications.
         def save():
             entry_new = entryname_entry.get().strip()
             website_new = website_entry.get().strip()
@@ -288,7 +296,7 @@ class MainWindow:
             if not entry_new or not website_new or not username_new or not pwd_new:
                 messagebox.showwarning("Fields missing!", "Please fill all fields before saving.")
 
-            # Update selected line
+            # Update selected line.
             self.tree.item(selected_entry, values=(entry_new, website_new, username_new, pwd_new))
 
             if os.path.exists("data/passwords.json"):
@@ -300,7 +308,7 @@ class MainWindow:
             else:
                 data = {}
 
-            # Search the right entry to modify
+            # Search the right entry to modify.
             for key, entry in data.items():
                 if (key == entry_old and
                     entry["website"] == website_old and
@@ -317,7 +325,7 @@ class MainWindow:
                         del data[key]
                     break
 
-            # Write in .json file
+            # Write in .json file.
             with open("data/passwords.json", "w") as f:
                 json.dump(data, f, indent=4)
 
@@ -328,7 +336,7 @@ class MainWindow:
 
 
     def delete_entry(self):
-        # Take the selected element
+        # Take the selected element.
         selected_entry = self.tree.selection()
 
         if not selected_entry:
@@ -345,7 +353,7 @@ class MainWindow:
 
         self.tree.delete(selected_entry)
 
-        # Deleting in .json file
+        # Deleting in .json file.
         if os.path.exists("data/passwords.json"):
             try:
                 with open("data/passwords.json", "r") as f:

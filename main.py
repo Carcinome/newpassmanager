@@ -9,14 +9,16 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
 
 
-# path to the primary password storage file
+# path to the primary password storage file.
 PRIMARY_PASSWORD_FILE = "data/primary_password.json"
 PASSWORDS_FILE = "data/passwords.json"
 SALT = b"azertyuiop123456"
 
 
 def init_storage():
+
     """Create the primary_password.json file if it does not exist."""
+
     if not os.path.exists(PRIMARY_PASSWORD_FILE):
         print("No primary password found, creating it.")
         primary_password = input("Create your primary password : ")
@@ -34,7 +36,9 @@ def init_storage():
 
 
 def load_passwords():
+
     """Load the passwords.json file if it exists."""
+
     if not os.path.exists(PASSWORDS_FILE) or os.path.getsize(PASSWORDS_FILE) == 0:
         return {} # No passwords already registered.
     with open(PASSWORDS_FILE, "r") as f:
@@ -42,20 +46,26 @@ def load_passwords():
 
 
 def ensure_password_file():
+
     """Ensure the password file is created."""
+
     if not os.path.exists(PASSWORDS_FILE):
         with open(PASSWORDS_FILE, "w") as f:
             json.dump({}, f)
 
 
 def save_passwords(passwords):
+
     """Save the password dictionary in the passwords.json file."""
+
     with open(PASSWORDS_FILE, "w") as f:
         json.dump(passwords, f, indent=4)
 
 
 def add_password(fernet_instance):
+
     """Add a new password for a website in the passwords.json file."""
+
     entry_name = input("New entry name : ").strip()
     website = input("New website url of application path : ").strip()
     username = input("New username : ").strip()
@@ -74,7 +84,9 @@ def add_password(fernet_instance):
 
 
 def delete_password():
+
     """Delete an entry from the passwords.json file."""
+
     passwords = load_passwords()
     if not passwords:
         print("No passwords found.")
@@ -95,7 +107,9 @@ def delete_password():
 
 
 def modify_password(fernet_instance):
+
     """Modify an entry from the passwords.json file."""
+
     passwords = load_passwords()
     if not passwords:
         print("No passwords found.")
@@ -123,7 +137,9 @@ def modify_password(fernet_instance):
 
 
 def view_passwords(fernet_instance):
+
     """View all passwords registered."""
+
     passwords = load_passwords()
     if not passwords:
         print("No passwords found.")
@@ -144,7 +160,9 @@ def view_passwords(fernet_instance):
 
 
 def derive_key(primary_password: str) -> Fernet:
+
     """Derive a Fernet key from a primary password."""
+
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=32,
