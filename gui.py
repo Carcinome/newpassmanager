@@ -292,6 +292,38 @@ class MainWindow:
 
             # Update selected line
             self.tree.item(selected_entry, values=(entry_new, website_new, username_new, pwd_new))
+
+            if os.path.exists("data/passwords.json"):
+                try:
+                    with open("data/passwords.json", "r") as f:
+                        data = json.load(f)
+                except json.JSONDecodeError:
+                    data = {}
+
+            else:
+                data = {}
+
+            # Search the right entry to modify
+            for key, entry in data.items():
+                if (key == entry_old and
+                    entry["website"] == website_old and
+                    entry["username"] == username_old and
+                    entry["password"] == pwd_old):
+
+                    data[entry_new] = {
+                        "website": website_new,
+                        "username": username_new,
+                        "password": pwd_new
+                    }
+
+                    if entry_new != key:
+                        del data[key]
+                    break
+
+            # Write in .json file
+            with open("data/passwords.json", "w") as f:
+                json.dump(data, f, indent=4)
+
             popup.destroy()
 
         # "Save" button
