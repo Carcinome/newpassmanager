@@ -102,7 +102,6 @@ class WindowLogin:
             window_login_root = tk.Tk()
             window_login_app = MainWindow(window_login_root)
             window_login_root.mainloop()
-
         else:
             messagebox.showerror("Error", "Wrong password.")
 
@@ -216,7 +215,6 @@ class MainWindow:
                         data = json.load(f)
                     except json.JSONDecodeError:
                         data = {}
-
             else:
                 data = {}
 
@@ -299,7 +297,6 @@ class MainWindow:
                         data = json.load(f)
                 except json.JSONDecodeError:
                     data = {}
-
             else:
                 data = {}
 
@@ -338,10 +335,43 @@ class MainWindow:
             messagebox.showwarning("No entry selected", "Please select an entry.")
             return
 
+        values = self.tree.item(selected_entry, "values")
+        entry, website, username, pwd = values
+
         confirm = messagebox.askyesno("Confirm deleting", "Would you really want to delete this entry?")
 
-        if confirm:
-            self.tree.delete(selected_entry)
+        if not confirm:
+            return
+
+        self.tree.delete(selected_entry)
+
+        # Deleting in .json file
+        if os.path.exists("data/passwords.json"):
+            try:
+                with open("data/passwords.json", "r") as f:
+                    data = json.load(f)
+            except json.JSONDecodeError:
+                data = {}
+        else:
+            data = {}
+
+        if entry in data:
+            item = data[entry]
+            if (
+                item.get("website") == website and
+                item.get("username") == username and
+                item.get("password") == pwd
+            ):
+                del data[entry]
+            else:
+                messagebox.showerror("Error", "Entry data doesn't match, deletion cancelled.")
+                return
+        else:
+            messagebox.showerror("Error", "Entry not found.")
+            return
+
+        with open("data/passwords.json", "w") as f:
+            json.dump(data, f, indent=4)
 
 
     def save_json(self):
@@ -356,7 +386,6 @@ class MainWindow:
                 "username": values[2],
                 "password": values[3]
             })
-
         try:
             with open(filepath, "w") as f:
                 json.dump(datas, f, indent=4)
