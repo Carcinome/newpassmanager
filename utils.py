@@ -49,21 +49,17 @@ def init_storage() -> Fernet:
 
     # If not primary the password exist, create it.
     if not os.path.exists(PRIMARY_PASSWORD_FILE):
-        password = input("Enter password for primary password: ")
+        primary_password = input("Enter password for primary password: ")
         with open(PRIMARY_PASSWORD_FILE, "w") as f:
-            json.dump({"primary_password": password}, f)
+            json.dump({"primary_password": primary_password}, f)
         print("Primary password created and saved.")
-
+        return derive_fernet_key(primary_password)
     # If primary the password exist, ask it and verify.
     else:
         with open(PRIMARY_PASSWORD_FILE, "r") as f:
             stored_primary_password = json.load(f).get("primary_password", "")
             attempt_primary_password = input("Enter the primary password: ").strip()
             if attempt_primary_password != stored_primary_password:
-                print("Wrong primary password.")
-                exit()
-
-            password = attempt_primary_password
-
+                raise SystemExit("Wrong primary password. The program will exit.")
     # Derivation of the key and push it again.
-    return derive_fernet_key(password)
+    return derive_fernet_key(attempt_primary_password)
