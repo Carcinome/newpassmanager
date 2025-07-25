@@ -5,14 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="29ce88e8-9a5f-4364-9259-5d20d8186681" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/data/load_password_explanation.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/forMemories.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/toKeepGUI.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/img.png" beforeDir="false" afterPath="$PROJECT_DIR$/data/genericTaskList.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/forMemories.md" beforeDir="false" afterPath="$PROJECT_DIR$/forMemories.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/gui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/toKeepGUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/toKeepGUI.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -112,7 +108,8 @@
       <workItem from="1753168981249" duration="12731000" />
       <workItem from="1753280643607" duration="69000" />
       <workItem from="1753280732050" duration="86000" />
-      <workItem from="1753339626117" duration="18149000" />
+      <workItem from="1753339626117" duration="18467000" />
+      <workItem from="1753424336706" duration="3856000" />
     </task>
     <servers />
   </component>

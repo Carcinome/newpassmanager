@@ -306,13 +306,12 @@ class MainWindow:
     def delete_entry(self):
         # Take the selected element.
         selected_entry = self.tree.selection()
-
         if not selected_entry:
             messagebox.showwarning("No entry selected", "Please select an entry.")
             return
 
-        values = self.tree.item(selected_entry, "values")
-        entry, website, username, pwd = values
+        # Extract the values of the line selected, key and data.
+        entry_old, website_old, username_old, pwd_old = self.tree.item(selected_entry, "values")
 
         confirm = messagebox.askyesno("Confirm deleting", "Would you really want to delete this entry?")
 
@@ -321,52 +320,15 @@ class MainWindow:
 
         self.tree.delete(selected_entry)
 
-        # Deleting in .json file.
-        if os.path.exists("data/passwords.json"):
-            try:
-                with open("data/passwords.json", "r") as f:
-                    data = json.load(f)
-            except json.JSONDecodeError:
-                data = {}
+        # Load the passwords.json file via utils.py's function.
+        data = load_passwords()
+
+        # Delete the matched key in the python dictionary.
+        if entry_old in data:
+            del data[entry_old]
+            save_passwords(data)
         else:
-            data = {}
-
-        if entry in data:
-            item = data[entry]
-            if (
-                item.get("website") == website and
-                item.get("username") == username and
-                item.get("password") == pwd
-            ):
-                del data[entry]
-            else:
-                messagebox.showerror("Error", "Entry data doesn't match, deletion cancelled.")
-                return
-        else:
-            messagebox.showerror("Error", "Entry not found.")
-            return
-
-        with open("data/passwords.json", "w") as f:
-            json.dump(data, f, indent=4)
-
-
-    def save_json(self):
-        filepath = "data/passwords.json"
-        datas = []
-
-        for child in self.tree.get_children():
-            values = self.tree.item(child)["values"]
-            datas.append({
-                "entry": values[0],
-                "website": values[1],
-                "username": values[2],
-                "password": values[3]
-            })
-        try:
-            with open(filepath, "w") as f:
-                json.dump(datas, f, indent=4)
-        except IOError as e:
-            messagebox.showerror("Error", f"Error when saving password file: {e}")
+            messagebox.showerror("Error", "Entry not found in data file. Please try again.")
 
 
 if __name__ == "__main__":

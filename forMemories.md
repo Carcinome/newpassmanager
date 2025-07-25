@@ -44,5 +44,12 @@ Dérivation de clé :
 * On utilise PBKDF2HMAC (KDF) pour transformer le mot de passe en une clé binaire fiable.
 * Puis on encode cette clé en Base64 pour qu’elle soit compatible avec l’API Fernet.
 
+Les bases de la syntaxe dans le jargon :
+
+* Indentation : en Python, l’espacement en début de ligne (généralement 4 espaces) définit les blocs.
+* Bloc : un groupe de lignes de code qui appartiennent à un même if, for, def, etc.
+* if / else : ces deux mots-clés sont accrochés — ils forment un seul bloc alternatif. L’else doit toujours arriver juste après toutes les lignes indentées de l’if.
+* : (deux-points) : indique à Python “attention, ce qui suit sur les lignes indentées forme un bloc”.
+
 
 ![img.png](data/load_password_explanation.png)
