@@ -4,6 +4,7 @@ import os
 import json
 import base64
 from cryptography.fernet import Fernet
+from cryptography.fernet import InvalidToken
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
 
@@ -23,10 +24,10 @@ def create_data_dir():
 
 # Derivation of the Fernet key from the primary password.
 def derive_fernet_key(primary_password: str) -> Fernet:
-
-    """Here, transform the primary password (strings) in the key usable by Fernet for crypt/decrypt.
-      For information, PBKDF2HMAC: algorithm for security key derivation. """
-
+    """
+    Here, transform the primary password (strings) in the key usable by Fernet for crypt/decrypt.
+      For information, PBKDF2HMAC: algorithm for security key derivation.
+      """
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=32,
@@ -40,13 +41,11 @@ def derive_fernet_key(primary_password: str) -> Fernet:
 
 # Storage initialization and reception of Fernet.
 def init_storage_primary_password() -> Fernet:
-
     """
     1. Create data directory
     2. Create or verify primary_password.json
     3. Return the Fernet key.
     """
-
     # If not primary the password exist, create it.
     if not os.path.exists(PRIMARY_PASSWORD_FILE):
         primary_password = input("Enter password for primary password: ")
@@ -67,12 +66,10 @@ def init_storage_primary_password() -> Fernet:
 
 # Load and read the passwords.
 def load_passwords() -> dict:
-
     """
     Read passwords.json and returns a Python dictionary.
     If the file doesn't exist, or it is empty, return an empty dictionary.
     """
-
     create_data_dir()
     if not os.path.exists(PASSWORDS_FILE):
         return {}
@@ -85,12 +82,29 @@ def load_passwords() -> dict:
 
 # Write the passwords in passwords.json file.
 def save_passwords(passwords: dict):
-
     """
     Take the Python dictionary and save it in passwords.json file.
     """
-
     create_data_dir()
     with open(PASSWORDS_FILE, "w") as f:
         json.dump(passwords, f, indent=4)
+
+
+def encrypt_password(fernet, password: str) -> str:
+    """
+    Crypt the "password" string with object Fernet and return the string encoded in Base64.
+    """
+    # 1. For convert the string in octets.
+    password_bytes = password.encode()
+    # 2. Crypt the octets.
+    encrypted_token = fernet.encrypt(password_bytes)
+    # 3. Return the text version.
+    return encrypted_token.decode()
+
+
+def decrypt_password(fernet, encrypted_token: str) -> str:
+    """
+    Decrypt the Base64 string "encrypting_token" and return the string cleared. If error occurred, return InvalidToken.
+    """
+    # 1. For convert the token in octets.
 

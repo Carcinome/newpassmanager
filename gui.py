@@ -1,6 +1,5 @@
 """This file si for making a Graphic User Interface, for avoid command lines interface for customers."""
 
-
 import json
 import os
 import tkinter as tk
@@ -13,9 +12,9 @@ PRIMARY_PASSWORD_FILE = "data/primary_password.json"
 
 
 class InitiatePrimaryWindow:
-
-    """For creating a primary password if it doesn't exist."""
-
+    """
+    For creating a primary password if it doesn't exist.
+    """
     def __init__(self, primary):
         self.primary = primary
         self.primary.title("Create a primary password")
@@ -40,7 +39,9 @@ class InitiatePrimaryWindow:
 
 
     def save_primary_password(self):
-        """For saving primary password."""
+        """
+        For saving primary password.
+        """
         password = self.pwd_entry.get()
         password_confirmation = self.confirm_entry.get()
 
@@ -67,9 +68,9 @@ class InitiatePrimaryWindow:
 
 
 class WindowLogin:
-
-    """Login screen."""
-
+    """
+    Login screen.
+    """
     def __init__(self, primary):
         self.primary = primary
         self.primary.title("Connection - Password manager")
@@ -90,9 +91,9 @@ class WindowLogin:
 
 
     def check_password(self):
-
-        """A check for primary password before the access to databases."""
-
+        """
+        A check for primary password before the access to databases.
+        """
         entered_password = self.password_entry.get()
 
         if not os.path.exists(PRIMARY_PASSWORD_FILE):
