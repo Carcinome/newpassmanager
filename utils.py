@@ -107,4 +107,10 @@ def decrypt_password(fernet, encrypted_token: str) -> str:
     Decrypt the Base64 string "encrypting_token" and return the string cleared. If error occurred, return InvalidToken.
     """
     # 1. For convert the token in octets.
+    token_bytes = encrypted_token.encode()
+    # 2. Let's decrypt.
+    password_bytes = fernet.decrypt(token_bytes)
+    # 3. Return the text version.
+    return password_bytes.decode()
+
 

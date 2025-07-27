@@ -3,6 +3,7 @@
 import json
 import os
 import tkinter as tk
+from utils import init_storage_primary_password
 from tkinter import messagebox
 from tkinter import ttk
 from utils import load_passwords, save_passwords
