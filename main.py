@@ -28,9 +28,9 @@ fernet = init_storage_primary_password()
 root = tk.Tk()
 # If the primary_password.json file doesn't exist, creat it. If it is, log in.
 if not os.path.exists(PRIMARY_PASSWORD_FILE):
-    gui_password_app = InitiatePrimaryWindow(root)
+    gui_password_app = InitiatePrimaryWindow(root, fernet)
 else:
-    gui_password_app = WindowLogin(root)
+    gui_password_app = WindowLogin(root, fernet)
 root.mainloop()
 
 
