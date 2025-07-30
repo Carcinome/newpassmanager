@@ -1,50 +1,55 @@
 """This file si for making a Graphic User Interface, for avoid command lines interface for customers."""
 
-import json
-import os
+
 import tkinter as tk
-from utils import init_storage_primary_password
-from tkinter import messagebox
-from tkinter import ttk
-from utils import load_passwords, save_passwords
+from tkinter import messagebox, ttk
 
+from cryptography.hazmat.primitives.twofactor import InvalidToken
 
-PRIMARY_PASSWORD_FILE = "data/primary_password.json"
+from utils import (
+    PRIMARY_PASSWORD_FILE,
+    load_passwords,
+    save_passwords,
+    encrypt_password,
+    decrypt_password,
+)
 
 
 class InitiatePrimaryWindow:
     """
     For creating a primary password if it doesn't exist.
+    Display two fields (password and confirmation) and one 'create' button.
     """
-    def __init__(self, primary):
+    def __init__(self, primary, fernet):
+
         self.primary = primary
-        self.primary.title("Create a primary password")
+        self.fernet = fernet
+
+        # Main text.
+        self.primary.title("Create primary password")
         self.primary.geometry("400x300")
         self.primary.resizable(False, False)
 
-        # Main text
-        self.label = tk.Label(primary, text="Create your primary password", font=("Arial", 15))
-        self.label.pack(pady=10)
+        # Password field.
+        tk.Label(root, text="Enter a new primary password:").pack(pady=(20, 5))
+        self.pwd_entry = tk.Entry(root, show="*", width=30)
+        self.pwd_entry.pack()
 
-        # Field 1 - password
-        self.pwd_entry = tk.Entry(primary, show="*", width=40)
-        self.pwd_entry.pack(pady=10)
+        # Confirm field.
+        tk.Label(root, text="Confirm password:").pack(pady=(10, 5))
+        self.confirm_entry = tk.Entry(root, show="*", width=30)
+        self.confirm_entry.pack()
 
-        # Field 2 - confirmation
-        self.confirm_entry = tk.Entry(primary, show="*", width=40)
-        self.confirm_entry.pack(pady=10)
-
-        # "Save" button
-        self.save_button = tk.Button(primary, text="Save", command=self.save_primary_password)
-        self.save_button.pack(pady=15)
+        # "Create" button.
+        tk.Button(root, text="Create", command=self.save_primary_password).pack(pady=20)
 
 
     def save_primary_password(self):
         """
         For saving primary password.
         """
-        password = self.pwd_entry.get()
-        password_confirmation = self.confirm_entry.get()
+        password = self.pwd_entry.get().strip()
+        password_confirmation = self.confirm_entry.get().strip()
 
         if not password or not password_confirmation:
             messagebox.showerror("Error", "All fields are required.")
@@ -54,65 +59,53 @@ class InitiatePrimaryWindow:
             messagebox.showerror("Error", "Passwords do not match.")
             return
 
-        os.makedirs("data", exist_ok=True) # For creating the data folder if it doesn't exist.
-
         with open(PRIMARY_PASSWORD_FILE, "w") as f:
-            json.dump({"primary_password": password},f)
+            f.write(password)
 
         messagebox.showinfo("Success", "Primary password saved.")
         self.primary.destroy() # close the window.
 
         # Open the connection window
-        save_primary_pwd_root = tk.Tk()
-        save_primary_pwd_app = WindowLogin(save_primary_pwd_root)
-        save_primary_pwd_root.mainloop()
+        login_root = tk.Tk()
+        WindowLogin(login_root, self.fernet)
+        login_root.mainloop()
 
 
 class WindowLogin:
     """
-    Login screen.
+    Login screen. Ask for primary password.
     """
-    def __init__(self, primary):
-        self.primary = primary
-        self.primary.title("Connection - Password manager")
-        self.primary.geometry("400x300")
-        self.primary.resizable(False, False)
+    def __init__(self, login_root, fernet):
+        self.login_root = login_root
+        self.fernet = fernet
+        self.login_root.title("Connection - Password manager")
+        self.login_root.geometry("400x300")
+        self.login_root.resizable(False, False)
 
         # Main text
-        self.label = tk.Label(primary, text="Enter your primary password :", font=("Arial", 15))
-        self.label.pack(pady=20)
-
-        # Password entry (hide with *)
-        self.password_entry = tk.Entry(primary, show="*", width=20)
+        tk.Label(login_root, text="Enter your primary password :").pack(pady=(30, 5))
+        self.password_entry = tk.Entry(login_root, show="*", width=30)
         self.password_entry.pack()
-
-        # "Connect" button
-        self.login_button = (tk.Button(primary, text="Connect", command=self.check_password))
-        self.login_button.pack(pady=20)
 
 
     def check_password(self):
         """
         A check for primary password before the access to databases.
         """
-        entered_password = self.password_entry.get()
-
-        if not os.path.exists(PRIMARY_PASSWORD_FILE):
-            messagebox.showerror("Error", "primary password file not found.")
+        entered_password = self.password_entry.get().strip()
+        try:
+            decrypt_password(self.fernet, encrypt_password(self.fernet, "test")
+            )
+        except InvalidToken:
+            messagebox.showerror("Error", "Invalid primary password.")
             return
 
-        with open(PRIMARY_PASSWORD_FILE, "r") as f:
-            data = json.load(f)
-
-        if entered_password == data.get("primary_password"):
-            messagebox.showinfo("Success", "Connection approved.")
-            self.primary.destroy() # close the window
-
-            window_login_root = tk.Tk()
-            window_login_app = MainWindow(window_login_root)
-            window_login_root.mainloop()
-        else:
-            messagebox.showerror("Error", "Wrong password.")
+        messagebox.showinfo("Success", "Login successful.")
+        self.login_root.destroy()
+        # Call for the main window here.
+        main_root = tk.Tk()
+        MainWindow(main_root, self.fernet)
+        main_root.mainloop()
 
 
 class MainWindow:
