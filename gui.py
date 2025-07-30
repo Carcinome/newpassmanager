@@ -109,44 +109,36 @@ class WindowLogin:
 
 
 class MainWindow:
+    """Main window:
+    - Display all credentials/passwords.
+    - Possibility to add, modify, remove and show a password.
+    """
+    def __init__(self, primary_main, fernet):
+        self.primary_main = primary_main
+        self.fernet = fernet
 
-    """The main window with the menu."""
+        self.primary_main.title("Password manager")
+        self.primary_main.geometry("1000x800")
+        self.primary_main.resizable(True, True)
 
-    def __init__(self, primary):
-        self.primary = primary
-        self.primary.title("Password Manager")
-        self.primary.geometry("1000x650")
-        self.primary.resizable(True, True)
-
-        # Title
-        title_label = tk.Label(primary, text="welcome to your Password Manager", font=('Arial', 14))
-        title_label.pack(pady=20)
-
-        # Passwords' array
+        # Array - Treeview.
         columns = ("entry", "website", "username", "password")
-        self.tree = ttk.Treeview(primary, columns=columns, show="headings")
-        self.tree.heading("entry", text="Entry")
-        self.tree.heading("website", text="Website")
-        self.tree.heading("username", text="Username")
-        self.tree.heading("password", text="Password")
-
-        self.tree.pack(pady=10, fill="both", expand=True)
-
-        self.load_data()
+        self.tree = ttk.Treeview(primary_main, columns=columns, show="headings")
+        for c, text in zip(columns, ("entry", "website", "username", "password")):
+            self.tree.heading(c, text=text)
+            self.tree.column(c, width=150)
+        self.tree.pack(fill="both", expand=True, pady=(10, 0))
 
         # Buttons
-        button_frame = tk.Frame(primary)
+        button_frame = tk.Frame(primary_main)
         button_frame.pack(pady=10)
 
-        self.add_button = tk.Button(button_frame, text="Add", width=15, command=self.add_entry)
-        self.add_button.pack(side="left", padx=5)
+        tk.Button(button_frame, text="Add", command=self.add_entry).pack(side="left", padx=10)
+        tk.Button(button_frame, text="Edit", command=self.edit_entry).pack(side="left", padx=10)
+        tk.Button(button_frame, text="Delete", command=self.delete_entry).pack(side="left", padx=10)
+        tk.Button(button_frame, text="Show", command=self.show_password).pack(side="left", padx=10)
 
-        self.edit_button = tk.Button(button_frame, text="Edit", width=15, command=self.edit_entry)
-        self.edit_button.pack(side="left", padx=5)
-
-        self.delete_button = tk.Button(button_frame, text="Delete", width=15, command=self.delete_entry)
-        self.delete_button.pack(side="left", padx=5)
-
+        self.load_data()
 
     def load_data(self):
         filepath = "data/passwords.json"
