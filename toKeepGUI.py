@@ -119,3 +119,37 @@
                 messagebox.showerror("Error", f"Error when saving password file: {e}")
             
 """
+
+
+# Classe WindowLogin avant modifications pour implémentation du fichier utils.py.
+
+"""     
+
+        # Password entry (hide with *)
+        self.password_entry = tk.Entry(login_root, show="*", width=20)
+        self.password_entry.pack()
+
+        # "Connect" button
+        self.login_button = (tk.Button(login_root, text="Connect", command=self.check_password))
+        self.login_button.pack(pady=20)
+        
+         if not os.path.exists(PRIMARY_PASSWORD_FILE):
+            messagebox.showerror("Error", "primary password file not found.")
+            return
+
+        with open(PRIMARY_PASSWORD_FILE, "r") as f:
+            data = json.load(f)
+
+        if entered_password == data.get("primary_password"):
+            messagebox.showinfo("Success", "Connection approved.")
+            self.primary.destroy() # close the window
+
+            window_login_root = tk.Tk()
+            window_login_app = MainWindow(window_login_root)
+            window_login_root.mainloop()
+        else:
+            messagebox.showerror("Error", "Wrong password.")
+        
+        
+        """
+

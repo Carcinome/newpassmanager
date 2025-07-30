@@ -3,6 +3,9 @@
 
 import tkinter as tk
 from tkinter import messagebox, ttk
+
+from cryptography.hazmat.primitives.twofactor import InvalidToken
+
 from utils import (
     PRIMARY_PASSWORD_FILE,
     load_passwords,
@@ -38,7 +41,7 @@ class InitiatePrimaryWindow:
         self.confirm_entry.pack()
 
         # "Create" button.
-        tk.Button(root, text="Create", command=self.save_primary).pack(pady=20)
+        tk.Button(root, text="Create", command=self.save_primary_password).pack(pady=20)
 
 
     def save_primary_password(self):
@@ -60,7 +63,7 @@ class InitiatePrimaryWindow:
             f.write(password)
 
         messagebox.showinfo("Success", "Primary password saved.")
-        self.root.destroy() # close the window.
+        self.primary.destroy() # close the window.
 
         # Open the connection window
         login_root = tk.Tk()
@@ -70,49 +73,39 @@ class InitiatePrimaryWindow:
 
 class WindowLogin:
     """
-    Login screen.
+    Login screen. Ask for primary password.
     """
-    def __init__(self, primary):
-        self.primary = primary
-        self.primary.title("Connection - Password manager")
-        self.primary.geometry("400x300")
-        self.primary.resizable(False, False)
+    def __init__(self, login_root, fernet):
+        self.login_root = login_root
+        self.fernet = fernet
+        self.login_root.title("Connection - Password manager")
+        self.login_root.geometry("400x300")
+        self.login_root.resizable(False, False)
 
         # Main text
-        self.label = tk.Label(primary, text="Enter your primary password :", font=("Arial", 15))
-        self.label.pack(pady=20)
-
-        # Password entry (hide with *)
-        self.password_entry = tk.Entry(primary, show="*", width=20)
+        tk.Label(login_root, text="Enter your primary password :").pack(pady=(30, 5))
+        self.password_entry = tk.Entry(login_root, show="*", width=30)
         self.password_entry.pack()
-
-        # "Connect" button
-        self.login_button = (tk.Button(primary, text="Connect", command=self.check_password))
-        self.login_button.pack(pady=20)
 
 
     def check_password(self):
         """
         A check for primary password before the access to databases.
         """
-        entered_password = self.password_entry.get()
-
-        if not os.path.exists(PRIMARY_PASSWORD_FILE):
-            messagebox.showerror("Error", "primary password file not found.")
+        entered_password = self.password_entry.get().strip()
+        try:
+            decrypt_password(self.fernet, encrypt_password(self.fernet, "test")
+            )
+        except InvalidToken:
+            messagebox.showerror("Error", "Invalid primary password.")
             return
 
-        with open(PRIMARY_PASSWORD_FILE, "r") as f:
-            data = json.load(f)
-
-        if entered_password == data.get("primary_password"):
-            messagebox.showinfo("Success", "Connection approved.")
-            self.primary.destroy() # close the window
-
-            window_login_root = tk.Tk()
-            window_login_app = MainWindow(window_login_root)
-            window_login_root.mainloop()
-        else:
-            messagebox.showerror("Error", "Wrong password.")
+        messagebox.showinfo("Success", "Login successful.")
+        self.login_root.destroy()
+        # Call for the main window here.
+        main_root = tk.Tk()
+        MainWindow(main_root, self.fernet)
+        main_root.mainloop()
 
 
 class MainWindow:

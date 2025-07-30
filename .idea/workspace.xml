@@ -6,10 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="29ce88e8-9a5f-4364-9259-5d20d8186681" name="Changes" comment="Clear the main.py file and add some">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/gui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/toKeepGUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/toKeepGUI.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -139,7 +137,12 @@
       <workItem from="1753708998071" duration="5941000" />
       <workItem from="1753740848367" duration="42000" />
       <workItem from="1753740967568" duration="108000" />
-      <workItem from="1753745090604" duration="812000" />
+      <workItem from="1753745090604" duration="2392000" />
+      <workItem from="1753778233028" duration="2894000" />
+      <workItem from="1753782839834" duration="601000" />
+      <workItem from="1753791573711" duration="604000" />
+      <workItem from="1753831762612" duration="1343000" />
+      <workItem from="1753835032268" duration="1627000" />
     </task>
     <task id="LOCAL-00001" summary="New branch for tests.">
       <option name="closed" value="true" />
