@@ -3,6 +3,7 @@
 
 import tkinter as tk
 from tkinter import messagebox, ttk
+from typing import Optional
 
 from cryptography.hazmat.primitives.twofactor import InvalidToken
 
@@ -117,6 +118,11 @@ class MainWindow:
         self.primary_main = primary_main
         self.fernet = fernet
 
+        self.add_e_entry: Optional[tk.Entry] = None
+        self.add_w_entry: Optional[tk.Entry] = None
+        self.add_u_entry: Optional[tk.Entry] = None
+        self.add_p_entry: Optional[tk.Entry] = None
+
         self.primary_main.title("Password manager")
         self.primary_main.geometry("1000x800")
         self.primary_main.resizable(True, True)
@@ -164,59 +170,46 @@ class MainWindow:
 
 
     def add_entry(self):
-        # Create a new window for add an entry.
-        popup = tk.Toplevel(self.primary)
-        popup.title("Add Entry")
-        popup.geometry("500x400")
+        """
+        Open a popup for entering a new entry.
+        Write new entry name, website or application path, username and password.
+        Finally, save it and reload the array.
+        """
+        popup = tk.Toplevel(self.add_entry_root)
+        popup.title("Add new entry")
+        popup.geometry("400x300")
         popup.grab_set()
-        popup.resizable(True, True)
 
-        # Field - Entry
-        tk.Label(popup, text="Add Entry :").pack(pady=(10, 0))
-        entryname_entry = tk.Entry(popup)
-        entryname_entry.pack()
-
-        # Field - Website/application path
-        tk.Label(popup, text="Website/Application path :").pack(pady=(10, 0))
-        website_entry = tk.Entry(popup)
-        website_entry.pack()
-
-        # Field - Username
-        tk.Label(popup, text="Username :").pack(pady=(10, 0))
-        username_entry = tk.Entry(popup)
-        username_entry.pack()
-
-        # Field - Password
-        tk.Label(popup, text="Password :").pack(pady=(10, 0))
-        pwd_entry = tk.Entry(popup, show="*")
-        pwd_entry.pack()
+        # Fields.
+        for label_text, attribut in [("Entry :", "e"), ("Website :", "w"), ("Username :", "u"), ("Password :", "p")]:
+            tk.Label(popup, text=label_text).pack(pady=(30, 5))
+            new_entry = tk.Entry(popup, show="*" if label_text == "Password :" else "")
+            setattr(self, f"add_{attribut}_entry", new_entry)
+            new_entry.pack()
 
 
-        # "Save" button
+        # "Save" button.
         def save():
-            entry = entryname_entry.get().strip()
-            website = website_entry.get().strip()
-            username = username_entry.get().strip()
-            pwd = pwd_entry.get().strip()
+            entry       = self.add_e_entry.get().strip()
+            website     = self.add_w_entry.get().strip()
+            username    = self.add_u_entry.get().strip()
+            pwd         = self.add_p_entry.get().strip()
 
-            if not entry or not website or not username or not pwd:
+            if not (entry or not website or not username or not pwd):
                 messagebox.showerror("Fields must be filled!", "Please fill all fields before saving.")
                 return
-
-            self.tree.insert("", "end", values=(entry, website, username, pwd))
-
             # Load the passwords.json file via utils.py's function.
             data = load_passwords()
-            data["entry"] = {
+            data[entry] = {
                 "website": website,
                 "username": username,
-                "password":pwd
+                "password":encrypt_password(self.fernet, pwd)
             }
             save_passwords(data)
             popup.destroy()
+            self.load_data()
 
-        save_button = tk.Button(popup, text="Save", command=save)
-        save_button.pack(pady=15)
+        tk.Button(popup, text="Save", command=save).pack(pady=(30, 5))
 
 
     def edit_entry(self):
