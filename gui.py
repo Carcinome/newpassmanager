@@ -141,25 +141,26 @@ class MainWindow:
         self.load_data()
 
     def load_data(self):
-        filepath = "data/passwords.json"
-
-        # If the .json file doesn't exit, create an empty file.
-        if not os.path.exists(filepath):
-            with open(filepath, "w") as f:
-                json.dump({}, f)
-
-        try:
-            with open(filepath, "r") as f:
-                datas = json.load(f)
-                for entry_name, data in datas.items():
-                    self.tree.insert("", "end", values=(
-                        entry_name,
-                        data["website"],
-                        data["username"],
-                        data["password"]
-                    ))
-        except (json.JSONDecodeError, KeyError) as e:
-            messagebox.showerror("Error", f"Loading .json file {e} impossible.")
+        """
+        Read passwords.json, decrypt any passwords and increment the Treeview.
+        """
+        self.tree.delete(*self.tree.get_children())
+        data = load_passwords()
+        for entry, info in data.items():
+            encrypt = info.get("password", "")
+            try:
+                clear = decrypt_password(self.fernet, encrypt)
+            except InvalidToken:
+                clear = "Error"
+            self.tree.insert(
+                "", "end",
+                values=(
+                    entry,
+                    info.get("website", ""),
+                    info.get("username", ""),
+                    clear
+                )
+            )
 
 
     def add_entry(self):

@@ -153,3 +153,25 @@
         
         """
 
+# load_data avant modifications pour implémentation du fichier utils.py.
+
+""" 
+        # If the .json file doesn't exit, create an empty file.
+        if not os.path.exists(filepath):
+            with open(filepath, "w") as f:
+                json.dump({}, f)
+
+        try:
+            with open(filepath, "r") as f:
+                datas = json.load(f)
+                for entry_name, data in datas.items():
+                    self.tree.insert("", "end", values=(
+                        entry_name,
+                        data["website"],
+                        data["username"],
+                        data["password"]
+                    ))
+        except (json.JSONDecodeError, KeyError) as e:
+            messagebox.showerror("Error", f"Loading .json file {e} impossible.")
+            
+"""
