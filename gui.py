@@ -213,6 +213,10 @@ class MainWindow:
 
 
     def edit_entry(self):
+        """
+        Open a popup for editing a selected entry.
+        Finally, update the passwords.json file and reload the array.
+        """
         selected_entry = self.tree.selection()
         if not selected_entry:
             messagebox.showwarning("No entry selected", "Please select an entry.")
@@ -220,37 +224,18 @@ class MainWindow:
 
         # Take values from selected line.
         entry_old, website_old, username_old, pwd_old = self.tree.item(selected_entry, "values")
-
-        # Create the popup window.
-        popup = tk.Toplevel(self.primary)
+        popup = tk.Toplevel(self.edit_entry_root)
         popup.title("Edit entry")
-        popup.geometry("500x400")
+        popup.geometry("400x300")
         popup.grab_set()
-        popup.resizable(True, True)
 
-        # Field - Entry
-        tk.Label(popup, text="Edit Entry :").pack(pady=(10, 0))
-        entryname_entry = tk.Entry(popup)
-        entryname_entry.insert(0, entry_old)
-        entryname_entry.pack()
-
-        # Field - Website/application path
-        tk.Label(popup, text="Website :").pack(pady=(10, 0))
-        website_entry = tk.Entry(popup)
-        website_entry.insert(0, website_old)
-        website_entry.pack()
-
-        # Field - Username
-        tk.Label(popup, text="Username :").pack(pady=(10, 0))
-        username_entry = tk.Entry(popup)
-        username_entry.insert(0, username_old)
-        username_entry.pack()
-
-        # Field - Password
-        tk.Label(popup, text="Password :").pack(pady=(10,0))
-        pwd_entry = tk.Entry(popup, show="*")
-        pwd_entry.insert(0, pwd_old)
-        pwd_entry.pack()
+        # Fields autoloaded.
+        for i, label_text in enumerate(("Entry :", "Website :", "Username :", "Password :")):
+            tk.Label(popup, text=label_text).pack(pady=(30, 5))
+            entry_to_modify = tk.Entry(popup, show="*" if i ==3 else "")
+            entry_to_modify.insert(0, old[i])
+            setattr(self, f"edit_{label_text}_entry", entry_to_modify)
+            entry_to_modify.pack()
 
 
         # Function for saving modifications.

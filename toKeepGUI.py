@@ -175,3 +175,39 @@
             messagebox.showerror("Error", f"Loading .json file {e} impossible.")
             
 """
+
+# edit_entry avant modifications pour implémentation du fichier utils.py.
+
+"""
+        # Create the popup window.
+                popup = tk.Toplevel(self.primary)
+                popup.title("Edit entry")
+                popup.geometry("500x400")
+                popup.grab_set()
+                popup.resizable(True, True)
+        
+                # Field - Entry
+                tk.Label(popup, text="Edit Entry :").pack(pady=(10, 0))
+                entryname_entry = tk.Entry(popup)
+                entryname_entry.insert(0, entry_old)
+                entryname_entry.pack()
+        
+                # Field - Website/application path
+                tk.Label(popup, text="Website :").pack(pady=(10, 0))
+                website_entry = tk.Entry(popup)
+                website_entry.insert(0, website_old)
+                website_entry.pack()
+        
+                # Field - Username
+                tk.Label(popup, text="Username :").pack(pady=(10, 0))
+                username_entry = tk.Entry(popup)
+                username_entry.insert(0, username_old)
+                username_entry.pack()
+        
+                # Field - Password
+                tk.Label(popup, text="Password :").pack(pady=(10,0))
+                pwd_entry = tk.Entry(popup, show="*")
+                pwd_entry.insert(0, pwd_old)
+                pwd_entry.pack()
+                
+"""
