@@ -5,7 +5,7 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 from typing import Optional
 
-from cryptography.hazmat.primitives.twofactor import InvalidToken
+from cryptography.fernet import InvalidToken
 
 from utils import (
     PRIMARY_PASSWORD_FILE,
@@ -32,17 +32,17 @@ class InitiatePrimaryWindow:
         self.primary.resizable(False, False)
 
         # Password field.
-        tk.Label(root, text="Enter a new primary password:").pack(pady=(20, 5))
-        self.pwd_entry = tk.Entry(root, show="*", width=30)
+        tk.Label(self.primary, text="Enter a new primary password:").pack(pady=(20, 5))
+        self.pwd_entry = tk.Entry(self.primary, show="*", width=30)
         self.pwd_entry.pack()
 
         # Confirm field.
-        tk.Label(root, text="Confirm password:").pack(pady=(10, 5))
-        self.confirm_entry = tk.Entry(root, show="*", width=30)
+        tk.Label(self.primary, text="Confirm password:").pack(pady=(10, 5))
+        self.confirm_entry = tk.Entry(self.primary, show="*", width=30)
         self.confirm_entry.pack()
 
         # "Create" button.
-        tk.Button(root, text="Create", command=self.save_primary_password).pack(pady=20)
+        tk.Button(self.primary, text="Create", command=self.save_primary_password).pack(pady=20)
 
 
     def save_primary_password(self):
@@ -85,6 +85,7 @@ class WindowLogin:
 
         # Main text
         tk.Label(login_root, text="Enter your primary password :").pack(pady=(30, 5))
+        tk.Button(login_root, text="Login", command=self.check_password).pack(pady=20)
         self.password_entry = tk.Entry(login_root, show="*", width=30)
         self.password_entry.pack()
 
@@ -95,8 +96,7 @@ class WindowLogin:
         """
         entered_password = self.password_entry.get().strip()
         try:
-            decrypt_password(self.fernet, encrypt_password(self.fernet, "test")
-            )
+            decrypt_password(self.fernet, encrypt_password(self.fernet, "test"))
         except InvalidToken:
             messagebox.showerror("Error", "Invalid primary password.")
             return
@@ -142,7 +142,7 @@ class MainWindow:
         tk.Button(button_frame, text="Add", command=self.add_entry).pack(side="left", padx=10)
         tk.Button(button_frame, text="Edit", command=self.edit_entry).pack(side="left", padx=10)
         tk.Button(button_frame, text="Delete", command=self.delete_entry).pack(side="left", padx=10)
-        tk.Button(button_frame, text="Show", command=self.show_password).pack(side="left", padx=10)
+        tk.Button(button_frame, text="Show", command=self.show_passwords).pack(side="left", padx=10)
 
         self.load_data()
 
@@ -175,7 +175,7 @@ class MainWindow:
         Write new entry name, website or application path, username and password.
         Finally, save it and reload the array.
         """
-        popup = tk.Toplevel(self.add_entry_root)
+        popup = tk.Toplevel(self.primary_main)
         popup.title("Add new entry")
         popup.geometry("400x300")
         popup.grab_set()
@@ -195,7 +195,7 @@ class MainWindow:
             username    = self.add_u_entry.get().strip()
             pwd         = self.add_p_entry.get().strip()
 
-            if not (entry or not website or not username or not pwd):
+            if not (entry and website and username and pwd):
                 messagebox.showerror("Fields must be filled!", "Please fill all fields before saving.")
                 return
             # Load the passwords.json file via utils.py's function.
@@ -224,7 +224,7 @@ class MainWindow:
 
         # Take values from selected line.
         entry_old, website_old, username_old, pwd_old = self.tree.item(selected_entry, "values")
-        popup = tk.Toplevel(self.edit_entry_root)
+        popup = tk.Toplevel(self.primary_main)
         popup.title("Edit entry")
         popup.geometry("400x300")
         popup.grab_set()
@@ -233,77 +233,71 @@ class MainWindow:
         for i, label_text in enumerate(("Entry :", "Website :", "Username :", "Password :")):
             tk.Label(popup, text=label_text).pack(pady=(30, 5))
             entry_to_modify = tk.Entry(popup, show="*" if i ==3 else "")
-            entry_to_modify.insert(0, old[i])
+            entry_to_modify.insert(0, [entry_old, website_old, username_old, pwd_old][i])
             setattr(self, f"edit_{label_text}_entry", entry_to_modify)
             entry_to_modify.pack()
 
 
         # Function for saving modifications.
-        def save():
-            entry_new = entryname_entry.get().strip()
-            website_new = website_entry.get().strip()
-            username_new = username_entry.get().strip()
-            pwd_new = pwd_entry.get().strip()
+        def entry_save():
+            new_entry = [self.edit_0_entry.get().strip(),
+                         self.edit_1_entry.get().strip(),
+                         self.edit_2_entry.get().strip(),
+                         self.edit_3_entry.get().strip(),]
+            if not all(new_entry):
+                messagebox.showerror("Error", "All fields are required.")
+                return
 
-            if not entry_new or not website_new or not username_new or not pwd_new:
-                messagebox.showwarning("Fields missing!", "Please fill all fields before saving.")
-
-            # Update selected line.
-            self.tree.item(selected_entry, values=(entry_new, website_new, username_new, pwd_new))
-
-            # Load the passwords.json file via utils.py's function.
             data = load_passwords()
-
-            if entry_new != entry_old and entry_old in data:
-                del data[entry_old]
-
-            data[entry_new] = {
-                "website": website_new,
-                "username": username_new,
-                "password":pwd_new
+            # if entry key change, deleting the oldest key.
+            if new_entry[0] != old[0] and old[0] in data:
+                del data[old[0]]
+            data[new_entry[0]] = {
+                "website": new_entry[0],
+                "username": new_entry[1],
+                "password": encrypt_password(self.fernet, new_entry[2])
             }
             save_passwords(data)
             popup.destroy()
+            self.load_data()
 
-        # "Save" button
-        tk.Button(popup, text="Save", command=save).pack(pady=15)
-
+        tk.Button(popup, text="Update entry", command=entry_save).pack(pady=20)
 
     def delete_entry(self):
-        # Take the selected element.
+        """
+        Delete a selected entry from the passwords.json file and the array.
+        """
         selected_entry = self.tree.selection()
         if not selected_entry:
-            messagebox.showwarning("No entry selected", "Please select an entry.")
+            messagebox.showwarning("No entry selected", "Please select an entry first.")
             return
 
-        # Extract the values of the line selected, key and data.
-        entry_old, website_old, username_old, pwd_old = self.tree.item(selected_entry, "values")
-
-        confirm = messagebox.askyesno("Confirm deleting", "Would you really want to delete this entry?")
-
-        if not confirm:
+        entry_to_delete = self.tree.item(selected_entry, "values")[0]
+        if not messagebox.askyesno("Please confirm deletion", f"Deleting {entry_to_delete}?"):
             return
 
-        self.tree.delete(selected_entry)
-
-        # Load the passwords.json file via utils.py's function.
         data = load_passwords()
-
-        # Delete the matched key in the python dictionary.
-        if entry_old in data:
-            del data[entry_old]
+        if entry_to_delete in data:
+            del data[entry_to_delete]
             save_passwords(data)
-        else:
-            messagebox.showerror("Error", "Entry not found in data file. Please try again.")
+        self.load_data()
 
+    def show_passwords(self):
+        """
+        Show the password cleared for the selected entry in a popup.
+        """
+        selected_entry = self.tree.selection()
+        if not selected_entry:
+            messagebox.showwarning("No entry selected", "Please select an entry first.")
+            return
 
-if __name__ == "__main__":
-    if not os.path.exists(PRIMARY_PASSWORD_FILE):
-        root = tk.Tk()
-        app = InitiatePrimaryWindow(root)
-    else:
-        root = tk.Tk()
-        app = WindowLogin(root)
+        entry_to_show = self.tree.item(selected_entry, "values")[0]
+        data = load_passwords()
+        tok = data.get(entry_to_show, {}).get("password", "")
+        try:
+            clear = decrypt_password(self.fernet, tok)
+        except ValueError:
+            messagebox.showerror("Error", "Cannot clear password.")
+            return
 
-    root.mainloop()
-
+        messagebox.showinfo(f"Password cleared for {entry_to_show}, {clear}")

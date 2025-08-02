@@ -211,3 +211,86 @@
                 pwd_entry.pack()
                 
 """
+
+# save_entry avant modifications pour implémentation du fichier utils.py.
+
+"""        
+
+            def entry_update():
+            entry_new = entryname_entry.get().strip()
+            website_new = website_entry.get().strip()
+            username_new = username_entry.get().strip()
+            pwd_new = pwd_entry.get().strip()
+
+            if not entry_new or not website_new or not username_new or not pwd_new:
+                messagebox.showwarning("Fields missing!", "Please fill all fields before saving.")
+
+            # Update selected line.
+            self.tree.item(selected_entry, values=(entry_new, website_new, username_new, pwd_new))
+
+            # Load the passwords.json file via utils.py's function.
+            data = load_passwords()
+
+            if entry_new != entry_old and entry_old in data:
+                del data[entry_old]
+
+            data[entry_new] = {
+                "website": website_new,
+                "username": username_new,
+                "password":pwd_new
+            }
+            save_passwords(data)
+            popup.destroy()
+
+        # "Save" button
+        tk.Button(popup, text="Save", command=save).pack(pady=15)
+        
+        
+"""
+
+# delete_entry avant modifications pour implémentation du fichier utils.py.
+
+"""
+    def delete_entry(self):
+        # Take the selected element.
+        selected_entry = self.tree.selection()
+        if not selected_entry:
+            messagebox.showwarning("No entry selected", "Please select an entry.")
+            return
+
+        # Extract the values of the line selected, key and data.
+        entry_old, website_old, username_old, pwd_old = self.tree.item(selected_entry, "values")
+
+        confirm = messagebox.askyesno("Confirm deleting", "Would you really want to delete this entry?")
+
+        if not confirm:
+            return
+
+        self.tree.delete(selected_entry)
+
+        # Load the passwords.json file via utils.py's function.
+        data = load_passwords()
+
+        # Delete the matched key in the python dictionary.
+        if entry_old in data:
+            del data[entry_old]
+            save_passwords(data)
+        else:
+            messagebox.showerror("Error", "Entry not found in data file. Please try again.")
+            
+"""
+
+# fichier de lancement avant modifications pour implémentation du fichier utils.py.
+
+"""
+        if __name__ == "__main__":
+    if not os.path.exists(PRIMARY_PASSWORD_FILE):
+        root = tk.Tk()
+        app = InitiatePrimaryWindow(root)
+    else:
+        root = tk.Tk()
+        app = WindowLogin(root)
+
+    root.mainloop()
+
+"""

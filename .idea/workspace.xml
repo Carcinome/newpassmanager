@@ -177,7 +177,8 @@
       <workItem from="1753910661166" duration="2739000" />
       <workItem from="1753920245429" duration="821000" />
       <workItem from="1753948322226" duration="1715000" />
-      <workItem from="1754097793482" duration="796000" />
+      <workItem from="1754097793482" duration="954000" />
+      <workItem from="1754126864364" duration="4433000" />
     </task>
     <task id="LOCAL-00001" summary="New branch for tests.">
       <option name="closed" value="true" />
@@ -211,6 +212,6 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/newpassmanager$gui.coverage" NAME="gui Coverage Results" MODIFIED="1753345928311" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/newpassmanager$main.coverage" NAME="main Coverage Results" MODIFIED="1754098298300" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/newpassmanager$main.coverage" NAME="main Coverage Results" MODIFIED="1754131349022" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
