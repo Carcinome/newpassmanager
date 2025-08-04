@@ -64,8 +64,8 @@ class InitiatePrimaryWindow:
             f.write(password)
 
         messagebox.showinfo("Success", "Primary password saved.")
-        self.primary.destroy() # close the window.
-
+        # close the window.
+        self.primary.destroy()
         # Open the connection window
         login_root = tk.Tk()
         WindowLogin(login_root, self.fernet)
@@ -79,8 +79,9 @@ class WindowLogin:
     def __init__(self, login_root, fernet):
         self.login_root = login_root
         self.fernet = fernet
+
         self.login_root.title("Connection - Password manager")
-        self.login_root.geometry("400x300")
+        self.login_root.geometry("600x400")
         self.login_root.resizable(False, False)
 
         # Main text
@@ -118,10 +119,10 @@ class MainWindow:
         self.primary_main = primary_main
         self.fernet = fernet
 
-        self.add_e_entry: Optional[tk.Entry] = None
+        """self.add_e_entry: Optional[tk.Entry] = None
         self.add_w_entry: Optional[tk.Entry] = None
         self.add_u_entry: Optional[tk.Entry] = None
-        self.add_p_entry: Optional[tk.Entry] = None
+        self.add_p_entry: Optional[tk.Entry] = None"""
 
         self.primary_main.title("Password manager")
         self.primary_main.geometry("1000x800")
@@ -172,28 +173,36 @@ class MainWindow:
     def add_entry(self):
         """
         Open a popup for entering a new entry.
-        Write new entry name, website or application path, username and password.
+        Write a new entry name, website or application path, username and password.
         Finally, save it and reload the array.
         """
         popup = tk.Toplevel(self.primary_main)
         popup.title("Add new entry")
-        popup.geometry("400x300")
+        popup.geometry("600x400")
         popup.grab_set()
 
         # Fields.
-        for label_text, attribut in [("Entry :", "e"), ("Website :", "w"), ("Username :", "u"), ("Password :", "p")]:
+        """for label_text, attribut in [("Entry :", "e"), ("Website :", "w"), ("Username :", "u"), ("Password :", "p")]:
             tk.Label(popup, text=label_text).pack(pady=(30, 5))
             new_entry = tk.Entry(popup, show="*" if label_text == "Password :" else "")
             setattr(self, f"add_{attribut}_entry", new_entry)
-            new_entry.pack()
+            new_entry.pack()"""
+        tk.Label(popup, text="Entry :").pack(pady=(30, 5))
+        new_entry_entry = tk.Entry(popup); new_entry_entry.pack()
+        tk.Label(popup, text="Website or application path :").pack(pady=(30, 5))
+        new_website_entry = tk.Entry(popup); new_website_entry.pack()
+        tk.Label(popup, text="Username :").pack(pady=(30, 5))
+        new_username_entry = tk.Entry(popup); new_username_entry.pack()
+        tk.Label(popup, text="Password :").pack(pady=(30, 5))
+        new_password_entry = tk.Entry(popup, show="*"); new_password_entry.pack()
 
 
         # "Save" button.
         def save():
-            entry       = self.add_e_entry.get().strip()
-            website     = self.add_w_entry.get().strip()
-            username    = self.add_u_entry.get().strip()
-            pwd         = self.add_p_entry.get().strip()
+            entry       = new_entry_entry.get().strip()
+            website     = new_website_entry.get().strip()
+            username    = new_username_entry.get().strip()
+            pwd         = new_password_entry.get().strip()
 
             if not (entry and website and username and pwd):
                 messagebox.showerror("Fields must be filled!", "Please fill all fields before saving.")
@@ -222,36 +231,34 @@ class MainWindow:
             messagebox.showwarning("No entry selected", "Please select an entry.")
             return
 
-        # Take values from selected line.
-        entry_old, website_old, username_old, pwd_old = self.tree.item(selected_entry, "values")
+        # Take values from the selected line.
+        old_entry = self.tree.item(selected_entry, "values")
         popup = tk.Toplevel(self.primary_main)
         popup.title("Edit entry")
         popup.geometry("400x300")
         popup.grab_set()
 
         # Fields autoloaded.
+        entries_to_modify = []
         for i, label_text in enumerate(("Entry :", "Website :", "Username :", "Password :")):
             tk.Label(popup, text=label_text).pack(pady=(30, 5))
             entry_to_modify = tk.Entry(popup, show="*" if i ==3 else "")
-            entry_to_modify.insert(0, [entry_old, website_old, username_old, pwd_old][i])
-            setattr(self, f"edit_{label_text}_entry", entry_to_modify)
+            entry_to_modify.insert(0, old_entry[i])
             entry_to_modify.pack()
+            entries_to_modify.append(entry_to_modify)
 
 
         # Function for saving modifications.
         def entry_save():
-            new_entry = [self.edit_0_entry.get().strip(),
-                         self.edit_1_entry.get().strip(),
-                         self.edit_2_entry.get().strip(),
-                         self.edit_3_entry.get().strip(),]
+            new_entry = [e.get().strip() for e in entries_to_modify]
             if not all(new_entry):
                 messagebox.showerror("Error", "All fields are required.")
                 return
 
             data = load_passwords()
-            # if entry key change, deleting the oldest key.
-            if new_entry[0] != old[0] and old[0] in data:
-                del data[old[0]]
+            # if the entry key changes, deleting the oldest key.
+            if new_entry[0] != old_entry[0] and old_entry[0] in data:
+                del data[old_entry[0]]
             data[new_entry[0]] = {
                 "website": new_entry[0],
                 "username": new_entry[1],
