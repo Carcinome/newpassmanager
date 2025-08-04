@@ -3,7 +3,6 @@
 
 import tkinter as tk
 from tkinter import messagebox, ttk
-from typing import Optional
 
 from cryptography.fernet import InvalidToken
 
@@ -74,7 +73,7 @@ class InitiatePrimaryWindow:
 
 class WindowLogin:
     """
-    Login screen. Ask for primary password.
+    Login screen. Ask for the primary password.
     """
     def __init__(self, login_root, fernet):
         self.login_root = login_root
@@ -93,7 +92,7 @@ class WindowLogin:
 
     def check_password(self):
         """
-        A check for primary password before the access to databases.
+        A check for the primary password before the access to databases.
         """
         entered_password = self.password_entry.get().strip()
         try:
@@ -118,11 +117,6 @@ class MainWindow:
     def __init__(self, primary_main, fernet):
         self.primary_main = primary_main
         self.fernet = fernet
-
-        """self.add_e_entry: Optional[tk.Entry] = None
-        self.add_w_entry: Optional[tk.Entry] = None
-        self.add_u_entry: Optional[tk.Entry] = None
-        self.add_p_entry: Optional[tk.Entry] = None"""
 
         self.primary_main.title("Password manager")
         self.primary_main.geometry("1000x800")

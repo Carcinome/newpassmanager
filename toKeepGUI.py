@@ -310,3 +310,11 @@
     root.mainloop()
 
 """
+
+
+"""
+        self.add_e_entry: Optional[tk.Entry] = None
+        self.add_w_entry: Optional[tk.Entry] = None
+        self.add_u_entry: Optional[tk.Entry] = None
+        self.add_p_entry: Optional[tk.Entry] = None"""
+
