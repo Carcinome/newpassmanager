@@ -129,9 +129,9 @@ class MainWindow:
         self.primary_main.resizable(True, True)
 
         # Array - Treeview.
-        columns = ("entry", "website", "username", "password")
+        columns = ("entry", "website or application path", "username", "password")
         self.tree = ttk.Treeview(primary_main, columns=columns, show="headings")
-        for c, text in zip(columns, ("entry", "website", "username", "password")):
+        for c, text in zip(columns, ("entry", "website or application path", "username", "password")):
             self.tree.heading(c, text=text)
             self.tree.column(c, width=150)
         self.tree.pack(fill="both", expand=True, pady=(10, 0))
@@ -182,11 +182,6 @@ class MainWindow:
         popup.grab_set()
 
         # Fields.
-        """for label_text, attribut in [("Entry :", "e"), ("Website :", "w"), ("Username :", "u"), ("Password :", "p")]:
-            tk.Label(popup, text=label_text).pack(pady=(30, 5))
-            new_entry = tk.Entry(popup, show="*" if label_text == "Password :" else "")
-            setattr(self, f"add_{attribut}_entry", new_entry)
-            new_entry.pack()"""
         tk.Label(popup, text="Entry :").pack(pady=(30, 5))
         new_entry_entry = tk.Entry(popup); new_entry_entry.pack()
         tk.Label(popup, text="Website or application path :").pack(pady=(30, 5))
@@ -232,39 +227,64 @@ class MainWindow:
             return
 
         # Take values from the selected line.
-        old_entry = self.tree.item(selected_entry, "values")
+        entry_old, website_old, username_old, pwd_old = self.tree.item(selected_entry, "values")
+        # Popup creation.
         popup = tk.Toplevel(self.primary_main)
         popup.title("Edit entry")
-        popup.geometry("400x300")
+        popup.geometry("700x500")
         popup.grab_set()
 
         # Fields autoloaded.
-        entries_to_modify = []
-        for i, label_text in enumerate(("Entry :", "Website :", "Username :", "Password :")):
-            tk.Label(popup, text=label_text).pack(pady=(30, 5))
-            entry_to_modify = tk.Entry(popup, show="*" if i ==3 else "")
-            entry_to_modify.insert(0, old_entry[i])
-            entry_to_modify.pack()
-            entries_to_modify.append(entry_to_modify)
+        tk.Label(popup, text="Entry :").pack(pady=(30, 5))
+        entry_input = tk.Entry(popup)
+        entry_input.insert(0, entry_old)
+        entry_input.pack()
+
+        tk.Label(popup, text="Website or application path :").pack(pady=(30, 5))
+        website_input = tk.Entry(popup)
+        website_input.insert(0, website_old)
+        website_input.pack()
+
+        tk.Label(popup, text="Username :").pack(pady=(30, 5))
+        username_input = tk.Entry(popup)
+        username_input.insert(0, username_old)
+        username_input.pack()
+
+        tk.Label(popup, text="Password :").pack(pady=(30, 5))
+        password_input = tk.Entry(popup, show="*")
+        password_input.insert(0, pwd_old)
+        password_input.pack()
 
 
         # Function for saving modifications.
         def entry_save():
-            new_entry = [e.get().strip() for e in entries_to_modify]
-            if not all(new_entry):
+        # Read the new fields.
+            entry_new = entry_input.get().strip()
+            website_new = website_input.get().strip()
+            username_new = username_input.get().strip()
+            pwd_new = password_input.get().strip()
+
+
+            if not (entry_new and website_new and username_new and pwd_new):
                 messagebox.showerror("Error", "All fields are required.")
                 return
 
+            # Treeview update.
+            self.tree.item(selected_entry, values=(entry_new, website_new, username_new, pwd_new))
+            # Loading of the passwords.json file.
             data = load_passwords()
             # if the entry key changes, deleting the oldest key.
-            if new_entry[0] != old_entry[0] and old_entry[0] in data:
-                del data[old_entry[0]]
-            data[new_entry[0]] = {
-                "website": new_entry[0],
-                "username": new_entry[1],
-                "password": encrypt_password(self.fernet, new_entry[2])
+            if entry_new != entry_old and entry_old in data:
+                del data[entry_old]
+            # Saving with the good values.
+            data[entry_new] = {
+                "website": website_new,
+                "username": username_new,
+                "password": encrypt_password(self.fernet, pwd_new)
             }
+            # Saving in the passwords.json file.
             save_passwords(data)
+            # Quit and reload the window.
             popup.destroy()
             self.load_data()
 

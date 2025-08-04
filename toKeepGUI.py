@@ -210,6 +210,22 @@
                 pwd_entry.insert(0, pwd_old)
                 pwd_entry.pack()
                 
+                
+                
+                for label_text, attribut in [("Entry :", "e"), ("Website :", "w"), ("Username :", "u"), ("Password :", "p")]:
+            tk.Label(popup, text=label_text).pack(pady=(30, 5))
+            new_entry = tk.Entry(popup, show="*" if label_text == "Password :" else "")
+            setattr(self, f"add_{attribut}_entry", new_entry)
+            new_entry.pack()
+            
+            entries_to_modify = []
+        for i, label_text in enumerate(("Entry :", "Website :", "Username :", "Password :")):
+            tk.Label(popup, text=label_text).pack(pady=(30, 5))
+            entry_to_modify = tk.Entry(popup, show="*" if i ==3 else "")
+            entry_to_modify.insert(0, old_entry[i])
+            entry_to_modify.pack()
+            entries_to_modify.append(entry_to_modify)
+                
 """
 
 # save_entry avant modifications pour implémentation du fichier utils.py.
