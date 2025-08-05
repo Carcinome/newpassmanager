@@ -137,7 +137,8 @@ class MainWindow:
         tk.Button(button_frame, text="Add", command=self.add_entry).pack(side="left", padx=10)
         tk.Button(button_frame, text="Edit", command=self.edit_entry).pack(side="left", padx=10)
         tk.Button(button_frame, text="Delete", command=self.delete_entry).pack(side="left", padx=10)
-        tk.Button(button_frame, text="Show", command=self.show_passwords).pack(side="left", padx=10)
+        tk.Button(button_frame, text="Show", command=self.show_password).pack(side="left", padx=10)
+        tk.Button(button_frame, text="Copy", command=self.copy_password).pack(side="left", padx=10)
 
         self.load_data()
 
@@ -309,7 +310,7 @@ class MainWindow:
             save_passwords(data)
         self.load_data()
 
-    def show_passwords(self):
+    def show_password(self):
         """
         Show the password cleared for the selected entry in a popup.
         """
@@ -341,3 +342,33 @@ class MainWindow:
 
         # After 15 seconds, restart hide_password_again.
         self.primary_main.after(15_000, hide_password_again)
+
+
+    def copy_password(self):
+        """
+        Copy the password to the clipboard from the selected line.
+        """
+        selected_entry = self.tree.selection()
+        if not selected_entry:
+            messagebox.showwarning("No entry selected", "Please select a line first.")
+            return
+        item_id = selected_entry[0]
+
+        # Recuperation of the key and read the crypted token.
+        entry_name = self.tree.item(item_id, "values")[0]
+        data = load_passwords()
+        token = data.get(entry_name, {}).get("password", "")
+
+        # Try to decrypt.
+        try:
+            clear_pwd = decrypt_password(self.fernet, token)
+        except InvalidToken:
+            messagebox.showerror("Error", "Cannot decrypt password.")
+            return
+
+        # Copy the password in the Tkinter's clipboard.
+        # Remplace the copied data and add the password after.
+        self.primary_main.clipboard_clear()
+        self.primary_main.clipboard_append(clear_pwd)
+        # Notify the user.
+        messagebox.showinfo("Password copied to clipboard", f"Password for {entry_name} is copied to clipboard.")
