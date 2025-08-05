@@ -143,23 +143,29 @@ class MainWindow:
 
     def load_data(self):
         """
-        Read passwords.json, decrypt any passwords and increment the Treeview.
+        Load the passwords crypted and display :
+                - 3 first columns cleared
+                - The 'password' column on masked form (******).
         """
+        # Clean the Treeview.
         self.tree.delete(*self.tree.get_children())
+        # Read the passwords.json file's dictionary.
         data = load_passwords()
+        # For all entries, decrypt and mask datas.
         for entry, info in data.items():
             encrypt = info.get("password", "")
             try:
-                clear = decrypt_password(self.fernet, encrypt)
-            except InvalidToken:
-                clear = "Error"
+                clear_pwd = decrypt_password(self.fernet, encrypt)
+                masked_pwd = "•" * (len(clear_pwd) * 12)
+            except (InvalidToken,TypeError):
+                masked_pwd = "Error"
             self.tree.insert(
                 "", "end",
                 values=(
                     entry,
                     info.get("website", ""),
                     info.get("username", ""),
-                    clear
+                    masked_pwd
                 )
             )
 
@@ -311,14 +317,27 @@ class MainWindow:
         if not selected_entry:
             messagebox.showwarning("No entry selected", "Please select an entry first.")
             return
+            # Unic ID of the selected line.
+        item_id = selected_entry[0]
 
         entry_to_show = self.tree.item(selected_entry, "values")[0]
         data = load_passwords()
-        tok = data.get(entry_to_show, {}).get("password", "")
+        token = data.get(entry_to_show, {}).get("password", "")
         try:
-            clear = decrypt_password(self.fernet, tok)
-        except ValueError:
+            clear_pwd = decrypt_password(self.fernet, token)
+        except InvalidToken:
             messagebox.showerror("Error", "Cannot clear password.")
             return
+        # Display the cleared password in the cell.
+        self.tree.set(item_id, "password", clear_pwd)
+        # Prepare the mask (oversize in comparaison of password).
+        mask = "•" * (len(clear_pwd) * 12)
 
-        messagebox.showinfo(f"Password cleared for {entry_to_show}, {clear}")
+
+        # Planification of establishment of the mask in 15 seconds.
+        def hide_password_again():
+            if item_id in self.tree.get_children():
+                self.tree.set(item_id, "password", mask)
+
+        # After 15 seconds, restart hide_password_again.
+        self.primary_main.after(15_000, hide_password_again)
