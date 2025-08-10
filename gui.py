@@ -2,6 +2,7 @@
 
 
 import tkinter as tk
+import json
 from tkinter import messagebox, ttk
 
 from cryptography.fernet import InvalidToken
@@ -12,6 +13,7 @@ from utils import (
     save_passwords,
     encrypt_password,
     decrypt_password,
+    derive_fernet_key,
 )
 
 
@@ -20,10 +22,9 @@ class InitiatePrimaryWindow:
     For creating a primary password if it doesn't exist.
     Display two fields (password and confirmation) and one 'create' button.
     """
-    def __init__(self, primary, fernet):
+    def __init__(self, primary):
 
         self.primary = primary
-        self.fernet = fernet
 
         # Main text.
         self.primary.title("Create primary password")
@@ -60,14 +61,14 @@ class InitiatePrimaryWindow:
             return
 
         with open(PRIMARY_PASSWORD_FILE, "w") as f:
-            f.write(password)
+            json.dump({"primary_password": password}, f)
 
         messagebox.showinfo("Success", "Primary password saved.")
         # close the window.
         self.primary.destroy()
         # Open the connection window
         login_root = tk.Tk()
-        WindowLogin(login_root, self.fernet)
+        WindowLogin(login_root)
         login_root.mainloop()
 
 
@@ -75,9 +76,9 @@ class WindowLogin:
     """
     Login screen. Ask for the primary password.
     """
-    def __init__(self, login_root, fernet):
+    def __init__(self, login_root):
         self.login_root = login_root
-        self.fernet = fernet
+        self.fernet = None
 
         self.login_root.title("Connection - Password manager")
         self.login_root.geometry("600x400")
@@ -85,8 +86,8 @@ class WindowLogin:
 
         # Main text
         tk.Label(login_root, text="Enter your primary password :").pack(pady=(30, 5))
+        self.password_entry = tk.Entry(login_root, show="*", width=30); self.password_entry.pack()
         tk.Button(login_root, text="Login", command=self.check_password).pack(pady=20)
-        self.password_entry = tk.Entry(login_root, show="*", width=30)
         self.password_entry.pack()
 
 
@@ -95,19 +96,28 @@ class WindowLogin:
         A check for the primary password before the access to databases.
         """
         entered_password = self.password_entry.get().strip()
+        # 1. Read the password stocked in .json file.
         try:
-            decrypt_password(self.fernet, encrypt_password(self.fernet, "test"))
-        except InvalidToken:
+            with open(PRIMARY_PASSWORD_FILE,  "r") as f:
+                stored_password = json.load(f).get("primary_password", "")
+        except FileNotFoundError:
+            messagebox.showerror("Error", "No prirmary password found. Please create one first.")
+            return
+
+        # 2. Compare.
+        if entered_password != stored_password:
             messagebox.showerror("Error", "Invalid primary password.")
             return
 
+        # 3. Derive the Fernet key from the password entered.
+        self.fernet = derive_fernet_key(entered_password)
+
+        # 4. Open the primary window with this key.
         messagebox.showinfo("Success", "Login successful.")
         self.login_root.destroy()
-        # Call for the main window here.
         main_root = tk.Tk()
         MainWindow(main_root, self.fernet)
         main_root.mainloop()
-
 
 class MainWindow:
     """Main window:
