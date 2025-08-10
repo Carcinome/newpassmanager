@@ -3,17 +3,16 @@
 import os
 import json
 import base64
-from cryptography.fernet import Fernet
-from cryptography.fernet import InvalidToken
+from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
 
 
 # Constants and paths.
 
-DATA_DIR = "data"
-PRIMARY_PASSWORD_FILE = os.path.join(DATA_DIR, "primary_password.json")
-PASSWORDS_FILE = os.path.join(DATA_DIR, "passwords.json")
+DATA_DIR                = "data"
+PRIMARY_PASSWORD_FILE   = os.path.join(DATA_DIR, "primary_password.json")
+PASSWORDS_FILE          = os.path.join(DATA_DIR, "passwords.json")
 SALT = b"azertyuiop123456"
 
 
