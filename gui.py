@@ -13,6 +13,7 @@ from utils import (
     save_passwords,
     encrypt_password,
     decrypt_password,
+    get_or_create_salt,
     derive_fernet_key,
 )
 
@@ -63,6 +64,9 @@ class InitiatePrimaryWindow:
         with open(PRIMARY_PASSWORD_FILE, "w") as f:
             json.dump({"primary_password": password}, f)
 
+        # Create the salt.
+        get_or_create_salt()
+
         messagebox.showinfo("Success", "Primary password saved.")
         # close the window.
         self.primary.destroy()
@@ -101,7 +105,7 @@ class WindowLogin:
             with open(PRIMARY_PASSWORD_FILE,  "r") as f:
                 stored_password = json.load(f).get("primary_password", "")
         except FileNotFoundError:
-            messagebox.showerror("Error", "No prirmary password found. Please create one first.")
+            messagebox.showerror("Error", "No primary password found. Please create one first.")
             return
 
         # 2. Compare.
@@ -110,7 +114,8 @@ class WindowLogin:
             return
 
         # 3. Derive the Fernet key from the password entered.
-        self.fernet = derive_fernet_key(entered_password)
+        salt = get_or_create_salt()
+        self.fernet = derive_fernet_key(entered_password, salt)
 
         # 4. Open the primary window with this key.
         messagebox.showinfo("Success", "Login successful.")
