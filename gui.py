@@ -157,6 +157,7 @@ class MainWindow:
 
         self.load_data()
 
+
     def load_data(self):
         """
         Load the passwords crypted and display :
@@ -306,6 +307,7 @@ class MainWindow:
 
         tk.Button(popup, text="Update entry", command=entry_save).pack(pady=20)
 
+
     def delete_entry(self):
         """
         Delete a selected entry from the passwords.json file and the array.
@@ -324,6 +326,7 @@ class MainWindow:
             del data[entry_to_delete]
             save_passwords(data)
         self.load_data()
+
 
     def show_password(self):
         """
