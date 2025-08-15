@@ -17,6 +17,7 @@ from utils import (
     derive_fernet_key,
 )
 
+from src.vault import load_encrypted_vault, save_encrypted_vault, Vault, Entry
 
 class InitiatePrimaryWindow:
     """
@@ -44,7 +45,6 @@ class InitiatePrimaryWindow:
 
         # "Create" button.
         tk.Button(self.primary, text="Create", command=self.save_primary_password).pack(pady=20)
-
 
     def save_primary_password(self):
         """
@@ -94,13 +94,12 @@ class WindowLogin:
         tk.Button(login_root, text="Login", command=self.check_password).pack(pady=20)
         self.password_entry.pack()
 
-
     def check_password(self):
         """
         A check for the primary password before the access to databases.
         """
         entered_password = self.password_entry.get().strip()
-        # 1. Read the password stocked in .json file.
+        # 1. Read the password stocked in the .json file.
         try:
             with open(PRIMARY_PASSWORD_FILE,  "r") as f:
                 stored_password = json.load(f).get("primary_password", "")
@@ -117,21 +116,29 @@ class WindowLogin:
         salt = get_or_create_salt()
         self.fernet = derive_fernet_key(entered_password, salt)
 
-        # 4. Open the primary window with this key.
+        # 4. Load the vault (or empty if it doesn't exist yet).
+        from pathlib import Path
+        VAULT_PATH = Path("data") / "vault.enc"
+        self.vault = load_encrypted_vault(self.fernet, str(VAULT_PATH))
+
+        # 5. Open the primary the main window.
         messagebox.showinfo("Success", "Login successful.")
         self.login_root.destroy()
         main_root = tk.Tk()
-        MainWindow(main_root, self.fernet)
+        MainWindow(main_root, self.fernet, self.vault, str(VAULT_PATH))
         main_root.mainloop()
+
 
 class MainWindow:
     """Main window:
     - Display all credentials/passwords.
     - Possibility to add, modify, remove and show a password.
     """
-    def __init__(self, primary_main, fernet):
+    def __init__(self, primary_main, fernet, vault, vault_path):
         self.primary_main = primary_main
         self.fernet = fernet
+        self.vault = vault
+        self.vault_path = vault_path
 
         self.primary_main.title("Password manager")
         self.primary_main.geometry("1000x800")
@@ -157,19 +164,18 @@ class MainWindow:
 
         self.load_data()
 
-
     def load_data(self):
         """
-        Load the passwords crypted and display :
+        Load the passwords crypted and display:
                 - 3 first columns cleared
                 - The 'password' column on masked form (******).
         """
         # Clean the Treeview.
         self.tree.delete(*self.tree.get_children())
         # Read the passwords.json file's dictionary.
-        data = load_passwords()
+        data = self.vault.to_dict_entry()
         # For all entries, decrypt and mask datas.
-        for entry, info in data.items():
+        for entry, info in data.items(): # 0.3.5
             encrypt = info.get("password", "")
             try:
                 clear_pwd = decrypt_password(self.fernet, encrypt)
@@ -185,7 +191,6 @@ class MainWindow:
                     masked_pwd
                 )
             )
-
 
     def add_entry(self):
         """
@@ -207,7 +212,6 @@ class MainWindow:
         new_username_entry = tk.Entry(popup); new_username_entry.pack()
         tk.Label(popup, text="Password :").pack(pady=(30, 5))
         new_password_entry = tk.Entry(popup, show="*"); new_password_entry.pack()
-
 
         # "Save" button.
         def save():
@@ -231,7 +235,6 @@ class MainWindow:
             self.load_data()
 
         tk.Button(popup, text="Save", command=save).pack(pady=(30, 5))
-
 
     def edit_entry(self):
         """
@@ -272,7 +275,6 @@ class MainWindow:
         password_input.insert(0, pwd_old)
         password_input.pack()
 
-
         # Function for saving modifications.
         def entry_save():
         # Read the new fields.
@@ -307,7 +309,6 @@ class MainWindow:
 
         tk.Button(popup, text="Update entry", command=entry_save).pack(pady=20)
 
-
     def delete_entry(self):
         """
         Delete a selected entry from the passwords.json file and the array.
@@ -326,7 +327,6 @@ class MainWindow:
             del data[entry_to_delete]
             save_passwords(data)
         self.load_data()
-
 
     def show_password(self):
         """
@@ -349,18 +349,16 @@ class MainWindow:
             return
         # Display the cleared password in the cell.
         self.tree.set(item_id, "password", clear_pwd)
-        # Prepare the mask (oversize in comparaison of password).
+        # Prepare the mask (oversize in comparison of password).
         mask = "•" * (len(clear_pwd) * 12)
 
-
-        # Planification of establishment of the mask in 15 seconds.
+        # Planification of an establishment for the mask in 15 seconds.
         def hide_password_again():
             if item_id in self.tree.get_children():
                 self.tree.set(item_id, "password", mask)
 
         # After 15 seconds, restart hide_password_again.
         self.primary_main.after(15_000, hide_password_again)
-
 
     def copy_password(self):
         """

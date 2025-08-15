@@ -30,11 +30,9 @@ def get_or_create_salt():
     with open(SALT_FILE, "rb") as f:
         return f.read()
 
-
 # Create the data directory if it doesn't exist.
 def create_data_dir():
     os.makedirs(DATA_DIR, exist_ok=True)
-
 
 # Derivation of the Fernet key from the primary password.
 def derive_fernet_key(primary_password: str, salt: bytes) -> Fernet:
@@ -51,7 +49,6 @@ def derive_fernet_key(primary_password: str, salt: bytes) -> Fernet:
     raw_key = kdf.derive(primary_password.encode()) # raw bytes
     b64_key = base64.urlsafe_b64encode(raw_key) # Base64 key
     return Fernet(b64_key)
-
 
 # Storage initialization and reception of Fernet.
 def init_storage_primary_password() -> Fernet:
@@ -77,7 +74,6 @@ def init_storage_primary_password() -> Fernet:
     # Derivation of the key and push it again.
     return derive_fernet_key(attempt_primary_password)
 
-
 # Load and read the passwords.
 def load_passwords() -> dict:
     """
@@ -93,7 +89,6 @@ def load_passwords() -> dict:
     except json.JSONDecodeError:
         return {}
 
-
 # Write the passwords in passwords.json file.
 def save_passwords(passwords: dict):
     """
@@ -102,7 +97,6 @@ def save_passwords(passwords: dict):
     create_data_dir()
     with open(PASSWORDS_FILE, "w") as f:
         json.dump(passwords, f, indent=4)
-
 
 def encrypt_password(fernet, password: str) -> str:
     """
@@ -114,7 +108,6 @@ def encrypt_password(fernet, password: str) -> str:
     encrypted_token = fernet.encrypt(password_bytes)
     # 3. Return the text version.
     return encrypted_token.decode()
-
 
 def decrypt_password(fernet, encrypted_token: str) -> str:
     """
