@@ -57,7 +57,7 @@ class Vault:
     def from_dict_entry(cls, data: Dict[str, dict]) -> "Vault":
         vault = cls()
         for name, d in data.items():
-            vault.add(Entry(
+            vault.add_vault_entry(Entry(
                 name=name,
                 website=d.get("website", ""),
                 username=d.get("username", ""),
