@@ -3,6 +3,7 @@
 
 import tkinter as tk
 import json
+from pathlib import Path
 from tkinter import messagebox, ttk
 
 from cryptography.fernet import InvalidToken
@@ -13,9 +14,13 @@ from utils import (
     save_passwords,
     encrypt_password,
     decrypt_password,
+    get_or_create_salt,
     derive_fernet_key,
 )
 
+from src.vault import load_encrypted_vault, save_encrypted_vault, Vault, Entry
+
+VAULT_PATH = Path("data") / "vault.enc"
 
 class InitiatePrimaryWindow:
     """
@@ -44,7 +49,6 @@ class InitiatePrimaryWindow:
         # "Create" button.
         tk.Button(self.primary, text="Create", command=self.save_primary_password).pack(pady=20)
 
-
     def save_primary_password(self):
         """
         For saving primary password.
@@ -62,6 +66,9 @@ class InitiatePrimaryWindow:
 
         with open(PRIMARY_PASSWORD_FILE, "w") as f:
             json.dump({"primary_password": password}, f)
+
+        # Create the salt.
+        get_or_create_salt()
 
         messagebox.showinfo("Success", "Primary password saved.")
         # close the window.
@@ -90,18 +97,17 @@ class WindowLogin:
         tk.Button(login_root, text="Login", command=self.check_password).pack(pady=20)
         self.password_entry.pack()
 
-
     def check_password(self):
         """
         A check for the primary password before the access to databases.
         """
         entered_password = self.password_entry.get().strip()
-        # 1. Read the password stocked in .json file.
+        # 1. Read the password stocked in the .json file.
         try:
             with open(PRIMARY_PASSWORD_FILE,  "r") as f:
                 stored_password = json.load(f).get("primary_password", "")
         except FileNotFoundError:
-            messagebox.showerror("Error", "No prirmary password found. Please create one first.")
+            messagebox.showerror("Error", "No primary password found. Please create one first.")
             return
 
         # 2. Compare.
@@ -110,23 +116,30 @@ class WindowLogin:
             return
 
         # 3. Derive the Fernet key from the password entered.
-        self.fernet = derive_fernet_key(entered_password)
+        salt = get_or_create_salt()
+        self.fernet = derive_fernet_key(entered_password, salt)
 
-        # 4. Open the primary window with this key.
+        # 4. Load the vault (or empty if it doesn't exist yet).
+        self.vault = load_encrypted_vault(self.fernet, str(VAULT_PATH))
+
+        # 5. Open the primary the main window.
         messagebox.showinfo("Success", "Login successful.")
         self.login_root.destroy()
         main_root = tk.Tk()
-        MainWindow(main_root, self.fernet)
+        MainWindow(main_root, self.fernet, self.vault, str(VAULT_PATH))
         main_root.mainloop()
+
 
 class MainWindow:
     """Main window:
     - Display all credentials/passwords.
     - Possibility to add, modify, remove and show a password.
     """
-    def __init__(self, primary_main, fernet):
+    def __init__(self, primary_main, fernet, vault, vault_path):
         self.primary_main = primary_main
         self.fernet = fernet
+        self.vault = vault
+        self.vault_path = vault_path
 
         self.primary_main.title("Password manager")
         self.primary_main.geometry("1000x800")
@@ -154,32 +167,21 @@ class MainWindow:
 
     def load_data(self):
         """
-        Load the passwords crypted and display :
+        Load the passwords crypted and display:
                 - 3 first columns cleared
                 - The 'password' column on masked form (******).
         """
         # Clean the Treeview.
         self.tree.delete(*self.tree.get_children())
-        # Read the passwords.json file's dictionary.
-        data = load_passwords()
+        # Read a snapshot dict from the vault.
+        data = self.vault.to_dict_entry()
         # For all entries, decrypt and mask datas.
         for entry, info in data.items():
-            encrypt = info.get("password", "")
-            try:
-                clear_pwd = decrypt_password(self.fernet, encrypt)
-                masked_pwd = "•" * (len(clear_pwd) * 12)
-            except (InvalidToken,TypeError):
-                masked_pwd = "Error"
-            self.tree.insert(
-                "", "end",
-                values=(
-                    entry,
-                    info.get("website", ""),
-                    info.get("username", ""),
-                    masked_pwd
-                )
-            )
-
+            website = info.get("website", "")
+            username = info.get("username", "")
+            cleared_password = info.get("password", "")
+            masked_password = "•" * max(60, len(cleared_password))
+            self.tree.insert("", "end", values=(entry, info.get("website", ""), info.get("username", ""), masked_password))
 
     def add_entry(self):
         """
@@ -202,7 +204,6 @@ class MainWindow:
         tk.Label(popup, text="Password :").pack(pady=(30, 5))
         new_password_entry = tk.Entry(popup, show="*"); new_password_entry.pack()
 
-
         # "Save" button.
         def save():
             entry       = new_entry_entry.get().strip()
@@ -213,19 +214,19 @@ class MainWindow:
             if not (entry and website and username and pwd):
                 messagebox.showerror("Fields must be filled!", "Please fill all fields before saving.")
                 return
-            # Load the passwords.json file via utils.py's function.
-            data = load_passwords()
-            data[entry] = {
-                "website": website,
-                "username": username,
-                "password":encrypt_password(self.fernet, pwd)
-            }
-            save_passwords(data)
+
+            clear_memory_obj = Entry(name=entry, website=website, username=username, password=pwd)
+
+            try:
+                self.vault.add_vault_entry(clear_memory_obj)
+            except ValueError as err:
+                messagebox.showerror("Error", str(err))
+
+            save_encrypted_vault(self.vault, self.fernet, self.vault_path)
             popup.destroy()
             self.load_data()
 
         tk.Button(popup, text="Save", command=save).pack(pady=(30, 5))
-
 
     def edit_entry(self):
         """
@@ -233,6 +234,7 @@ class MainWindow:
         Finally, update the passwords.json file and reload the array.
         """
         selected_entry = self.tree.selection()
+
         if not selected_entry:
             messagebox.showwarning("No entry selected", "Please select an entry.")
             return
@@ -266,36 +268,36 @@ class MainWindow:
         password_input.insert(0, pwd_old)
         password_input.pack()
 
-
         # Function for saving modifications.
         def entry_save():
-        # Read the new fields.
-            entry_new = entry_input.get().strip()
-            website_new = website_input.get().strip()
-            username_new = username_input.get().strip()
-            pwd_new = password_input.get().strip()
+            # Read the new fields.
+            entry_new       = entry_input.get().strip()
+            website_new     = website_input.get().strip()
+            username_new    = username_input.get().strip()
+            pwd_new         = password_input.get().strip()
 
+            if entry_new != entry_old:
+                # If the name of the entry change.
+                try:
+                    self.vault.delete_vault_entry(entry_old)
+                    self.vault.add(Entry(name=entry_new, website=website_new, username=username_new, password=pwd_new))
+                except KeyError as err:
+                    messagebox.showerror("Error", f"Cannot edit {err}")
+                    return
+                except ValueError as err:
+                    messagebox.showerror("Error", str(err))
+            else:
+                # If the name of the entry doesn't change, just a fields update.
+                try:
+                    self.vault.update_vault_entry(entry_old,
+                                                  website=website_new,
+                                                  username=username_new,
+                                                  password=pwd_new)
+                except KeyError as err:
+                    messagebox.showerror("Error", f"Cannot edit {err}")
+                    return
 
-            if not (entry_new and website_new and username_new and pwd_new):
-                messagebox.showerror("Error", "All fields are required.")
-                return
-
-            # Treeview update.
-            self.tree.item(selected_entry, values=(entry_new, website_new, username_new, pwd_new))
-            # Loading of the passwords.json file.
-            data = load_passwords()
-            # if the entry key changes, deleting the oldest key.
-            if entry_new != entry_old and entry_old in data:
-                del data[entry_old]
-            # Saving with the good values.
-            data[entry_new] = {
-                "website": website_new,
-                "username": username_new,
-                "password": encrypt_password(self.fernet, pwd_new)
-            }
-            # Saving in the passwords.json file.
-            save_passwords(data)
-            # Quit and reload the window.
+            save_encrypted_vault(self.vault, self.fernet, self.vault_path)
             popup.destroy()
             self.load_data()
 
@@ -303,7 +305,7 @@ class MainWindow:
 
     def delete_entry(self):
         """
-        Delete a selected entry from the passwords.json file and the array.
+        Delete a selected entry.
         """
         selected_entry = self.tree.selection()
         if not selected_entry:
@@ -314,10 +316,13 @@ class MainWindow:
         if not messagebox.askyesno("Please confirm deletion", f"Deleting {entry_to_delete}?"):
             return
 
-        data = load_passwords()
-        if entry_to_delete in data:
-            del data[entry_to_delete]
-            save_passwords(data)
+        try:
+            self.vault.delete_vault_entry(entry_to_delete)
+        except KeyError:
+            messagebox.showerror("Error", f"Cannot delete entry {entry_to_delete}.")
+            return
+
+        save_encrypted_vault(self.vault, self.fernet, self.vault_path)
         self.load_data()
 
     def show_password(self):
@@ -332,27 +337,25 @@ class MainWindow:
         item_id = selected_entry[0]
 
         entry_to_show = self.tree.item(selected_entry, "values")[0]
-        data = load_passwords()
-        token = data.get(entry_to_show, {}).get("password", "")
-        try:
-            clear_pwd = decrypt_password(self.fernet, token)
-        except InvalidToken:
-            messagebox.showerror("Error", "Cannot clear password.")
+        entry_to_clear = self.vault.get_vault_entry(entry_to_show)
+        if not entry_to_clear:
+            messagebox.showerror("Erro", f"Entry {entry_to_show} not found.")
             return
+
+        clear_pwd = entry_to_clear.password
+
         # Display the cleared password in the cell.
         self.tree.set(item_id, "password", clear_pwd)
-        # Prepare the mask (oversize in comparaison of password).
+        # Prepare the mask (oversize in comparison of password).
         mask = "•" * (len(clear_pwd) * 12)
 
-
-        # Planification of establishment of the mask in 15 seconds.
+        # Planification of an establishment for the mask in 15 seconds.
         def hide_password_again():
             if item_id in self.tree.get_children():
                 self.tree.set(item_id, "password", mask)
 
         # After 15 seconds, restart hide_password_again.
         self.primary_main.after(15_000, hide_password_again)
-
 
     def copy_password(self):
         """
@@ -362,23 +365,18 @@ class MainWindow:
         if not selected_entry:
             messagebox.showwarning("No entry selected", "Please select a line first.")
             return
-        item_id = selected_entry[0]
 
-        # Recuperation of the key and read the crypted token.
-        entry_name = self.tree.item(item_id, "values")[0]
-        data = load_passwords()
-        token = data.get(entry_name, {}).get("password", "")
-
-        # Try to decrypt.
-        try:
-            clear_pwd = decrypt_password(self.fernet, token)
-        except InvalidToken:
-            messagebox.showerror("Error", "Cannot decrypt password.")
+        entry_to_copy = self.tree.item(selected_entry[0], "values")[0]
+        entry_to_get = self.vault.get_vault_entry(entry_to_copy)
+        if not entry_to_get:
+            messagebox.showerror("Error", f"Entry '{entry_to_copy}' not found.")
             return
+
+        clear_pwd = entry_to_get.password
 
         # Copy the password in the Tkinter's clipboard.
         # Remplace the copied data and add the password after.
         self.primary_main.clipboard_clear()
         self.primary_main.clipboard_append(clear_pwd)
         # Notify the user.
-        messagebox.showinfo("Password copied to clipboard", f"Password for {entry_name} is copied to clipboard.")
+        messagebox.showinfo("Password copied to clipboard", f"Password for {entry_to_copy} is copied to clipboard.")

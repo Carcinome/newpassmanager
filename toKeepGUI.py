@@ -316,5 +316,81 @@
         self.add_e_entry: Optional[tk.Entry] = None
         self.add_w_entry: Optional[tk.Entry] = None
         self.add_u_entry: Optional[tk.Entry] = None
-        self.add_p_entry: Optional[tk.Entry] = None"""
+        self.add_p_entry: Optional[tk.Entry] = None
+        
+"""
 
+# load_data avant modification pour implémentation du fichier model.py.
+
+"""
+        for entry, info in data.items(): # 0.3.5
+            encrypt = info.get("password", "")
+            try:
+                clear_pwd = decrypt_password(self.fernet, encrypt)
+                masked_pwd = "•" * (len(clear_pwd) * 12)
+            except (InvalidToken,TypeError):
+                masked_pwd = "Error"
+            self.tree.insert(
+                "", "end",
+                values=(
+                    entry,
+                    info.get("website", ""),
+                    info.get("username", ""),
+                    masked_pwd
+                )
+            )
+
+"""
+
+# entry_save après modifications pour implémentation du fichier model.py.
+
+"""
+            # Read the new fields.
+            entry_new = entry_input.get().strip()
+            website_new = website_input.get().strip()
+            username_new = username_input.get().strip()
+            pwd_new = password_input.get().strip()
+
+
+            if not (entry_new and website_new and username_new and pwd_new):
+                messagebox.showerror("Error", "All fields are required.")
+                return
+
+            # Treeview update.
+            self.tree.item(selected_entry, values=(entry_new, website_new, username_new, pwd_new))
+            # Loading of the passwords.json file.
+            data = load_passwords()
+            # if the entry key changes, deleting the oldest key.
+            if entry_new != entry_old and entry_old in data:
+                del data[entry_old]
+            # Saving with the good values.
+            data[entry_new] = {
+                "website": website_new,
+                "username": username_new,
+                "password": encrypt_password(self.fernet, pwd_new)
+            }
+            # Saving in the passwords.json file.
+            save_passwords(data)
+            # Quit and reload the window.
+            
+"""
+
+# delete_entry après modifications pour implémentation du fichier model.py.
+
+"""
+    
+        selected_entry = self.tree.selection()
+        if not selected_entry:
+            messagebox.showwarning("No entry selected", "Please select an entry first.")
+            return
+
+        entry_to_delete = self.tree.item(selected_entry, "values")[0]
+        if not messagebox.askyesno("Please confirm deletion", f"Deleting {entry_to_delete}?"):
+            return
+
+        data = load_passwords()
+        if entry_to_delete in data:
+            del data[entry_to_delete]
+            save_passwords(data)
+            
+"""

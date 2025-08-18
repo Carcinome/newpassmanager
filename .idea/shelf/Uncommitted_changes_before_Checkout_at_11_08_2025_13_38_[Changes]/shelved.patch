@@ -1,0 +1,191 @@
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"AutoImportSettings\">\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\n  </component>\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"29ce88e8-9a5f-4364-9259-5d20d8186681\" name=\"Changes\" comment=\"Clear the main.py file and add some\">\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/gui.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/gui.py\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/main.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/main.py\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"FileTemplateManagerImpl\">\n    <option name=\"RECENT_TEMPLATES\">\n      <list>\n        <option value=\"Python Script\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\n      <map>\n        <entry key=\"$PROJECT_DIR$\" value=\"GUI_website_and_mobile_application\" />\n      </map>\n    </option>\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"GitHubPullRequestSearchHistory\">{\n  &quot;lastFilter&quot;: {\n    &quot;state&quot;: &quot;OPEN&quot;,\n    &quot;assignee&quot;: &quot;Carcinome&quot;\n  }\n}</component>\n  <component name=\"GithubPullRequestsUISettings\">{\n  &quot;selectedUrlAndAccountId&quot;: {\n    &quot;url&quot;: &quot;https://github.com/Carcinome/newpassmanager.git&quot;,\n    &quot;accountId&quot;: &quot;03de154d-2118-49c6-88bc-44f57c834600&quot;\n  }\n}</component>\n  <component name=\"InvalidFacetManager\">\n    <ignored-facets>\n      <facet id=\"newpassmanager/invalid/Python facet\" />\n    </ignored-facets>\n  </component>\n  <component name=\"ProblemsViewState\">\n    <option name=\"selectedTabId\" value=\"CurrentFile\" />\n  </component>\n  <component name=\"ProjectColorInfo\">{\n  &quot;associatedIndex&quot;: 1\n}</component>\n  <component name=\"ProjectId\" id=\"2zvc6qw3PylyO12SXz5meypmkNt\" />\n  <component name=\"ProjectLevelVcsManager\">\n    <ConfirmationsSetting value=\"2\" id=\"Add\" />\n  </component>\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\"><![CDATA[{\n  \"keyToString\": {\n    \"ModuleVcsDetector.initialDetectionPerformed\": \"true\",\n    \"Python.gui.executor\": \"Run\",\n    \"Python.main.executor\": \"Run\",\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\n    \"RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager\": \"true\",\n    \"RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252\": \"true\",\n    \"RunOnceActivity.git.unshallow\": \"true\",\n    \"SHARE_PROJECT_CONFIGURATION_FILES\": \"true\",\n    \"git-widget-placeholder\": \"Python__program__and__interfaces\",\n    \"ignore.virus.scanning.warn.message\": \"true\",\n    \"last_opened_file_path\": \"C:/Prg/newpassmanager\",\n    \"node.js.detected.package.eslint\": \"true\",\n    \"node.js.detected.package.tslint\": \"true\",\n    \"node.js.selected.package.eslint\": \"(autodetect)\",\n    \"node.js.selected.package.tslint\": \"(autodetect)\",\n    \"nodejs_package_manager_path\": \"npm\",\n    \"settings.editor.selected.configurable\": \"com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable\",\n    \"vue.rearranger.settings.migration\": \"true\"\n  }\n}]]></component>\n  <component name=\"RecentsManager\">\n    <key name=\"MoveFile.RECENT_KEYS\">\n      <recent name=\"$PROJECT_DIR$/data\" />\n    </key>\n  </component>\n  <component name=\"RunManager\">\n    <configuration name=\"main\" type=\"PythonConfigurationType\" factoryName=\"Python\" temporary=\"true\" nameIsGenerated=\"true\">\n      <module name=\"newpassmanager\" />\n      <option name=\"ENV_FILES\" value=\"\" />\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\n      <option name=\"PARENT_ENVS\" value=\"true\" />\n      <envs>\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\n      </envs>\n      <option name=\"SDK_HOME\" value=\"\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$\" />\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/main.py\" />\n      <option name=\"PARAMETERS\" value=\"\" />\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\n      <option name=\"MODULE_MODE\" value=\"false\" />\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\n      <option name=\"INPUT_FILE\" value=\"\" />\n      <method v=\"2\" />\n    </configuration>\n    <recent_temporary>\n      <list>\n        <item itemvalue=\"Python.main\" />\n      </list>\n    </recent_temporary>\n  </component>\n  <component name=\"SharedIndexes\">\n    <attachedChunks>\n      <set>\n        <option value=\"bundled-js-predefined-d6986cc7102b-e03c56caf84a-JavaScript-PY-252.23892.439\" />\n        <option value=\"bundled-python-sdk-b3ae9b5d7125-f0eec537fc84-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.23892.439\" />\n      </set>\n    </attachedChunks>\n  </component>\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"29ce88e8-9a5f-4364-9259-5d20d8186681\" name=\"Changes\" comment=\"\" />\n      <created>1752614814662</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1752614814662</updated>\n      <workItem from=\"1752614815771\" duration=\"850000\" />\n      <workItem from=\"1752693346730\" duration=\"27000\" />\n      <workItem from=\"1752693380349\" duration=\"722000\" />\n      <workItem from=\"1752697957492\" duration=\"657000\" />\n      <workItem from=\"1752787162819\" duration=\"2996000\" />\n      <workItem from=\"1752795670902\" duration=\"15000\" />\n      <workItem from=\"1752796035206\" duration=\"6000\" />\n      <workItem from=\"1752833210286\" duration=\"607000\" />\n      <workItem from=\"1752840007727\" duration=\"2000\" />\n      <workItem from=\"1752874624012\" duration=\"795000\" />\n      <workItem from=\"1752884035019\" duration=\"167000\" />\n      <workItem from=\"1752933247059\" duration=\"626000\" />\n      <workItem from=\"1752983199864\" duration=\"2307000\" />\n      <workItem from=\"1753082473082\" duration=\"11041000\" />\n      <workItem from=\"1753101098214\" duration=\"160000\" />\n      <workItem from=\"1753101266809\" duration=\"10352000\" />\n      <workItem from=\"1753166296371\" duration=\"2588000\" />\n      <workItem from=\"1753168981249\" duration=\"12731000\" />\n      <workItem from=\"1753280643607\" duration=\"69000\" />\n      <workItem from=\"1753280732050\" duration=\"86000\" />\n      <workItem from=\"1753339626117\" duration=\"18149000\" />\n      <workItem from=\"1753572240629\" duration=\"606000\" />\n      <workItem from=\"1753577038432\" duration=\"1317000\" />\n      <workItem from=\"1753623618530\" duration=\"645000\" />\n      <workItem from=\"1753627410943\" duration=\"1101000\" />\n      <workItem from=\"1753692719417\" duration=\"39000\" />\n      <workItem from=\"1753692767209\" duration=\"60000\" />\n      <workItem from=\"1753698777376\" duration=\"45000\" />\n      <workItem from=\"1753698833391\" duration=\"627000\" />\n      <workItem from=\"1753701189488\" duration=\"320000\" />\n      <workItem from=\"1753701630861\" duration=\"81000\" />\n      <workItem from=\"1753701724688\" duration=\"155000\" />\n      <workItem from=\"1753704791714\" duration=\"47000\" />\n      <workItem from=\"1753708998071\" duration=\"5941000\" />\n      <workItem from=\"1753740848367\" duration=\"42000\" />\n      <workItem from=\"1753740967568\" duration=\"108000\" />\n      <workItem from=\"1753745090604\" duration=\"2392000\" />\n      <workItem from=\"1753778233028\" duration=\"2894000\" />\n      <workItem from=\"1753782839834\" duration=\"601000\" />\n      <workItem from=\"1753791573711\" duration=\"604000\" />\n      <workItem from=\"1753831762612\" duration=\"1343000\" />\n      <workItem from=\"1753835032268\" duration=\"1779000\" />\n      <workItem from=\"1753836911930\" duration=\"109000\" />\n      <workItem from=\"1753910661166\" duration=\"2739000\" />\n      <workItem from=\"1753920245429\" duration=\"821000\" />\n      <workItem from=\"1753948322226\" duration=\"1715000\" />\n      <workItem from=\"1754097793482\" duration=\"954000\" />\n      <workItem from=\"1754126864364\" duration=\"4706000\" />\n      <workItem from=\"1754257528119\" duration=\"169000\" />\n      <workItem from=\"1754257727397\" duration=\"741000\" />\n      <workItem from=\"1754268414218\" duration=\"2424000\" />\n      <workItem from=\"1754300551522\" duration=\"3512000\" />\n      <workItem from=\"1754345041880\" duration=\"842000\" />\n      <workItem from=\"1754347575612\" duration=\"208000\" />\n      <workItem from=\"1754441164634\" duration=\"803000\" />\n      <workItem from=\"1754839081435\" duration=\"4005000\" />\n    </task>\n    <task id=\"LOCAL-00001\" summary=\"New branch for tests.\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1753578290571</created>\n      <option name=\"number\" value=\"00001\" />\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1753578290571</updated>\n    </task>\n    <option name=\"localTasksCounter\" value=\"2\" />\n    <servers />\n  </component>\n  <component name=\"TypeScriptGeneratedFilesManager\">\n    <option name=\"version\" value=\"3\" />\n  </component>\n  <component name=\"Vcs.Log.Tabs.Properties\">\n    <option name=\"TAB_STATES\">\n      <map>\n        <entry key=\"MAIN\">\n          <value>\n            <State />\n          </value>\n        </entry>\n      </map>\n    </option>\n  </component>\n  <component name=\"VcsManagerConfiguration\">\n    <MESSAGE value=\"New branch for tests.\" />\n    <MESSAGE value=\"Add html skeleton.\" />\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"\" />\n  </component>\n  <component name=\"com.intellij.coverage.CoverageDataManagerImpl\">\n    <SUITE FILE_PATH=\"coverage/newpassmanager$main.coverage\" NAME=\"main Coverage Results\" MODIFIED=\"1754441310673\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\n    <SUITE FILE_PATH=\"coverage/newpassmanager$gui.coverage\" NAME=\"gui Coverage Results\" MODIFIED=\"1753345928311\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 256ae54854f61e63e50a39eace5ff0ee2121d2fb)
++++ b/.idea/workspace.xml	(date 1754912302756)
+@@ -4,10 +4,8 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="29ce88e8-9a5f-4364-9259-5d20d8186681" name="Changes" comment="Clear the main.py file and add some">
++    <list default="true" id="29ce88e8-9a5f-4364-9259-5d20d8186681" name="Changes" comment="New branch for tests.">
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/gui.py" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -24,7 +22,7 @@
+   <component name="Git.Settings">
+     <option name="RECENT_BRANCH_BY_REPOSITORY">
+       <map>
+-        <entry key="$PROJECT_DIR$" value="GUI_website_and_mobile_application" />
++        <entry key="$PROJECT_DIR$" value="main" />
+       </map>
+     </option>
+     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+@@ -41,11 +39,6 @@
+     &quot;accountId&quot;: &quot;03de154d-2118-49c6-88bc-44f57c834600&quot;
+   }
+ }</component>
+-  <component name="InvalidFacetManager">
+-    <ignored-facets>
+-      <facet id="newpassmanager/invalid/Python facet" />
+-    </ignored-facets>
+-  </component>
+   <component name="ProblemsViewState">
+     <option name="selectedTabId" value="CurrentFile" />
+   </component>
+@@ -53,75 +46,40 @@
+   &quot;associatedIndex&quot;: 1
+ }</component>
+   <component name="ProjectId" id="2zvc6qw3PylyO12SXz5meypmkNt" />
+-  <component name="ProjectLevelVcsManager">
+-    <ConfirmationsSetting value="2" id="Add" />
+-  </component>
+   <component name="ProjectViewState">
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />
+   </component>
+-  <component name="PropertiesComponent"><![CDATA[{
+-  "keyToString": {
+-    "ModuleVcsDetector.initialDetectionPerformed": "true",
+-    "Python.gui.executor": "Run",
+-    "Python.main.executor": "Run",
+-    "RunOnceActivity.ShowReadmeOnStart": "true",
+-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+-    "RunOnceActivity.git.unshallow": "true",
+-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+-    "git-widget-placeholder": "Python__program__and__interfaces",
+-    "ignore.virus.scanning.warn.message": "true",
+-    "last_opened_file_path": "C:/Prg/newpassmanager",
+-    "node.js.detected.package.eslint": "true",
+-    "node.js.detected.package.tslint": "true",
+-    "node.js.selected.package.eslint": "(autodetect)",
+-    "node.js.selected.package.tslint": "(autodetect)",
+-    "nodejs_package_manager_path": "npm",
+-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+-    "vue.rearranger.settings.migration": "true"
++  <component name="PropertiesComponent">{
++  &quot;keyToString&quot;: {
++    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
++    &quot;Python.gui.executor&quot;: &quot;Run&quot;,
++    &quot;Python.main.executor&quot;: &quot;Run&quot;,
++    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
++    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
++    &quot;git-widget-placeholder&quot;: &quot;GUI-connection-with-utils&quot;,
++    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
++    &quot;last_opened_file_path&quot;: &quot;C:/Prg/newpassmanager&quot;,
++    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
++    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
++    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
++    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
++    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
++    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
++    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+   }
+-}]]></component>
++}</component>
+   <component name="RecentsManager">
+     <key name="MoveFile.RECENT_KEYS">
+       <recent name="$PROJECT_DIR$/data" />
+     </key>
+   </component>
+-  <component name="RunManager">
+-    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+-      <module name="newpassmanager" />
+-      <option name="ENV_FILES" value="" />
+-      <option name="INTERPRETER_OPTIONS" value="" />
+-      <option name="PARENT_ENVS" value="true" />
+-      <envs>
+-        <env name="PYTHONUNBUFFERED" value="1" />
+-      </envs>
+-      <option name="SDK_HOME" value="" />
+-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+-      <option name="IS_MODULE_SDK" value="true" />
+-      <option name="ADD_CONTENT_ROOTS" value="true" />
+-      <option name="ADD_SOURCE_ROOTS" value="true" />
+-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+-      <option name="PARAMETERS" value="" />
+-      <option name="SHOW_COMMAND_LINE" value="false" />
+-      <option name="EMULATE_TERMINAL" value="false" />
+-      <option name="MODULE_MODE" value="false" />
+-      <option name="REDIRECT_INPUT" value="false" />
+-      <option name="INPUT_FILE" value="" />
+-      <method v="2" />
+-    </configuration>
+-    <recent_temporary>
+-      <list>
+-        <item itemvalue="Python.main" />
+-      </list>
+-    </recent_temporary>
+-  </component>
+   <component name="SharedIndexes">
+     <attachedChunks>
+       <set>
+-        <option value="bundled-js-predefined-d6986cc7102b-e03c56caf84a-JavaScript-PY-252.23892.439" />
+-        <option value="bundled-python-sdk-b3ae9b5d7125-f0eec537fc84-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.23892.439" />
++        <option value="bundled-js-predefined-d6986cc7102b-09060db00ec0-JavaScript-WS-251.27812.50" />
+       </set>
+     </attachedChunks>
+   </component>
+@@ -159,35 +117,6 @@
+       <workItem from="1753627410943" duration="1101000" />
+       <workItem from="1753692719417" duration="39000" />
+       <workItem from="1753692767209" duration="60000" />
+-      <workItem from="1753698777376" duration="45000" />
+-      <workItem from="1753698833391" duration="627000" />
+-      <workItem from="1753701189488" duration="320000" />
+-      <workItem from="1753701630861" duration="81000" />
+-      <workItem from="1753701724688" duration="155000" />
+-      <workItem from="1753704791714" duration="47000" />
+-      <workItem from="1753708998071" duration="5941000" />
+-      <workItem from="1753740848367" duration="42000" />
+-      <workItem from="1753740967568" duration="108000" />
+-      <workItem from="1753745090604" duration="2392000" />
+-      <workItem from="1753778233028" duration="2894000" />
+-      <workItem from="1753782839834" duration="601000" />
+-      <workItem from="1753791573711" duration="604000" />
+-      <workItem from="1753831762612" duration="1343000" />
+-      <workItem from="1753835032268" duration="1779000" />
+-      <workItem from="1753836911930" duration="109000" />
+-      <workItem from="1753910661166" duration="2739000" />
+-      <workItem from="1753920245429" duration="821000" />
+-      <workItem from="1753948322226" duration="1715000" />
+-      <workItem from="1754097793482" duration="954000" />
+-      <workItem from="1754126864364" duration="4706000" />
+-      <workItem from="1754257528119" duration="169000" />
+-      <workItem from="1754257727397" duration="741000" />
+-      <workItem from="1754268414218" duration="2424000" />
+-      <workItem from="1754300551522" duration="3512000" />
+-      <workItem from="1754345041880" duration="842000" />
+-      <workItem from="1754347575612" duration="208000" />
+-      <workItem from="1754441164634" duration="803000" />
+-      <workItem from="1754839081435" duration="4005000" />
+     </task>
+     <task id="LOCAL-00001" summary="New branch for tests.">
+       <option name="closed" value="true" />
+@@ -216,11 +145,10 @@
+   </component>
+   <component name="VcsManagerConfiguration">
+     <MESSAGE value="New branch for tests." />
+-    <MESSAGE value="Add html skeleton." />
+-    <option name="LAST_COMMIT_MESSAGE" value="" />
++    <option name="LAST_COMMIT_MESSAGE" value="New branch for tests." />
+   </component>
+   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+-    <SUITE FILE_PATH="coverage/newpassmanager$main.coverage" NAME="main Coverage Results" MODIFIED="1754441310673" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+     <SUITE FILE_PATH="coverage/newpassmanager$gui.coverage" NAME="gui Coverage Results" MODIFIED="1753345928311" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
++    <SUITE FILE_PATH="coverage/newpassmanager$main.coverage" NAME="main Coverage Results" MODIFIED="1753108558119" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+   </component>
+ </project>
+\ No newline at end of file

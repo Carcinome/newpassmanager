@@ -22,9 +22,9 @@ def main():
     root = tk.Tk()
     # 3. If the primary password doesn't exist, create it. If it already exists, ask for connection.
     if not os.path.exists(PRIMARY_PASSWORD_FILE):
-        app = InitiatePrimaryWindow(root)
+        InitiatePrimaryWindow(root)
     else:
-        app = WindowLogin(root)
+        WindowLogin(root)
     root.mainloop()
 
 # 4. This for assurance to start main() only with main.py.

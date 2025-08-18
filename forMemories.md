@@ -53,3 +53,47 @@ Les bases de la syntaxe dans le jargon :
 
 
 ![img.png](data/load_password_explanation.png)
+
+Classe :
+
+* class Nom: définit un type personnalisé.
+* def __init__(self, …): initialise l’état (attributs).
+* Méthodes = fonctions dans la classe (1er paramètre : self).
+* But : rassembler données + règles.
+* Classe & indentation : une méthode doit être indentée dans la classe. Sinon, c’est une fonction libre.
+* API stable = mêmes noms partout → moins d’erreurs.
+* @classmethod : méthode appelable sur la classe (Vault.from_dict(...)) et qui retourne une instance.
+
+Dataclass :
+
+* @dataclass génère __init__ et d’autres méthodes utiles.
+* Idéale pour des conteneurs (ex. Entry).
+
+Séparation des responsabilités :
+
+* vault/model.py : logique métier (CRUD, conversions).
+* vault/storage.py : E/S chiffrées (un seul fichier).
+* utils.py : dérivation de clé (mot de passe + salt), chemins, répertoires.
+* gui.py : affichage + interactions, sans I/O directes ni crypto fine.
+
+Crypto :
+
+* PBKDF2HMAC (dans utils.py) : dérive une clé depuis (mot de passe + salt).
+* Fernet : chiffre/déchiffre un bloc (coffre entier) et garantit l’intégrité.
+* Salt : public, aléatoire, stocké dans data/salt.bin.
+
+Patron de travail :
+
+* GUI modifie Vault (RAM) → save_encrypted(...) (disque chiffré).
+* Ré-ouverture : load_encrypted(...) → Vault (RAM).
+
+JSON :
+
+* json.dump(obj, f) → écrit un objet Python en texte JSON.
+* json.load(f) → relit en dict.
+* Toujours UTF‑8 pour sérénité.
+
+IO fichiers :
+
+* Texte : "w" / "r" ; Binaire : "wb" / "rb".
+* Path(...).write_bytes() pour écrire des octets (chiffrés).
