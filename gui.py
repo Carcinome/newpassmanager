@@ -14,8 +14,10 @@ from utils import (
     save_passwords,
     encrypt_password,
     decrypt_password,
+    write_primary_verifier,
     get_or_create_salt,
     derive_fernet_key,
+    verify_primary_password_and_get_key,
 )
 
 from src.vault import load_encrypted_vault, save_encrypted_vault, Vault, Entry
@@ -53,8 +55,8 @@ class InitiatePrimaryWindow:
         """
         For saving primary password.
         """
-        password = self.pwd_entry.get().strip()
-        password_confirmation = self.confirm_entry.get().strip()
+        password = (self.pwd_entry.get() or "").strip()
+        password_confirmation = (self.confirm_entry.get() or "").strip()
 
         if not password or not password_confirmation:
             messagebox.showerror("Error", "All fields are required.")
@@ -64,11 +66,11 @@ class InitiatePrimaryWindow:
             messagebox.showerror("Error", "Passwords do not match.")
             return
 
-        with open(PRIMARY_PASSWORD_FILE, "w") as f:
-            json.dump({"primary_password": password}, f)
-
-        # Create the salt.
-        get_or_create_salt()
+        try:
+            write_primary_verifier(password)
+        except ValueError as err:
+            messagebox.showerror("Error", f"Could not save primary password.")
+            return
 
         messagebox.showinfo("Success", "Primary password saved.")
         # close the window.
@@ -95,38 +97,31 @@ class WindowLogin:
         tk.Label(login_root, text="Enter your primary password :").pack(pady=(30, 5))
         self.password_entry = tk.Entry(login_root, show="*", width=30); self.password_entry.pack()
         tk.Button(login_root, text="Login", command=self.check_password).pack(pady=20)
-        self.password_entry.pack()
 
     def check_password(self):
         """
         A check for the primary password before the access to databases.
         """
-        entered_password = self.password_entry.get().strip()
-        # 1. Read the password stocked in the .json file.
+        entered_password = (self.password_entry.get() or "").strip()
+
+        if not entered_password:
+            messagebox.showwarning("Warning", "Please enter your primary password.")
+            return
+
         try:
-            with open(PRIMARY_PASSWORD_FILE,  "r") as f:
-                stored_password = json.load(f).get("primary_password", "")
+            self.fernet = verify_primary_password_and_get_key(entered_password)
         except FileNotFoundError:
             messagebox.showerror("Error", "No primary password found. Please create one first.")
-            return
-
-        # 2. Compare.
-        if entered_password != stored_password:
+        except InvalidToken:
             messagebox.showerror("Error", "Invalid primary password.")
-            return
+        except Exception as exc:
+            messagebox.showerror("Error", f"Unknown error: {exc}")
 
-        # 3. Derive the Fernet key from the password entered.
-        salt = get_or_create_salt()
-        self.fernet = derive_fernet_key(entered_password, salt)
 
-        # 4. Load the vault (or empty if it doesn't exist yet).
-        self.vault = load_encrypted_vault(self.fernet, str(VAULT_PATH))
-
-        # 5. Open the primary the main window.
         messagebox.showinfo("Success", "Login successful.")
         self.login_root.destroy()
         main_root = tk.Tk()
-        MainWindow(main_root, self.fernet, self.vault, str(VAULT_PATH))
+        MainWindow(main_root, self.fernet)
         main_root.mainloop()
 
 
@@ -135,11 +130,9 @@ class MainWindow:
     - Display all credentials/passwords.
     - Possibility to add, modify, remove and show a password.
     """
-    def __init__(self, primary_main, fernet, vault, vault_path):
+    def __init__(self, primary_main, fernet):
         self.primary_main = primary_main
         self.fernet = fernet
-        self.vault = vault
-        self.vault_path = vault_path
 
         self.primary_main.title("Password manager")
         self.primary_main.geometry("1000x800")
@@ -333,9 +326,9 @@ class MainWindow:
         if not selected_entry:
             messagebox.showwarning("No entry selected", "Please select an entry first.")
             return
+
             # Unic ID of the selected line.
         item_id = selected_entry[0]
-
         entry_to_show = self.tree.item(selected_entry, "values")[0]
         entry_to_clear = self.vault.get_vault_entry(entry_to_show)
         if not entry_to_clear:

@@ -18,16 +18,16 @@ SALT_FILE               = os.path.join(DATA_DIR, "salt.bin")
 
 def get_or_create_salt():
     """
-    Load the salt from the salt.bin file, or create it if it doesn't exist.
-    Salt ISN'T secret, just useful for make all derivations unic.
+    Load the salt from the salt.bin file or create it if it doesn't exist.
+    Salt ISN'T secret, just useful for making all derivations unic.
     """
     create_data_dir()
     if not os.path.exists(SALT_FILE):
         salt = os.urandom(16) # 16 octets, 128 bits, enough.
-        with open(SALT_FILE, "wb") as f:
+        with open(SALT_FILE, "wb") as f: # wb = write octets.
             f.write(salt)
         return salt
-    with open(SALT_FILE, "rb") as f:
+    with open(SALT_FILE, "rb") as f: # rb = read octets.
         return f.read()
 
 # Create the data directory if it doesn't exist.
@@ -35,7 +35,7 @@ def create_data_dir():
     os.makedirs(DATA_DIR, exist_ok=True)
 
 # Derivation of the Fernet key from the primary password.
-def derive_fernet_key(primary_password: str, salt: bytes) -> Fernet:
+def derive_fernet_key(primary_password: str, salt: bytes, iterations: int = 200_000) -> Fernet:
     """
     Here, transform the primary password (strings) in the key usable by Fernet for crypt/decrypt.
     For information, PBKDF2HMAC: algorithm for security key derivation.
@@ -44,16 +44,69 @@ def derive_fernet_key(primary_password: str, salt: bytes) -> Fernet:
         algorithm=hashes.SHA256(),
         length=32,
         salt=salt,
-        iterations=100_000,
+        iterations=iterations,
     )
     raw_key = kdf.derive(primary_password.encode()) # raw bytes
     b64_key = base64.urlsafe_b64encode(raw_key) # Base64 key
     return Fernet(b64_key)
 
+def write_primary_verifier(primary_password: str, iterations: int = 200_000) -> None:
+    """
+    Write an JSON file "primary_password.json" without a password, with:
+    - format version
+    - KDF parameters
+    - A verifier = secret crypted with the derived key.
+    """
+    create_data_dir()
+    salt = get_or_create_salt()
+    fernet = derive_fernet_key(primary_password, salt)
+    secret = "verify-v1".encode("utf-8")
+    token = fernet.encrypt(secret).decode("utf-8")
+    payload = {
+        "version": 1,
+        "kdf": {"name": "PBKDF2HMAC", "hash": "SHA256", "iterations": iterations},
+        "verifier": token,
+    }
+    with open(PRIMARY_PASSWORD_FILE, "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2, ensure_ascii=False)
+
+def verify_primary_password_and_get_key(entered_password: str) -> Fernet:
+    """
+    Read 'primary_password.json' and 'salt.bin', derive the key with 'entered_password' and try to decrypt the verifier.
+    - If it works: return the Fernet object (correct key).
+    - If it fails: raise InvalidToken.
+    """
+    if not os.path.exists(PRIMARY_PASSWORD_FILE):
+        raise FileNotFoundError("No primary password found. Please create one first.")
+    with open(PRIMARY_PASSWORD_FILE, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    # Old format (with 'primary_password' cleared) -> instant migration.
+    if "primary_password" in data:
+        stored = data.get("primary_password", "")
+        if entered_password != stored:
+            raise InvalidToken("Invalid primary password.")
+        # Migration: write the new format and read again.
+        write_primary_verifier(entered_password)
+        with open(PRIMARY_PASSWORD_FILE, "r", encoding="utf-8") as f2:
+            data = json.load(f2)
+
+    kdf = data.get("kdf", {})
+    iterations = int(kdf.get("iterations", 200_000))
+    verifier = data["verifier"]
+    salt = get_or_create_salt()
+    fernet = derive_fernet_key(entered_password, salt, iterations)
+
+    try:
+        _ = fernet.decrypt(verifier.encode("utf-8"))
+    except InvalidToken:
+        raise InvalidToken("Wrong primary password (cannot decrypt verifier).")
+    return fernet
+
 # Storage initialization and reception of Fernet.
 def init_storage_primary_password() -> Fernet:
     """
-    1. Create data directory.
+    1. Create a data directory.
     2. Create or verify primary_password.json.
     3. Return the Fernet key.
     """
@@ -64,7 +117,7 @@ def init_storage_primary_password() -> Fernet:
             json.dump({"primary_password": primary_password}, f)
         print("Primary password created and saved.")
         return derive_fernet_key(primary_password)
-    # If primary the password exist, ask it and verify.
+    # If the primary password exists, ask it and verify.
     else:
         with open(PRIMARY_PASSWORD_FILE, "r") as f:
             stored_primary_password = json.load(f).get("primary_password", "")
@@ -89,10 +142,10 @@ def load_passwords() -> dict:
     except json.JSONDecodeError:
         return {}
 
-# Write the passwords in passwords.json file.
+# Write the passwords in the passwords.json file.
 def save_passwords(passwords: dict):
     """
-    Take the Python dictionary and save it in passwords.json file.
+    Take the Python dictionary and save it in the passwords.json file.
     """
     create_data_dir()
     with open(PASSWORDS_FILE, "w") as f:
