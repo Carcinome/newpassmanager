@@ -2,21 +2,13 @@
 
 
 import tkinter as tk
-import json
 from pathlib import Path
 from tkinter import messagebox, ttk
 
 from cryptography.fernet import InvalidToken
 
 from utils import (
-    PRIMARY_PASSWORD_FILE,
-    load_passwords,
-    save_passwords,
-    encrypt_password,
-    decrypt_password,
     write_primary_verifier,
-    get_or_create_salt,
-    derive_fernet_key,
     verify_primary_password_and_get_key,
 )
 
@@ -88,6 +80,7 @@ class WindowLogin:
     def __init__(self, login_root):
         self.login_root = login_root
         self.fernet = None
+        self.vault = None
 
         self.login_root.title("Connection - Password manager")
         self.login_root.geometry("600x400")
@@ -117,11 +110,20 @@ class WindowLogin:
         except Exception as exc:
             messagebox.showerror("Error", f"Unknown error: {exc}")
 
+        try:
+            self.vault = load_encrypted_vault(self.fernet, str(VAULT_PATH))
+        except InvalidToken:
+            messagebox.showerror("Error", "Vault is corrupted or cannot be decrypted.")
+            return
+        except Exception as exc:
+            messagebox.showerror("Error", f"Could not read the encrypted vault. {exc}")
+            return
+
 
         messagebox.showinfo("Success", "Login successful.")
         self.login_root.destroy()
         main_root = tk.Tk()
-        MainWindow(main_root, self.fernet)
+        MainWindow(main_root, self.fernet, self.vault, str(VAULT_PATH))
         main_root.mainloop()
 
 
@@ -130,9 +132,11 @@ class MainWindow:
     - Display all credentials/passwords.
     - Possibility to add, modify, remove and show a password.
     """
-    def __init__(self, primary_main, fernet):
+    def __init__(self, primary_main, fernet, vault, vault_path):
         self.primary_main = primary_main
         self.fernet = fernet
+        self.vault = vault
+        self.vault_path = vault_path
 
         self.primary_main.title("Password manager")
         self.primary_main.geometry("1000x800")
