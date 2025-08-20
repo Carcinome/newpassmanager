@@ -20,7 +20,7 @@ def main():
 
     # 2. Launch the GUI.
     root = tk.Tk()
-    # 3. If the primary password doesn't exist, create it. If it already exists, ask for connection.
+    # 3. If the primary password doesn't exist, create it. If it already exists, ask for a connection.
     if not os.path.exists(PRIMARY_PASSWORD_FILE):
         InitiatePrimaryWindow(root)
     else:
