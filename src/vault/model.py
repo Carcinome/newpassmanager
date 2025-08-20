@@ -15,7 +15,7 @@ class Entry:
 
 class Vault:
     """
-    Represent all memories entries (not crypted when in RAM). It's a memory vault.
+    Represent all memory entries (not crypted when in RAM). It's a memory vault.
     No disk access here, no GUI, just rules and datas (CRUD).
     """
     def __init__(self) -> None:
