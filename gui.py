@@ -137,6 +137,8 @@ class MainWindow:
         self.fernet = fernet            # Fernet key (already validated on login).
         self.vault = vault              # Vault in RAM (cleared).
         self.vault_path = vault_path    # Path of the encrypted vault.
+        self.clipboard_timeout_ms = 30_000
+        self.show_timeout_ms = 15_000
 
         self.primary_main.title("Password manager")
         self.primary_main.geometry("1000x800")
@@ -379,7 +381,7 @@ class MainWindow:
             messagebox.showerror("Error", f"Entry '{entry_to_copy}' not found.")
             return
 
-        clear_pwd = entry_to_get.password
+        clear_pwd = entry_to_get.password # In the RAM, cleared, just for GUI.
 
         # Copy the password in the Tkinter's clipboard.
         # Remplace the copied data and add the password after.
@@ -387,12 +389,17 @@ class MainWindow:
         self.primary_main.clipboard_append(clear_pwd)
         # Notify the user.
         messagebox.showinfo("Password copied to clipboard", f"Password for {entry_to_copy} is copied to clipboard.")
+        # Auto clear clipboard.
+        self.schedule_clipboard_clear()
 
-        # Enhanced security: clear the clipboard after 30 seconds.
+    # Enhanced security: clear the clipboard.
+    def schedule_clipboard_clear(self):
+        """
+        Clear the clipboard after select.clipboard_timeout_ms.
+        """
         def clear_clipboard():
             try:
                 self.primary_main.clipboard_clear()
             except tk.TclError:
                 pass
-
-        self.primary_main.after(30_000, clear_clipboard)
+        self.primary_main.after(self.clipboard_timeout_ms, clear_clipboard)
