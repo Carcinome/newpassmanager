@@ -139,6 +139,7 @@ class MainWindow:
         self.vault_path = vault_path    # Path of the encrypted vault.
         self.clipboard_timeout_ms = 30_000
         self.show_timeout_ms = 15_000
+        self.remask_jobs = {}
 
         self.primary_main.title("Password manager")
         self.primary_main.geometry("1000x800")
@@ -152,6 +153,10 @@ class MainWindow:
             self.tree.column(c, width=150)
         self.tree.pack(fill="both", expand=True, pady=(10, 0))
 
+        self.status_var = tk.StringVar(value="")
+        status = tk.Label(self.primary_main, textvariable=self.status_var, anchor="w")
+        status.pack(fill="x", padx=8, pady=(2, 6))
+
         # Buttons
         button_frame = tk.Frame(primary_main)
         button_frame.pack(pady=10)
@@ -161,6 +166,7 @@ class MainWindow:
         tk.Button(button_frame, text="Delete", command=self.delete_entry).pack(side="left", padx=10)
         tk.Button(button_frame, text="Show", command=self.show_password).pack(side="left", padx=10)
         tk.Button(button_frame, text="Copy", command=self.copy_password).pack(side="left", padx=10)
+        tk.Button(button_frame, text="Hide all", command=self.hide_all_passwords).pack(side="left", padx=10)
 
         self.load_data()
 
@@ -179,7 +185,7 @@ class MainWindow:
             website = info.get("website", "")
             username = info.get("username", "")
             cleared_password = info.get("password", "")
-            masked_password = "•" * max(60, len(cleared_password))
+            masked_password = self.mask_for(cleared_password)
             self.tree.insert("", "end", values=(entry, website, username, masked_password))
 
     def add_entry(self):
@@ -348,22 +354,30 @@ class MainWindow:
             return
 
         clear_pwd = entry_to_clear.password
+        mask = self.mask_for(clear_pwd)
+
+        self.cancel_remask_if_any(item_id)
 
         # Display the cleared password in the cell.
-        self.tree.set(item_id, "password", clear_pwd)
-        # Prepare the mask (oversize in comparison of password).
-        mask = "•" * (len(clear_pwd) * 12)
+        try:
+            self.tree.set(item_id, "password", clear_pwd)
+        except tk.TclError:
+            return
+        self.status_var.set(f"Password for {entry_to_show} is shown for {self.show_timeout_ms}ms.")
 
-        # Planification of an establishment for the mask in 15 seconds.
-        def hide_password_again():
-            # security: the user can delete item.
+        # Reprogramming of masking.
+        def hide_again():
             try:
                 self.tree.set(item_id, "password", mask)
             except tk.TclError:
-                pass
+                pass # In case of line disappear.
+            if self.status_var.get().startswith("Password displayed"):
+                self.status_var.set("")
+            self.remask_jobs.pop(item_id, None)
 
-        # After 15 seconds, restart hide_password_again.
-        self.primary_main.after(15_000, hide_password_again)
+        after_id = self.primary_main.after(self.show_timeout_ms, hide_again)
+        self.remask_jobs[item_id] = after_id
+
 
     def copy_password(self):
         """
@@ -403,3 +417,38 @@ class MainWindow:
             except tk.TclError:
                 pass
         self.primary_main.after(self.clipboard_timeout_ms, clear_clipboard)
+
+    def mask_for(self, clear_pwd: str) -> str:
+        """
+        For calculating a masked version of a password.
+        """
+        return "•" * max(35, len(clear_pwd))
+
+    def cancel_remask_if_any(self, item_id):
+        """
+        Cancel a timer for remasking for the selected line, if it presents.
+        """
+        job = self.remask_jobs.pop(item_id, None)
+        if job is not None:
+            try:
+                self.primary_main.after_cancel(job)
+            except Exception:
+                pass
+    
+    def hide_all_passwords(self):
+        """
+        Automatically hide all password entries and cancel all timers.
+        """
+        for item_id in self.tree.get_children():
+            values = list(self.tree.item(item_id, "values")) # values = [entry, website, username, password]
+            name = values[0]
+            entry = self.vault.get_vault_entry(name)
+            if entry:
+                values[3] = self.mask_for(entry.password)
+                try:
+                    self.tree.item(item_id, values=values)
+                except tk.TclError:
+                    pass
+            self.cancel_remask_if_any(item_id)
+        self.status_var.set("")
+            
