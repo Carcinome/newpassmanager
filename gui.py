@@ -4,6 +4,8 @@
 import tkinter as tk
 from pathlib import Path
 from tkinter import messagebox, ttk
+import logging, os
+
 
 from cryptography.fernet import InvalidToken
 
@@ -12,12 +14,20 @@ from utils import (
     verify_primary_password_and_get_key,
 )
 
-from src.vault import load_encrypted_vault, save_encrypted_vault, Vault, Entry
+from src.vault import (load_encrypted_vault,
+                       save_encrypted_vault,
+                       Vault,
+                       Entry
+)
 
-import logging, os
+# from il8n import setup_language
+from main import _
 
 VAULT_PATH = Path("data") / "vault.enc"
 LOG_PATH = os.path.join("data", "app.log")
+# _, LANG = setup_language() # harmless if called twice; ensures _() is available.
+
+# Logging users errors.
 logging.basicConfig(
     filename=LOG_PATH,
     level=logging.INFO,
@@ -50,22 +60,22 @@ class InitiatePrimaryWindow:
         self.primary = primary
 
         # Main text.
-        self.primary.title("Create primary password")
+        self.primary.title_("Create primary password")
         self.primary.geometry("400x300")
         self.primary.resizable(False, False)
 
         # Password field.
-        tk.Label(self.primary, text="Enter a new primary password:").pack(pady=(20, 5))
+        tk.Label(self.primary, text=_("Enter a new primary password:")).pack(pady=(20, 5))
         self.pwd_entry = tk.Entry(self.primary, show="*", width=30)
         self.pwd_entry.pack()
 
         # Confirm field.
-        tk.Label(self.primary, text="Confirm password:").pack(pady=(10, 5))
+        tk.Label(self.primary, text=_("Confirm password:")).pack(pady=(10, 5))
         self.confirm_entry = tk.Entry(self.primary, show="*", width=30)
         self.confirm_entry.pack()
 
         # "Create" button.
-        tk.Button(self.primary, text="Create", command=self.save_primary_password).pack(pady=20)
+        tk.Button(self.primary, text=_("Create"), command=self.save_primary_password).pack(pady=20)
 
     def save_primary_password(self):
         """
@@ -75,20 +85,20 @@ class InitiatePrimaryWindow:
         password_confirmation = (self.confirm_entry.get() or "").strip()
 
         if not password or not password_confirmation:
-            messagebox.showerror("Error", "All fields are required.")
+            messagebox.showerror(_("Error"), _("All fields are required."))
             return
 
         if password != password_confirmation:
-            messagebox.showerror("Error", "Passwords do not match.")
+            messagebox.showerror(_("Error"), _("Passwords do not match."))
             return
 
         try:
             write_primary_verifier(password)
         except ValueError as err:
-            messagebox.showerror("Error", f"Could not save primary password : {err}.")
+            messagebox.showerror(_("Error"), _(f"Could not save primary password : {err}."))
             return
 
-        messagebox.showinfo("Success", "Primary password saved.")
+        messagebox.showinfo(_("Success"), _("Primary password saved."))
         # close the window.
         self.primary.destroy()
         # Open the connection window
@@ -106,14 +116,14 @@ class WindowLogin:
         self.fernet = None
         self.vault = None
 
-        self.login_root.title("Connection - Password manager")
-        self.login_root.geometry("600x400")
+        self.login_root.title(_("Connection - Password manager"))
+        self.login_root.geometry("300x200")
         self.login_root.resizable(False, False)
 
         # Main text
-        tk.Label(login_root, text="Enter your primary password :").pack(pady=(30, 5))
+        tk.Label(login_root, text=_("Enter your primary password :")).pack(pady=(30, 5))
         self.password_entry = tk.Entry(login_root, show="*", width=30); self.password_entry.pack()
-        tk.Button(login_root, text="Login", command=self.check_password).pack(pady=20)
+        tk.Button(login_root, text=_("Login"), command=self.check_password).pack(pady=20)
 
     def check_password(self):
         """
@@ -122,27 +132,27 @@ class WindowLogin:
         entered_password = (self.password_entry.get() or "").strip()
 
         if not entered_password:
-            messagebox.showwarning("Missing password", "Please type your primary password.")
+            messagebox.showwarning(_("Missing password"), _("Please type your primary password."))
             return
 
         try:
             self.fernet = verify_primary_password_and_get_key(entered_password)
         except FileNotFoundError:
             show_error(
-                "No primary password",
-                "No primary password found. Please create one first."
+                _("No primary password"),
+                _("No primary password found. Please create one first.")
             )
             return
         except InvalidToken:
             show_error(
-                "Invalid password",
-                "The primary password entered is incorrect."
+                _("Invalid password"),
+                _("The primary password entered is incorrect.")
             )
             return
         except Exception as exc:
             show_error(
-                "Unexpected error",
-                "An unexpected error occurred while checking your password.",
+                _("Unexpected error"),
+                _("An unexpected error occurred while checking your password."),
             details=str(exc)
             )
             return
@@ -153,28 +163,28 @@ class WindowLogin:
             self.vault = Vault()
         except InvalidToken:
             show_error(
-                "Vault error",
-                "The vault can't be decrypted with this key or is corrupted.\n"
-                "Make sure you type the correct primary password.",
+                _("Vault error"),
+                _("The vault can't be decrypted with this key or is corrupted.\n"),
+                _("Make sure you type the correct primary password."),
                 details=str(VAULT_PATH)
             )
             return
         except PermissionError as exc:
             show_error(
-                "Permission denied",
-                "The application can't read the vault file. Please check file permissions.",
+                _("Permission denied"),
+                _("The application can't read the vault file. Please check file permissions."),
                 details=str(exc)
             )
             return
         except Exception as exc:
             show_error(
-                "Unexpected error",
-                "An unexpected error occurred while reading the vault.",
+                _("Unexpected error"),
+                _("An unexpected error occurred while reading the vault."),
                 details=str(exc)
             )
             return
 
-        messagebox.showinfo("Success", "Login successful.")
+        messagebox.showinfo(_("Success"), _("Login successful."))
         self.login_root.destroy()
         main_root = tk.Tk()
         MainWindow(main_root, self.fernet, self.vault, str(VAULT_PATH))
@@ -195,16 +205,16 @@ class MainWindow:
         self.show_timeout_ms = 15_000
         self.remask_jobs = {}
 
-        self.primary_main.title("Password manager")
+        self.primary_main.title(_("Password manager"))
         self.primary_main.geometry("1000x800")
         self.primary_main.resizable(True, True)
 
 
 
         # Array - Treeview.
-        columns = ("entry", "website or application path", "username", "password")
+        columns = (_("entry"), _("website or application path"), _("username"), _("password"))
         self.tree = ttk.Treeview(primary_main, columns=columns, show="headings")
-        for c, text in zip(columns, ("entry", "website or application path", "username", "password")):
+        for c, text in zip(columns, (_("entry"), _("website or application path"), _("username", _("password")))):
             self.tree.heading(c, text=text)
             self.tree.column(c, width=150)
         self.tree.pack(fill="both", expand=True, pady=(10, 0))
@@ -221,22 +231,22 @@ class MainWindow:
         menubar = tk.Menu(self.primary_main)
 
         help_menu = tk.Menu(menubar, tearoff=0)
-        help_menu.add_command(label="Sticky note", command=self.show_help)
-        help_menu.add_command(label="About", command=self.show_about)
+        help_menu.add_command(label=_("Sticky notes"), command=self.show_help)
+        help_menu.add_command(label=_("About"), command=self.show_about)
 
-        menubar.add_cascade(label="Help", menu=help_menu)
+        menubar.add_cascade(label=_("Help"), menu=help_menu)
         self.primary_main.config(menu=menubar)
 
         self.primary_main.bind_all("<Control-h>", lambda e: self.show_help())
         self.primary_main.bind_all("<Control-H>", lambda e: self.show_help())
         self.primary_main.bind_all("<F1>",      lambda e: self.show_help())
 
-        tk.Button(button_frame, text="Add", command=self.add_entry).pack(side="left", padx=10)
-        tk.Button(button_frame, text="Edit", command=self.edit_entry).pack(side="left", padx=10)
-        tk.Button(button_frame, text="Delete", command=self.delete_entry).pack(side="left", padx=10)
-        tk.Button(button_frame, text="Show", command=self.show_password).pack(side="left", padx=10)
-        tk.Button(button_frame, text="Copy", command=self.copy_password).pack(side="left", padx=10)
-        tk.Button(button_frame, text="Hide all", command=self.hide_all_passwords).pack(side="left", padx=10)
+        tk.Button(button_frame, text=_("Add"), command=self.add_entry).pack(side="left", padx=10)
+        tk.Button(button_frame, text=_("Edit"), command=self.edit_entry).pack(side="left", padx=10)
+        tk.Button(button_frame, text=_("Delete"), command=self.delete_entry).pack(side="left", padx=10)
+        tk.Button(button_frame, text=_("Show"), command=self.show_password).pack(side="left", padx=10)
+        tk.Button(button_frame, text=_("Copy"), command=self.copy_password).pack(side="left", padx=10)
+        tk.Button(button_frame, text=_("Hide all"), command=self.hide_all_passwords).pack(side="left", padx=10)
 
         self.load_data()
 
@@ -265,18 +275,18 @@ class MainWindow:
         Finally, save it and reload the array.
         """
         popup = tk.Toplevel(self.primary_main)
-        popup.title("Add new entry")
+        popup.title(_("Add new entry"))
         popup.geometry("600x400")
         popup.grab_set()
 
         # Fields.
-        tk.Label(popup, text="Entry :").pack(pady=(30, 5))
+        tk.Label(popup, text=_("Entry :")).pack(pady=(30, 5))
         new_entry_entry = tk.Entry(popup); new_entry_entry.pack()
-        tk.Label(popup, text="Website or application path :").pack(pady=(30, 5))
+        tk.Label(popup, text=_("Website or application path :")).pack(pady=(30, 5))
         new_website_entry = tk.Entry(popup); new_website_entry.pack()
-        tk.Label(popup, text="Username :").pack(pady=(30, 5))
+        tk.Label(popup, text=_("Username :")).pack(pady=(30, 5))
         new_username_entry = tk.Entry(popup); new_username_entry.pack()
-        tk.Label(popup, text="Password :").pack(pady=(30, 5))
+        tk.Label(popup, text=_("Password :")).pack(pady=(30, 5))
         new_password_entry = tk.Entry(popup, show="*"); new_password_entry.pack()
 
         # "Save" button.
@@ -287,7 +297,7 @@ class MainWindow:
             pwd         = new_password_entry.get().strip()
 
             if not (entry and website and username and pwd):
-                messagebox.showerror("Fields must be filled!", "Please fill all fields before saving.")
+                messagebox.showerror(_("Fields must be filled!"), _("Please fill all fields before saving."))
                 return
             # Construct the Entry object (cleared in RAM).
             clear_memory_obj = Entry(name=entry, website=website, username=username, password=pwd)
@@ -297,14 +307,14 @@ class MainWindow:
                 self.vault.add_vault_entry(clear_memory_obj)
             except ValueError as err:
                 show_error(
-                    "Duplicate entry",
+                    _("Duplicate entry"),
                     str(err)
                 )
                 return
             except Exception as exc:
                 show_error(
-                    "Unexpected error",
-                    "Couldn't add the entry.",
+                    _("Unexpected error"),
+                    _("Couldn't add the entry."),
                     details=str(exc)
                 )
                 return
@@ -314,15 +324,15 @@ class MainWindow:
                 save_encrypted_vault(self.vault, self.fernet, self.vault_path)
             except PermissionError as exc:
                 show_error(
-                    "Permission denied",
-                    "Can't write the encrypted vault file.",
+                    _("Permission denied"),
+                    _("Can't write the encrypted vault file."),
                     details=str(exc)
                 )
                 return
             except Exception as exc:
                 show_error(
-                    "Unexpected error",
-                    "Couldn't save the encrypted vault.",
+                    _("Unexpected error"),
+                    _("Couldn't save the encrypted vault."),
                     details=str(exc)
                 )
                 return
@@ -330,7 +340,7 @@ class MainWindow:
             popup.destroy()
             self.load_data()
 
-        tk.Button(popup, text="Save", command=save).pack(pady=(30, 5))
+        tk.Button(popup, text=_("Save"), command=save).pack(pady=(30, 5))
 
     def edit_entry(self):
         """
@@ -340,34 +350,34 @@ class MainWindow:
         selected_entry = self.tree.selection()
 
         if not selected_entry:
-            messagebox.showwarning("No entry selected", "Please select an entry.")
+            messagebox.showwarning(_("No entry selected"), _("Please select an entry."))
             return
 
         # Take values from the selected line.
         entry_old, website_old, username_old, pwd_old = self.tree.item(selected_entry, "values")
         # Popup creation.
         popup = tk.Toplevel(self.primary_main)
-        popup.title("Edit entry")
+        popup.title(_("Edit entry"))
         popup.geometry("700x500")
         popup.grab_set()
 
         # Fields autoloaded.
-        tk.Label(popup, text="Entry :").pack(pady=(30, 5))
+        tk.Label(popup, text=_("Entry :")).pack(pady=(30, 5))
         entry_input = tk.Entry(popup)
         entry_input.insert(0, entry_old)
         entry_input.pack()
 
-        tk.Label(popup, text="Website or application path :").pack(pady=(30, 5))
+        tk.Label(popup, text="_(Website or application path :").pack(pady=(30, 5))
         website_input = tk.Entry(popup)
         website_input.insert(0, website_old)
         website_input.pack()
 
-        tk.Label(popup, text="Username :").pack(pady=(30, 5))
+        tk.Label(popup, text=_("Username :")).pack(pady=(30, 5))
         username_input = tk.Entry(popup)
         username_input.insert(0, username_old)
         username_input.pack()
 
-        tk.Label(popup, text="Password :").pack(pady=(30, 5))
+        tk.Label(popup, text=_("Password :")).pack(pady=(30, 5))
         password_input = tk.Entry(popup, show="*")
         password_input.insert(0, pwd_old)
         password_input.pack()
@@ -387,13 +397,13 @@ class MainWindow:
                     self.vault.add(Entry(name=entry_new, website=website_new, username=username_new, password=pwd_new))
                 except KeyError as err:
                     show_error(
-                        "Entry not found",
-                        f"Cannot edit {err}"
+                        _("Entry not found"),
+                        _(f"Cannot edit {err}")
                     )
                     return
                 except ValueError as err:
                     show_error(
-                        "Duplicate entry",
+                        _("Duplicate entry"),
                         str(err))
                     return
             else:
@@ -405,28 +415,28 @@ class MainWindow:
                                                   password=pwd_new)
                 except KeyError as err:
                     show_error(
-                        "Entry not found",
-                        f"Cannot edit {err}")
+                        _("Entry not found"),
+                        _(f"Cannot edit {err}"))
                     return
 
             try:
                 save_encrypted_vault(self.vault, self.fernet, self.vault_path)
             except PermissionError as exc:
                 show_error(
-                    "Permission denied",
-                    "Can't write the encrypted vault file.",
+                    _("Permission denied"),
+                    _("Can't write the encrypted vault file."),
                     details=str(exc)
                 )
                 return
             except Exception as exc:
                 show_error(
-                    "Unexpected error",
-                    "Couldn't save the encrypted vault.",
+                    _("Unexpected error"),
+                    _("Couldn't save the encrypted vault."),
                     details=str(exc)
                 )
                 return
 
-        tk.Button(popup, text="Update entry", command=entry_save).pack(pady=20)
+        tk.Button(popup, text=_("Update entry"), command=entry_save).pack(pady=20)
 
     def delete_entry(self):
         """
@@ -434,12 +444,12 @@ class MainWindow:
         """
         selected_entry = self.tree.selection()
         if not selected_entry:
-            messagebox.showwarning("No entry selected", "Please select an entry first.")
+            messagebox.showwarning(_("No entry selected"), _("Please select an entry first."))
             return
 
         entry_to_delete = self.tree.item(selected_entry, "values")[0]
 
-        if not messagebox.askyesno("Please confirm deletion", f"Deleting {entry_to_delete}?"):
+        if not messagebox.askyesno(_("Please confirm deletion"), _(f"Deleting {entry_to_delete}?")):
             return
 
         try:
@@ -543,7 +553,7 @@ class MainWindow:
         self.primary_main.clipboard_clear()
         self.primary_main.clipboard_append(clear_pwd)
         # Notify the user.
-        messagebox.showinfo("Password copied to clipboard", f"Password for {entry_to_copy} is copied to clipboard.")
+        messagebox.showinfo("Password copied to clipboard", f"Password for '{entry_to_copy}' is copied to clipboard.")
         # Auto clear clipboard.
         self.schedule_clipboard_clear()
 
@@ -625,7 +635,7 @@ class MainWindow:
             "About",
             "Password manager\n"
             "Vault crypted with Fernet (cryptography).\n"
-            "Version : 0.2 (Phase 2)"
+            "Version : 0.2 (Phase 2)\n"
             "Author : Clément 'Carcinome' Aicardi"
         )
 
