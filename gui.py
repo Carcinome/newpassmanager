@@ -199,6 +199,8 @@ class MainWindow:
         self.primary_main.geometry("1000x800")
         self.primary_main.resizable(True, True)
 
+
+
         # Array - Treeview.
         columns = ("entry", "website or application path", "username", "password")
         self.tree = ttk.Treeview(primary_main, columns=columns, show="headings")
@@ -214,6 +216,20 @@ class MainWindow:
         # Buttons
         button_frame = tk.Frame(primary_main)
         button_frame.pack(pady=10)
+
+        # Menu.
+        menubar = tk.Menu(self.primary_main)
+
+        help_menu = tk.Menu(menubar, tearoff=0)
+        help_menu.add_command(label="Sticky note", command=self.show_help)
+        help_menu.add_command(label="About", command=self.show_about)
+
+        menubar.add_cascade(label="Help", menu=help_menu)
+        self.primary_main.config(menu=menubar)
+
+        self.primary_main.bind_all("<Control-h>", lambda e: self.show_help())
+        self.primary_main.bind_all("<Control-H>", lambda e: self.show_help())
+        self.primary_main.bind_all("<F1>",      lambda e: self.show_help())
 
         tk.Button(button_frame, text="Add", command=self.add_entry).pack(side="left", padx=10)
         tk.Button(button_frame, text="Edit", command=self.edit_entry).pack(side="left", padx=10)
@@ -576,5 +592,44 @@ class MainWindow:
                     pass
             self.cancel_remask_if_any(item_id)
         self.status_var.set("")
+
+    def show_help(self):
+        """
+        Show an information window about the application and their functionalities.
+        """
+        top = tk.Toplevel(self.primary_main)
+        top.title("Sticky note")
+        top.geometry("620x420")
+        top.resizable(True, True)
+
+        txt = tk.Text(top, width=80, height=18, wrap="word")
+        txt.pack(fill="both", expand=True, padx=10, pady=10)
+
+        content = (
+            "• The vault is crypted (Fernet) on data/vault.enc.\n"
+            "• The passwords are in clean text in RAM only when the execution of the program.\n"
+            "• 'Show' displays the password in the selected cell, and remask it automatically.\n"
+            "• 'Copy' copies the password to the clipboard and clean it after a delay.\n"
+            "• 'Hide all' hides all passwords and cancels all timers.\n"
+            "• Saving the file in data/vault.enc regularity.\n"
+            "• Salt is in data/salt.bin\n"
+            "• A primary password is essential.\n"
+            "• All modifications (GRUD) is persistant with save_encrypted_vault().\n"
+            "• In case of error 'Vault is corrupted', please verify the primary password and the files.\n"
+        )
+        txt.insert("1.0", content)
+        txt.configure(state="disabled")
+
+    def show_about(self):
+        messagebox.showinfo(
+            "About",
+            "Password manager\n"
+            "Vault crypted with Fernet (cryptography).\n"
+            "Version : 0.2 (Phase 2)"
+            "Author : Clément 'Carcinome' Aicardi"
+        )
+
+
+
 
 
