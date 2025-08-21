@@ -14,7 +14,31 @@ from utils import (
 
 from src.vault import load_encrypted_vault, save_encrypted_vault, Vault, Entry
 
+import logging, os
+
 VAULT_PATH = Path("data") / "vault.enc"
+LOG_PATH = os.path.join("data", "app.log")
+logging.basicConfig(
+    filename=LOG_PATH,
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s [%(name)s] %(message)s"
+)
+logger = logging.getLogger("gui")
+
+def show_error(title: str, message: str, details: str | None = None):
+    """
+    Display a uniformed error message.
+    - title: short.
+    - message: clear for user.
+    - details: optional, on a second line more technic
+    - logging errors for programmer.
+    """
+    if details:
+        logging.error("%s - %s - %s", title, message, details)
+        messagebox.showerror(title, f"{message}\n\nDetails: \n{details}")
+    else:
+        logging.error("%s - %s", title, message)
+        messagebox.showerror(title, message)
 
 class InitiatePrimaryWindow:
     """
@@ -98,27 +122,57 @@ class WindowLogin:
         entered_password = (self.password_entry.get() or "").strip()
 
         if not entered_password:
-            messagebox.showwarning("Warning", "Please enter your primary password.")
+            messagebox.showwarning("Missing password", "Please type your primary password.")
             return
 
         try:
             self.fernet = verify_primary_password_and_get_key(entered_password)
         except FileNotFoundError:
-            messagebox.showerror("Error", "No primary password found. Please create one first.")
+            show_error(
+                "No primary password",
+                "No primary password found. Please create one first."
+            )
+            return
         except InvalidToken:
-            messagebox.showerror("Error", "Invalid primary password.")
+            show_error(
+                "Invalid password",
+                "The primary password entered is incorrect."
+            )
+            return
         except Exception as exc:
-            messagebox.showerror("Error", f"Unknown error: {exc}")
+            show_error(
+                "Unexpected error",
+                "An unexpected error occurred while checking your password.",
+            details=str(exc)
+            )
+            return
 
         try:
             self.vault = load_encrypted_vault(self.fernet, str(VAULT_PATH))
+        except FileNotFoundError:
+            self.vault = Vault()
         except InvalidToken:
-            messagebox.showerror("Error", "Vault is corrupted or cannot be decrypted.")
+            show_error(
+                "Vault error",
+                "The vault can't be decrypted with this key or is corrupted.\n"
+                "Make sure you type the correct primary password.",
+                details=str(VAULT_PATH)
+            )
+            return
+        except PermissionError as exc:
+            show_error(
+                "Permission denied",
+                "The application can't read the vault file. Please check file permissions.",
+                details=str(exc)
+            )
             return
         except Exception as exc:
-            messagebox.showerror("Error", f"Could not read the encrypted vault. {exc}")
+            show_error(
+                "Unexpected error",
+                "An unexpected error occurred while reading the vault.",
+                details=str(exc)
+            )
             return
-
 
         messagebox.showinfo("Success", "Login successful.")
         self.login_root.destroy()
@@ -226,11 +280,37 @@ class MainWindow:
             try:
                 self.vault.add_vault_entry(clear_memory_obj)
             except ValueError as err:
-                messagebox.showerror("Error", str(err))
+                show_error(
+                    "Duplicate entry",
+                    str(err)
+                )
+                return
+            except Exception as exc:
+                show_error(
+                    "Unexpected error",
+                    "Couldn't add the entry.",
+                    details=str(exc)
+                )
                 return
 
             # Crypted save from the entire vault.
-            save_encrypted_vault(self.vault, self.fernet, self.vault_path)
+            try:
+                save_encrypted_vault(self.vault, self.fernet, self.vault_path)
+            except PermissionError as exc:
+                show_error(
+                    "Permission denied",
+                    "Can't write the encrypted vault file.",
+                    details=str(exc)
+                )
+                return
+            except Exception as exc:
+                show_error(
+                    "Unexpected error",
+                    "Couldn't save the encrypted vault.",
+                    details=str(exc)
+                )
+                return
+
             popup.destroy()
             self.load_data()
 
@@ -290,10 +370,15 @@ class MainWindow:
                     self.vault.delete_vault_entry(entry_old)
                     self.vault.add(Entry(name=entry_new, website=website_new, username=username_new, password=pwd_new))
                 except KeyError as err:
-                    messagebox.showerror("Error", f"Cannot edit {err}")
+                    show_error(
+                        "Entry not found",
+                        f"Cannot edit {err}"
+                    )
                     return
                 except ValueError as err:
-                    messagebox.showerror("Error", str(err))
+                    show_error(
+                        "Duplicate entry",
+                        str(err))
                     return
             else:
                 # If the name of the entry doesn't change, just a field update.
@@ -303,12 +388,27 @@ class MainWindow:
                                                   username=username_new,
                                                   password=pwd_new)
                 except KeyError as err:
-                    messagebox.showerror("Error", f"Cannot edit {err}")
+                    show_error(
+                        "Entry not found",
+                        f"Cannot edit {err}")
                     return
 
-            save_encrypted_vault(self.vault, self.fernet, self.vault_path)
-            popup.destroy()
-            self.load_data()
+            try:
+                save_encrypted_vault(self.vault, self.fernet, self.vault_path)
+            except PermissionError as exc:
+                show_error(
+                    "Permission denied",
+                    "Can't write the encrypted vault file.",
+                    details=str(exc)
+                )
+                return
+            except Exception as exc:
+                show_error(
+                    "Unexpected error",
+                    "Couldn't save the encrypted vault.",
+                    details=str(exc)
+                )
+                return
 
         tk.Button(popup, text="Update entry", command=entry_save).pack(pady=20)
 
@@ -329,10 +429,35 @@ class MainWindow:
         try:
             self.vault.delete_vault_entry(entry_to_delete)
         except KeyError:
-            messagebox.showerror("Error", f"Cannot delete entry {entry_to_delete}.")
+            show_error(
+                "entry not found",
+                f"Entry {entry_to_delete} not found.")
+            return
+        except Exception as exc:
+            show_error(
+                "Unexpected error",
+                "Couldn't delete the entry.",
+                details=str(exc)
+            )
             return
 
-        save_encrypted_vault(self.vault, self.fernet, self.vault_path)
+        try:
+            save_encrypted_vault(self.vault, self.fernet, self.vault_path)
+        except PermissionError as exc:
+            show_error(
+                "Permission denied",
+                "Can't write the encrypted vault file.",
+                details=str(exc)
+            )
+            return
+        except Exception as exc:
+            show_error(
+                "Unexpected error",
+                "Couldn't save the encrypted vault.",
+                details=str(exc)
+            )
+            return
+
         self.load_data()
 
     def show_password(self):
@@ -451,4 +576,5 @@ class MainWindow:
                     pass
             self.cancel_remask_if_any(item_id)
         self.status_var.set("")
-            
+
+
