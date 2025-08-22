@@ -53,5 +53,5 @@ msgstr "Mot de passe copié"
 msgid "Password for '{entry_to_copy}' is copied to clipboard."
 msgstr "Le mot de passe pour '{entry_to_copy}' est copié dans le presse-papiers."
 
-msgid "Password for '{entry_to_show}' is shown for {self.show_timeout_ms}ms."
+msgid "Password for {entry_to_show} is shown for {self.show_timeout_ms}ms."
 msgstr "Le mot de passe pour '{entry_to_show}' est affiché pendant {self.show_timeout_ms}ms."

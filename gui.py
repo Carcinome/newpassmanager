@@ -20,8 +20,7 @@ from src.vault import (load_encrypted_vault,
                        Entry
 )
 
-# from il8n import setup_language
-from main import _
+from i18n import _
 
 VAULT_PATH = Path("data") / "vault.enc"
 LOG_PATH = os.path.join("data", "app.log")
@@ -214,7 +213,7 @@ class MainWindow:
         # Array - Treeview.
         columns = (_("entry"), _("website or application path"), _("username"), _("password"))
         self.tree = ttk.Treeview(primary_main, columns=columns, show="headings")
-        for c, text in zip(columns, (_("entry"), _("website or application path"), _("username", _("password")))):
+        for c, text in zip(columns, (_("entry"), _("website or application path"), _("username"), _("password"))):
             self.tree.heading(c, text=text)
             self.tree.column(c, width=150)
         self.tree.pack(fill="both", expand=True, pady=(10, 0))
@@ -456,13 +455,13 @@ class MainWindow:
             self.vault.delete_vault_entry(entry_to_delete)
         except KeyError:
             show_error(
-                "entry not found",
-                f"Entry {entry_to_delete} not found.")
+                _("entry not found"),
+                _(f"Entry {entry_to_delete} not found."))
             return
         except Exception as exc:
             show_error(
-                "Unexpected error",
-                "Couldn't delete the entry.",
+                _("Unexpected error"),
+                _("Couldn't delete the entry."),
                 details=str(exc)
             )
             return
@@ -471,15 +470,15 @@ class MainWindow:
             save_encrypted_vault(self.vault, self.fernet, self.vault_path)
         except PermissionError as exc:
             show_error(
-                "Permission denied",
-                "Can't write the encrypted vault file.",
+                _("Permission denied"),
+                _("Can't write the encrypted vault file."),
                 details=str(exc)
             )
             return
         except Exception as exc:
             show_error(
-                "Unexpected error",
-                "Couldn't save the encrypted vault.",
+                _("Unexpected error"),
+                _("Couldn't save the encrypted vault."),
                 details=str(exc)
             )
             return
@@ -492,7 +491,7 @@ class MainWindow:
         """
         selected_entry = self.tree.selection()
         if not selected_entry:
-            messagebox.showwarning("No entry selected", "Please select an entry first.")
+            messagebox.showwarning(_("No entry selected"), _("Please select an entry first."))
             return
 
             # Unic ID of the selected line.
@@ -501,7 +500,7 @@ class MainWindow:
         entry_to_clear = self.vault.get_vault_entry(entry_to_show)
 
         if not entry_to_clear:
-            messagebox.showerror("Error", f"Entry {entry_to_show} not found.")
+            messagebox.showerror(_("Error"), _(f"Entry {entry_to_show} not found."))
             return
 
         clear_pwd = entry_to_clear.password
@@ -514,7 +513,7 @@ class MainWindow:
             self.tree.set(item_id, "password", clear_pwd)
         except tk.TclError:
             return
-        self.status_var.set(f"Password for {entry_to_show} is shown for {self.show_timeout_ms}ms.")
+        self.status_var.set(_(f"Password for {entry_to_show} is shown for {self.show_timeout_ms}ms."))
 
         # Reprogramming of masking.
         def hide_again():
@@ -536,14 +535,14 @@ class MainWindow:
         """
         selected_entry = self.tree.selection()
         if not selected_entry:
-            messagebox.showwarning("No entry selected", "Please select a line first.")
+            messagebox.showwarning(_("No entry selected"), _("Please select a line first."))
             return
 
         entry_to_copy = self.tree.item(selected_entry[0], "values")[0]
         entry_to_get = self.vault.get_vault_entry(entry_to_copy)
 
         if not entry_to_get:
-            messagebox.showerror("Error", f"Entry '{entry_to_copy}' not found.")
+            messagebox.showerror(_("Error"), _(f"Entry '{entry_to_copy}' not found."))
             return
 
         clear_pwd = entry_to_get.password # In the RAM, cleared, just for GUI.
@@ -553,7 +552,7 @@ class MainWindow:
         self.primary_main.clipboard_clear()
         self.primary_main.clipboard_append(clear_pwd)
         # Notify the user.
-        messagebox.showinfo("Password copied to clipboard", f"Password for '{entry_to_copy}' is copied to clipboard.")
+        messagebox.showinfo(_("Password copied to clipboard"), _(f"Password for '{entry_to_copy}' is copied to clipboard."))
         # Auto clear clipboard.
         self.schedule_clipboard_clear()
 
@@ -608,14 +607,14 @@ class MainWindow:
         Show an information window about the application and their functionalities.
         """
         top = tk.Toplevel(self.primary_main)
-        top.title("Sticky note")
+        top.title(_("Sticky note"))
         top.geometry("620x420")
         top.resizable(True, True)
 
         txt = tk.Text(top, width=80, height=18, wrap="word")
         txt.pack(fill="both", expand=True, padx=10, pady=10)
 
-        content = (
+        content = (_(
             "• The vault is crypted (Fernet) on data/vault.enc.\n"
             "• The passwords are in clean text in RAM only when the execution of the program.\n"
             "• 'Show' displays the password in the selected cell, and remask it automatically.\n"
@@ -626,18 +625,19 @@ class MainWindow:
             "• A primary password is essential.\n"
             "• All modifications (GRUD) is persistant with save_encrypted_vault().\n"
             "• In case of error 'Vault is corrupted', please verify the primary password and the files.\n"
-        )
+        ))
         txt.insert("1.0", content)
         txt.configure(state="disabled")
 
     def show_about(self):
-        messagebox.showinfo(
-            "About",
-            "Password manager\n"
+        messagebox.showinfo(_(
+            "About"),
+            _("Password manager\n"
             "Vault crypted with Fernet (cryptography).\n"
             "Version : 0.2 (Phase 2)\n"
             "Author : Clément 'Carcinome' Aicardi"
-        )
+        ))
+
 
 
 
