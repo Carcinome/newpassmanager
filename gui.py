@@ -208,7 +208,32 @@ class MainWindow:
         self.primary_main.geometry("1000x800")
         self.primary_main.resizable(True, True)
 
+        # For search.
+        search_frame = ttk.Frame(self.primary_main)
+        search_frame.pack(fill="x", padx=10, pady=5)
 
+        self.search_var = tk.StringVar()
+
+        def on_search_var_changed(*_):
+            self.schedule_live_search()
+
+        # Trace on writing: callback whenever the text changes.
+        self.search_var.trace_add("write", on_search_var_changed)
+
+        ttk.Label(search_frame, text=_("Search :")).pack(side="left", padx=(0, 6))
+        search_entry = ttk.Entry(search_frame, textvariable=self.search_var)
+        search_entry.pack(side="left", expand=True, fill="x")
+
+        # search_button = ttk.Button(search_frame, text=_("Search"), command=self.search_entries)
+        # search_button.pack(side="left", padx=(5, 0))
+
+        reset_button = ttk.Button(search_frame, text=_("Reset"), command=self.reset_search)
+        reset_button.pack(side="left", padx=(5, 0))
+
+        # Debounce job id for live search.
+        self.search_job = None
+        # Debounce delay in milliseconds.
+        self.search_debounce_ms = 200
 
         # Array - Treeview.
         columns = (_("entry"), _("website or application path"), _("username"), _("password"))
@@ -239,6 +264,7 @@ class MainWindow:
         self.primary_main.bind_all("<Control-h>", lambda e: self.show_help())
         self.primary_main.bind_all("<Control-H>", lambda e: self.show_help())
         self.primary_main.bind_all("<F1>",      lambda e: self.show_help())
+        self.tree.bind("<Double-1>", self.on_row_double_click)
 
         tk.Button(button_frame, text=_("Add"), command=self.add_entry).pack(side="left", padx=10)
         tk.Button(button_frame, text=_("Edit"), command=self.edit_entry).pack(side="left", padx=10)
@@ -446,9 +472,15 @@ class MainWindow:
             messagebox.showwarning(_("No entry selected"), _("Please select an entry first."))
             return
 
-        entry_to_delete = self.tree.item(selected_entry, "values")[0]
+        entry_to_delete = self.tree.item(selected_entry[0], "values")[0]
 
-        if not messagebox.askyesno(_("Please confirm deletion"), _(f"Deleting {entry_to_delete}?")):
+        deleting_confirmation = messagebox.askyesno(
+            _("Please confirm deletion"),
+            _(f"Deleting {entry_to_delete}?\n"
+            "This action can't be undone.")
+        )
+        if not deleting_confirmation:
+            self.set_status(_("Deletion cancelled."))
             return
 
         try:
@@ -484,6 +516,7 @@ class MainWindow:
             return
 
         self.load_data()
+        self.set_status(_(f"Entry {entry_to_delete} deleted."))
 
     def show_password(self):
         """
@@ -527,6 +560,7 @@ class MainWindow:
 
         after_id = self.primary_main.after(self.show_timeout_ms, hide_again)
         self.remask_jobs[item_id] = after_id
+        self.set_status(_("Password displayed for {self.show_timeout_ms}ms."))
 
 
     def copy_password(self):
@@ -555,6 +589,40 @@ class MainWindow:
         messagebox.showinfo(_("Password copied to clipboard"), _(f"Password for '{entry_to_copy}' is copied to clipboard."))
         # Auto clear clipboard.
         self.schedule_clipboard_clear()
+        self.set_status(_(f"Password for '{entry_to_copy}' copied to clipboard"))
+
+    def on_row_double_click(self, event):
+        """
+        Double-clik on a row copies the password to the clipboard.
+        """
+        item_id = self.tree.identify_row(event.y)
+        if not item_id: # Clicked on empty space or header.
+            return
+
+        name = self.tree.item(item_id, "values")[0]
+        entry = self.vault.get_vault_entry(name)
+        if not entry:
+            show_error(
+                _("Entry not found"),
+                _(f"Entry '{name}' not found.")
+            )
+            return
+
+        clear_pwd = entry.password
+        # Copy the clipboard (same behavior as copy button).
+        try:
+            self.primary_main.clipboard_clear()
+            self.primary_main.clipboard_append(clear_pwd)
+        except tk.TclError:
+            show_error(
+                _("Error"),
+                _(f"Couldn't copy the password to clipboard.")
+            )
+            return
+
+        self.schedule_clipboard_clear()
+        self.set_status(_(f"Password for '{name}' copied to clipboard"))
+
 
     # Enhanced security: clear the clipboard.
     def schedule_clipboard_clear(self):
@@ -638,8 +706,93 @@ class MainWindow:
             "Author : Clément 'Carcinome' Aicardi"
         ))
 
+    def set_status(self, text: str, timout_ms: int = 3000):
+        """Show a temporary status message in the bottom bar.
+        """
+        self.status_var.set(text)
+
+        def clear():
+            # Clear only if it wasn't updated by something else since.
+            if self.status_var.get()  == text:
+                self.status_var.set("")
+        self.primary_main.after(timout_ms, clear)
+
+    def search_entries(self):
+        """
+        Filter the Treeview by search string (in name, website or username).
+        """
+        query = self.search_var.get().strip().lower()
+        if not query:
+            self.set_status(_("Please enter a search term."))
+            return
+
+        # Clear the tree.
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+
+        # Filter entries.
+        for entry in self.vault.iter_vault_entries():
+            if (query in entry.name.lower() or
+                query in entry.website.lower() or
+                query in entry.username.lower()):
+                self.tree.insert("", "end", values=(entry.name, entry.website, entry.username, "*************"))
+        self.set_status(_(f"Results for '{query}"))
+
+    def reset_search(self):
+        """
+        Reset the search field and reload all entries.
+        """
+        # Cancel pending live-search job if any.
+        if self.search_job is not None:
+            try:
+                self.primary_main.after_cancel(self.search_job)
+            except Exception:
+                pass
+            self.search_job = None
+
+        self.search_var.set("")
+        self.load_data()
+        self.set_status(_("Search cleared. Showing all entries."))
 
 
+    def schedule_live_search(self):
+        """
+        Debounce live search: schedule apply after a short delay.
+        """
+        if self.search_job is not None:
+            try:
+                self.primary_main.after_cancel(self.search_job)
+            except Exception:
+                pass
+            self.search_job = None
 
+        # Schedule a fresh job.
+        self.search_job = self.primary_main.after(
+            self.search_debounce_ms, self.apply_live_search
+        )
+
+    def apply_live_search(self):
+        """
+        Apply the current search filter immediately.
+        """
+        self.search_job = None
+        query = (self.search_var.get() or "").strip().lower()
+
+        # If the search field is empty, show all entries.
+        if not query:
+            self.load_data()
+            return
+
+        # Rebuild the tree with the filtered entries.
+        self.tree.delete(*self.tree.get_children())
+        for entry in self.vault.iter_vault_entries():
+            if (
+                query in entry.name.lower() or
+                query in entry.website.lower() or
+                query in entry.username.lower()
+            ):
+                self.tree.insert("", "end", values=(entry.name, entry.website, entry.username, "*************"))
+
+        self.set_status(_(f"Results for '{query}"))
 
 

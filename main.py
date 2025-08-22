@@ -10,7 +10,7 @@ from utils import create_data_dir, PRIMARY_PASSWORD_FILE
 from gui import InitiatePrimaryWindow, WindowLogin
 
 # Auto-detect system language (default).
-_, LANG = setup_language("fr")
+_, LANG = setup_language()
 
 def main():
     """

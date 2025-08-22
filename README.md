@@ -22,9 +22,9 @@ Icônes
 * Thème clair/sombre (Tkinter supporte les styles via ttk.Style, on peut gérer un switch simple).
 
  Expérience utilisateur
-* Double-clic sur une entrée = afficher ou copier automatiquement le mot de passe (au choix).
+* Double-clic sur une entrée = afficher ou copier automatiquement le mot de passe (au choix). --fait--
 * Raccourcis clavier (Ctrl+N = New entry, Ctrl+C = Copy, Suppr = Delete).
-* Confirmation avant suppression avec un message clair “Delete entry X ?”.
+* Confirmation avant suppression avec un message clair “Delete entry X ?”. --fait--
 
 Navigation & organisation
 
