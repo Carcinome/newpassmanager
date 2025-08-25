@@ -224,6 +224,18 @@ class MainWindow:
         search_entry = ttk.Entry(search_frame, textvariable=self.search_var)
         search_entry.pack(side="left", expand=True, fill="x")
 
+        self.tag_filter_var = tk.StringVar(value="All tags")
+        self.tag_filter = ttk.Combobox(
+            search_frame,
+            textvariable=self.tag_filter_var,
+            state="readonly",
+            width=18
+        )
+        self.tag_filter.pack(side="left", padx=(6, 0))
+
+        # When a user picks a tag, re-run the live search immediately.
+        self.tag_filter.bind("<<ComboboxSelected>>", lambda e: self.apply_live_search())
+
         # search_button = ttk.Button(search_frame, text=_("Search"), command=self.search_entries)
         # search_button.pack(side="left", padx=(5, 0))
 
@@ -236,12 +248,25 @@ class MainWindow:
         self.search_debounce_ms = 200
 
         # Array - Treeview.
-        columns = (_("entry"), _("website or application path"), _("username"), _("password"))
-        self.tree = ttk.Treeview(primary_main, columns=columns, show="headings")
-        for c, text in zip(columns, (_("entry"), _("website or application path"), _("username"), _("password"))):
+        columns = (_("entry"), _("tag"), _("website or application path"), _("username"), _("password"))
+        self.tree = ttk.Treeview(primary_main, columns=columns, show="headings", height=16)
+
+        for c, text in zip(columns, (_("entry"), _("tag"), _("website or application path"), _("username"), _("password"))):
             self.tree.heading(c, text=text)
             self.tree.column(c, width=150)
         self.tree.pack(fill="both", expand=True, pady=(10, 0))
+
+        """self.tree.heading("entry", text=_("Entry"))
+        self.tree.heading("tag", text=_("Tags"))
+        self.tree.heading("website or application path", text=_("Website or application path"))
+        self.tree.heading("username", text=_("Username"))
+        self.tree.heading("password", text=_("Password"))
+
+        self.tree.column("entry", width=170)
+        self.tree.column("tag", width=180)
+        self.tree.column("website or application path", width=250)
+        self.tree.column("username", width=160)
+        self.tree.column("password", width=160)"""
 
         self.status_var = tk.StringVar(value="")
         status = tk.Label(self.primary_main, textvariable=self.status_var, anchor="w")
@@ -287,11 +312,21 @@ class MainWindow:
         data = self.vault.to_dict_entry()
         # For all entries, decrypt and mask datas.
         for entry, info in data.items():
+            tags_list = info.get("tags", []) or []
+            tags_text = ", ".join(tags_list)
             website = info.get("website", "")
             username = info.get("username", "")
             cleared_password = info.get("password", "")
             masked_password = self.mask_for(cleared_password)
-            self.tree.insert("", "end", values=(entry, website, username, masked_password))
+            self.tree.insert("", "end", values=(entry, tags_text, website, username, masked_password))
+
+        # refresh tag filter options after (re)loading.
+        all_tags = self.collect_all_tags() or []
+        values = ["All tags"] + all_tags
+        self.tag_filter["values"] = values
+        current = self.tag_filter_var.get()
+        if current not in values:
+            self.tag_filter_var.set("All tags")
 
     def add_entry(self):
         """
@@ -307,6 +342,8 @@ class MainWindow:
         # Fields.
         tk.Label(popup, text=_("Entry :")).pack(pady=(30, 5))
         new_entry_entry = tk.Entry(popup); new_entry_entry.pack()
+        tk.Label(popup, text=_("Tags :")).pack(pady=(30, 5))
+        new_tag_entry = tk.Entry(popup, width=36)
         tk.Label(popup, text=_("Website or application path :")).pack(pady=(30, 5))
         new_website_entry = tk.Entry(popup); new_website_entry.pack()
         tk.Label(popup, text=_("Username :")).pack(pady=(30, 5))
@@ -317,6 +354,8 @@ class MainWindow:
         # "Save" button.
         def save():
             entry       = new_entry_entry.get().strip()
+            raw_tags    = new_tag_entry.get().strip()
+            tag_list    = [t.strip() for t in raw_tags.split(",") if t.strip()] if raw_tags else []
             website     = new_website_entry.get().strip()
             username    = new_username_entry.get().strip()
             pwd         = new_password_entry.get().strip()
@@ -777,6 +816,39 @@ class MainWindow:
         """
         self.search_job = None
         query = (self.search_var.get() or "").strip().lower()
+        selected_tag = (self.tag_filter_var.get() or "All tags").strip()
+        tag_filter_active = (selected_tag != "All tags")
+        selected_tag_lc = selected_tag.lower()
+
+        # Clear the table.
+        self.tree.delete(*self.tree.get_children())
+
+        def matches(entry) -> bool:
+            # 1. Text query in name, website, username or tag.
+            if query:
+                in_text = (
+                    query in entry.name.lower()
+                    or query in entry.website.lower()
+                    or query in entry.username.lower()
+                    or any(query in t.lower() for t in (entry.tags or []))
+                )
+                if not in_text:
+                    return False
+
+            # 2. Tag filter (exact tag, case-insensitive).
+            if tag_filter_active:
+                if not any(selected_tag_lc == t.lower() for t in (entry.tags or [])):
+                    return False
+
+            return True
+
+        # Rebuild the tree with the filtered entries.
+        for entry in self.vault.iter_vault_entries.values():
+            if matches(entry):
+                masked = self.mask_for(entry.password)
+                tags_text = ", ".join(entry.tags or [])
+                self.tree.insert("", "end", values=(entry.name, tags_text, entry.website, entry.username, masked))
+
 
         # If the search field is empty, show all entries.
         if not query:
@@ -795,4 +867,22 @@ class MainWindow:
 
         self.set_status(_(f"Results for '{query}"))
 
+    def collect_all_tags(self) -> list[str]:
+        """
+        Return a sorted list of unique tags present in the vault.
+        """
+        seen = set()
+        entries = self.vault.iter_vault_entries()
+        if isinstance(entries, dict):
+            iterable = entries.values()
+        else:
+            iterable = entries
+
+        for entry in iterable:
+            tags = getattr(entry, "tags", None) or []
+            for tag in tags:
+                t = (tag or "").strip()
+                if t:
+                    seen.add(t)
+        return sorted(seen)
 
