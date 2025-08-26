@@ -4,7 +4,7 @@
 import tkinter as tk
 from pathlib import Path
 from tkinter import messagebox, ttk
-import logging, os
+import logging, os, string, secrets
 
 
 from cryptography.fernet import InvalidToken
@@ -901,3 +901,57 @@ class MainWindow:
                     seen.add(t)
         return sorted(seen)
 
+
+# Characters that are often confused: O/0, l/I/1, etc.
+AMBIGUOUS_CHARS = set("O0oIl1")
+
+def secure_generate_password(
+        length: int = 16,
+        use_lower: bool = True,
+        use_upper: bool = True,
+        use_digits: bool = True,
+        use_symbols : bool = True,
+        avoid_ambiguous: bool = True
+) -> str:
+    """
+    Generate a cryptographically secure password.
+    Ensure at least one character from each selected category of characters.
+    """
+    if length < 8:
+        raise ValueError(_("Length must be at least 8."))
+
+    # Build the character's group.
+    groups = []
+    if use_lower:
+        groups.append(list(string.ascii_lowercase))
+    if use_upper:
+        groups.append(list(string.ascii_uppercase))
+    if use_digits:
+        groups.append(list(string.digits))
+    if use_symbols:
+        # Conservative symbol set (can be modified).
+        groups.append(list("!@#$^&*()-_=+[]{};:,.?/"))
+
+    if not groups:
+        raise ValueError(_("Select at least one character category."))
+
+    # Option for removing ambiguous characters.
+    if avoid_ambiguous:
+        for g in groups:
+            g[:] = [ch for ch in g if ch not in AMBIGUOUS_CHARS]
+
+    # Combined pool.
+    pool = [ch for g in groups for ch in g]
+    if not pool:
+        raise ValueError(_("No characters left after filtering the ambiguous group."))
+
+    # Guarantee at least one from each group.from
+    password_chars = [secrets.choice(g) for g in groups]
+
+    # Fill the remaining length from the pool.
+    for _ in range(length - len(password_chars)):
+        password_chars.append(secrets.choice(pool))
+
+    # Shuffle for avoiding the predictable position of characters.
+    secrets.SystemRandom().shuffle(password_chars)
+    return "".join(password_chars)
