@@ -212,7 +212,7 @@ class MainWindow:
         search_frame = ttk.Frame(self.primary_main)
         search_frame.pack(fill="x", padx=10, pady=5)
 
-        self.search_var = tk.StringVar()
+        self.search_var = tk.StringVar(value="")
 
         def on_search_var_changed(*_):
             self.schedule_live_search()
@@ -232,7 +232,6 @@ class MainWindow:
             width=18
         )
         self.tag_filter.pack(side="left", padx=(6, 0))
-
         # When a user picks a tag, re-run the live search immediately.
         self.tag_filter.bind("<<ComboboxSelected>>", lambda e: self.apply_live_search())
 
@@ -248,25 +247,13 @@ class MainWindow:
         self.search_debounce_ms = 200
 
         # Array - Treeview.
-        columns = (_("entry"), _("tag"), _("website or application path"), _("username"), _("password"))
+        columns = ("entry", "tag", "website or application path", "username", "password")
         self.tree = ttk.Treeview(primary_main, columns=columns, show="headings", height=16)
 
         for c, text in zip(columns, (_("entry"), _("tag"), _("website or application path"), _("username"), _("password"))):
             self.tree.heading(c, text=text)
             self.tree.column(c, width=150)
         self.tree.pack(fill="both", expand=True, pady=(10, 0))
-
-        """self.tree.heading("entry", text=_("Entry"))
-        self.tree.heading("tag", text=_("Tags"))
-        self.tree.heading("website or application path", text=_("Website or application path"))
-        self.tree.heading("username", text=_("Username"))
-        self.tree.heading("password", text=_("Password"))
-
-        self.tree.column("entry", width=170)
-        self.tree.column("tag", width=180)
-        self.tree.column("website or application path", width=250)
-        self.tree.column("username", width=160)
-        self.tree.column("password", width=160)"""
 
         self.status_var = tk.StringVar(value="")
         status = tk.Label(self.primary_main, textvariable=self.status_var, anchor="w")
@@ -336,14 +323,14 @@ class MainWindow:
         """
         popup = tk.Toplevel(self.primary_main)
         popup.title(_("Add new entry"))
-        popup.geometry("600x400")
+        popup.geometry("600x500")
         popup.grab_set()
 
         # Fields.
         tk.Label(popup, text=_("Entry :")).pack(pady=(30, 5))
         new_entry_entry = tk.Entry(popup); new_entry_entry.pack()
         tk.Label(popup, text=_("Tags :")).pack(pady=(30, 5))
-        new_tag_entry = tk.Entry(popup, width=36)
+        new_tag_entry = tk.Entry(popup, width=36); new_tag_entry.pack()
         tk.Label(popup, text=_("Website or application path :")).pack(pady=(30, 5))
         new_website_entry = tk.Entry(popup); new_website_entry.pack()
         tk.Label(popup, text=_("Username :")).pack(pady=(30, 5))
@@ -364,7 +351,7 @@ class MainWindow:
                 messagebox.showerror(_("Fields must be filled!"), _("Please fill all fields before saving."))
                 return
             # Construct the Entry object (cleared in RAM).
-            clear_memory_obj = Entry(name=entry, website=website, username=username, password=pwd)
+            clear_memory_obj = Entry(name=entry, tags=tag_list, website=website, username=username, password=pwd)
 
             # Add the Entry object to the vault (start the rule "no double").
             try:
@@ -418,7 +405,7 @@ class MainWindow:
             return
 
         # Take values from the selected line.
-        entry_old, website_old, username_old, pwd_old = self.tree.item(selected_entry, "values")
+        entry_old, tag_old, website_old, username_old, pwd_old = self.tree.item(selected_entry, "values")
         # Popup creation.
         popup = tk.Toplevel(self.primary_main)
         popup.title(_("Edit entry"))
@@ -431,7 +418,12 @@ class MainWindow:
         entry_input.insert(0, entry_old)
         entry_input.pack()
 
-        tk.Label(popup, text="_(Website or application path :").pack(pady=(30, 5))
+        tk.Label(popup, text=_("Tags :")).pack(pady=(30, 5))
+        tag_input = tk.Entry(popup)
+        tag_input.insert(0, tag_old)
+        tag_input.pack()
+
+        tk.Label(popup, text=_("Website or application path :")).pack(pady=(30, 5))
         website_input = tk.Entry(popup)
         website_input.insert(0, website_old)
         website_input.pack()
@@ -450,6 +442,8 @@ class MainWindow:
         def entry_save():
             # Read the new fields.
             entry_new       = entry_input.get().strip()
+            raw_tags_new    = tag_input.get().strip()
+            tags_list_new    = [t.strip() for t in raw_tags_new.split(",") if t.strip()] if raw_tags_new else []
             website_new     = website_input.get().strip()
             username_new    = username_input.get().strip()
             pwd_new         = password_input.get().strip()
@@ -458,7 +452,7 @@ class MainWindow:
                 # If the name of the entry change.
                 try:
                     self.vault.delete_vault_entry(entry_old)
-                    self.vault.add(Entry(name=entry_new, website=website_new, username=username_new, password=pwd_new))
+                    self.vault.add(Entry(name=entry_new, tags=tags_list_new, website=website_new, username=username_new, password=pwd_new))
                 except KeyError as err:
                     show_error(
                         _("Entry not found"),
@@ -474,6 +468,7 @@ class MainWindow:
                 # If the name of the entry doesn't change, just a field update.
                 try:
                     self.vault.update_vault_entry(entry_old,
+                                                  tags=tags_list_new,
                                                   website=website_new,
                                                   username=username_new,
                                                   password=pwd_new)
@@ -500,7 +495,11 @@ class MainWindow:
                 )
                 return
 
+            popup.destroy()
+            self.load_data()
+
         tk.Button(popup, text=_("Update entry"), command=entry_save).pack(pady=20)
+
 
     def delete_entry(self):
         """
@@ -599,7 +598,7 @@ class MainWindow:
 
         after_id = self.primary_main.after(self.show_timeout_ms, hide_again)
         self.remask_jobs[item_id] = after_id
-        self.set_status(_("Password displayed for {self.show_timeout_ms}ms."))
+        self.set_status(_(f"Password displayed for {self.show_timeout_ms}ms."))
 
 
     def copy_password(self):
@@ -701,7 +700,7 @@ class MainWindow:
             name = values[0]
             entry = self.vault.get_vault_entry(name)
             if entry:
-                values[3] = self.mask_for(entry.password)
+                values[4] = self.mask_for(entry.password)
                 try:
                     self.tree.item(item_id, values=values)
                 except tk.TclError:
@@ -770,11 +769,14 @@ class MainWindow:
             self.tree.delete(item)
 
         # Filter entries.
-        for entry in self.vault.iter_vault_entries():
+        entries = self.vault.iter_vault_entries()
+        for entry in entries():
             if (query in entry.name.lower() or
                 query in entry.website.lower() or
                 query in entry.username.lower()):
-                self.tree.insert("", "end", values=(entry.name, entry.website, entry.username, "*************"))
+                tag_text = ", ".join(entry.tags or [])
+                masked = self.mask_for(entry.password)
+                self.tree.insert("", "end", values=(entry.name, tag_text, entry.website, entry.username, masked))
         self.set_status(_(f"Results for '{query}"))
 
     def reset_search(self):
@@ -823,6 +825,8 @@ class MainWindow:
         # Clear the table.
         self.tree.delete(*self.tree.get_children())
 
+        entries = self.vault.iter_vault_entries()
+
         def matches(entry) -> bool:
             # 1. Text query in name, website, username or tag.
             if query:
@@ -830,42 +834,30 @@ class MainWindow:
                     query in entry.name.lower()
                     or query in entry.website.lower()
                     or query in entry.username.lower()
-                    or any(query in t.lower() for t in (entry.tags or []))
+                    or any(query in (t or "").lower() for t in (entry.tags or []))
                 )
                 if not in_text:
                     return False
 
             # 2. Tag filter (exact tag, case-insensitive).
             if tag_filter_active:
-                if not any(selected_tag_lc == t.lower() for t in (entry.tags or [])):
+                if not any(selected_tag_lc == (t or "").lower() for t in (entry.tags or [])):
                     return False
 
             return True
 
         # Rebuild the tree with the filtered entries.
-        for entry in self.vault.iter_vault_entries.values():
+        for entry in entries:
             if matches(entry):
                 masked = self.mask_for(entry.password)
                 tags_text = ", ".join(entry.tags or [])
                 self.tree.insert("", "end", values=(entry.name, tags_text, entry.website, entry.username, masked))
 
-
-        # If the search field is empty, show all entries.
-        if not query:
-            self.load_data()
-            return
-
-        # Rebuild the tree with the filtered entries.
-        self.tree.delete(*self.tree.get_children())
-        for entry in self.vault.iter_vault_entries():
-            if (
-                query in entry.name.lower() or
-                query in entry.website.lower() or
-                query in entry.username.lower()
-            ):
-                self.tree.insert("", "end", values=(entry.name, entry.website, entry.username, "*************"))
-
-        self.set_status(_(f"Results for '{query}"))
+        # Status.
+        if query or tag_filter_active:
+            self.set_status(_(f"Search results for '{query}'"))
+        else:
+            self.set_status(_("Search cleared. Showing all entries."))
 
     def collect_all_tags(self) -> list[str]:
         """
