@@ -247,14 +247,37 @@ class MainWindow:
         self.search_debounce_ms = 200
 
         # Array - Treeview.
-        columns = ("entry", "tag", "website or application path", "username", "password")
+        columns = ("Entry", "Tags", "Website or application path", "Username", "Password")
         self.tree = ttk.Treeview(primary_main, columns=columns, show="headings", height=16)
 
-        for c, text in zip(columns, (_("entry"), _("tag"), _("website or application path"), _("username"), _("password"))):
-            self.tree.heading(c, text=text)
-            self.tree.column(c, width=150)
-        self.tree.pack(fill="both", expand=True, pady=(10, 0))
+        column_widths = {
+            "Entry": 150,
+            "Tags": 120,
+            "Website or application path": 340,
+            "Username": 180,
+            "Password": 160,
+        }
+        column_stretch = {
+            "Entry": False,
+            "Tags": False,
+            "Website or application path": True,
+            "Username": False,
+            "Password": False,
+        }
 
+        for c, text in zip(
+            columns,
+            (_("Entry"), _("Tags"), _("Website or application path"), _("Username"), _("Password"))
+        ):
+            self.tree.heading(c, text=text)
+            self.tree.column(
+                c,
+                width=column_widths.get(c, 150),
+                stretch=column_stretch.get(c, False),
+                anchor="w"
+            )
+
+        self.tree.pack(fill="both", expand=True, pady=(10, 0))
         self.status_var = tk.StringVar(value="")
         status = tk.Label(self.primary_main, textvariable=self.status_var, anchor="w")
         status.pack(fill="x", padx=8, pady=(2, 6))
@@ -323,14 +346,14 @@ class MainWindow:
         """
         popup = tk.Toplevel(self.primary_main)
         popup.title(_("Add new entry"))
-        popup.geometry("600x500")
+        popup.geometry("300x500")
         popup.grab_set()
 
         # Fields.
         tk.Label(popup, text=_("Entry :")).pack(pady=(30, 5))
         new_entry_entry = tk.Entry(popup); new_entry_entry.pack()
         tk.Label(popup, text=_("Tags :")).pack(pady=(30, 5))
-        new_tag_entry = tk.Entry(popup, width=36); new_tag_entry.pack()
+        new_tag_entry = tk.Entry(popup); new_tag_entry.pack()
         tk.Label(popup, text=_("Website or application path :")).pack(pady=(30, 5))
         new_website_entry = tk.Entry(popup); new_website_entry.pack()
         tk.Label(popup, text=_("Username :")).pack(pady=(30, 5))
@@ -409,7 +432,7 @@ class MainWindow:
         # Popup creation.
         popup = tk.Toplevel(self.primary_main)
         popup.title(_("Edit entry"))
-        popup.geometry("700x500")
+        popup.geometry("300x500")
         popup.grab_set()
 
         # Fields autoloaded.
