@@ -342,6 +342,7 @@ class MainWindow:
         """
         Open a popup for entering a new entry.
         Write a new entry name, website or application path, username and password.
+        Tags is optional.
         Finally, save it and reload the array.
         """
         popup = tk.Toplevel(self.primary_main)
@@ -360,6 +361,8 @@ class MainWindow:
         new_username_entry = tk.Entry(popup); new_username_entry.pack()
         tk.Label(popup, text=_("Password :")).pack(pady=(30, 5))
         new_password_entry = tk.Entry(popup, show="*"); new_password_entry.pack()
+        ttk.Button(popup, text=_("Generate password"),
+                   command=lambda: self.open_password_generator(popup, new_password_entry))
 
         # "Save" button.
         def save():
@@ -657,7 +660,7 @@ class MainWindow:
         Double-clik on a row copies the password to the clipboard.
         """
         item_id = self.tree.identify_row(event.y)
-        if not item_id: # Clicked on empty space or header.
+        if not item_id: # Clicked on the empty space or header.
             return
 
         name = self.tree.item(item_id, "values")[0]
@@ -670,7 +673,7 @@ class MainWindow:
             return
 
         clear_pwd = entry.password
-        # Copy the clipboard (same behavior as copy button).
+        # Copy the clipboard (same behavior as a copy button).
         try:
             self.primary_main.clipboard_clear()
             self.primary_main.clipboard_append(clear_pwd)
@@ -900,6 +903,120 @@ class MainWindow:
                 if t:
                     seen.add(t)
         return sorted(seen)
+
+    def open_password_generator(self, parent: tk.Toplevel, target_entry: tk.Entry):
+        """
+        Open a small window to generate a password.
+        """
+        gen = tk.Toplevel(parent)
+        gen.title(_("Password generator"))
+        gen.geometry("300x150")
+        gen.resizable(False, False)
+        gen.transient(parent)
+        gen.grab_set()
+
+        # Variables for UI settings.
+        var_len = tk.IntVar(value=16)
+        var_lower = tk.BooleanVar(value=True)
+        var_upper = tk.BooleanVar(value=True)
+        var_digits = tk.BooleanVar(value=True)
+        var_symbols = tk.BooleanVar(value=True)
+        var_avoid = tk.BooleanVar(value=True)
+        var_out = tk.StringVar(value="")
+
+        # UI.
+        frm = ttk.Frame(gen, padding=10)
+        frm.pack(fill="both", expand=True)
+
+        # Length.
+        row = ttk.Frame(frm)
+        row.pack(fill="x", pady=(0,6))
+        ttk.Label(row, text=_("Length")).pack(side="left")
+        sp = ttk.Spinbox(row, from_=8, to=64, textvariable=var_len, width=5)
+        sp.pack(side="left", padx=(6,0))
+
+        # Categories.
+        cats = ttk.Frame(frm)
+        cats.pack(fill="x")
+        ttk.Checkbutton(cats, text=_("Lowercase (a_z)"), variable=var_lower).grid(row=0, column=0, sticky="w", padx=2)
+        ttk.Checkbutton(cats, text=_("Uppercase (A-Z)"), variable=var_upper).grid(row=0, column=1, sticky="w", padx=12)
+        ttk.Checkbutton(cats, text=_("Digits (0-9"), variable=var_digits).grid(row=1, column=0, sticky="w", padx=2, pady=(4,0))
+        ttk.Checkbutton(cats, text=_("Symbols (!@#...)"), variable=var_symbols).grid(row=1, column=1, sticky="w", padx=12, pady=(4,0))
+        ttk.Checkbutton(cats, text=_("Avoid common words and ambiguous characters (0/O, l/1/I"), variable=var_avoid).pack(anchor="w", pady=(6.4))
+
+        # Output field for users.
+        out_row = ttk.Frame(frm)
+        out_row.pack(fill="x", pady=(6,6))
+        ttk.Label(out_row, text=_("Generated password:")).pack(anchor="w")
+        out_entry = ttk.Entry(out_row, textvariable=var_out, width=42)
+        out_entry.pack(fill="x")
+
+        # Actions.
+        btn_row = ttk.Frame(frm)
+        btn_row.pack(fill="x", pady=(8,0))
+
+        def do_generate():
+            try:
+                pwd = secure_generate_password(
+                    length=int(var_len.get()),
+                    use_lower=bool(var_lower.get()),
+                    use_upper=bool(var_upper.get()),
+                    use_digits=bool(var_digits.get()),
+                    use_symbols=bool(var_symbols.get()),
+                    avoid_ambiguous=bool(var_avoid.get()),
+                )
+                var_out.set(pwd)
+                # Select the text for a quick copy.
+                out_entry.selection_range(0, tk.END)
+            except Exception as exc:
+                messagebox.showerror(_("Error"), str(exc))
+                return
+
+        def do_use_this():
+            pwd = var_out.get()
+            if not pwd:
+                messagebox.showwarning(_("No password"), _("Please generate a password first."))
+                return
+            target_entry.delete(0, tk.END)
+            target_entry.insert(0, pwd)
+            gen.destroy()
+
+        def do_copy():
+            pwd = var_out.get()
+            if not pwd:
+               messagebox.showwarning(_("No password"), _("Please generate a password first."))
+               return
+            try:
+                self.primary_main.clipboard_clear()
+                self.primary_main.clipboard_append(pwd)
+                self.set_status(_("Password copied to clipboard."))
+                # Cleaning clipboard like other places.
+                if hasattr(self, "schedule_clipboard_clear"):
+                    self.schedule_clipboard_clear()
+            except tk.TclError:
+                messagebox.showerror(_("Error"), _("Couldn't copy the password to clipboard."))
+
+        ttk.Button(btn_row, text=_("Generate"), command=do_generate).pack(side="left")
+        ttk.Button(btn_row, text=_("Use this"), command=do_use_this).pack(side="left", padx=(6,0))
+        ttk.Button(btn_row, text=_("Copy"), command=do_copy).pack(side="left", padx=(6,0))
+        ttk.Button(btn_row, text=_("Close"), command=gen.destroy).pack(side="right")
+
+        # 1rst generation is for convenience.
+        do_generate()
+
+        # Keyboard shortcuts, press ctrl+g to generate a password automatically.
+        gen.bind("<Control-g>", lambda e:do_generate())
+
+        # Centering.
+        gen.update_idletasks()
+        try:
+            x = parent.winfo_rootx() + (parent.winfo_width() //2) - (gen.winfo_width() // 2)
+            y = parent.winfo_rooty() + (parent.winfo_height() //2) - (gen.winfo_height() // 2)
+            gen.geometry(f"+{x}+{y}")
+        except Exception:
+            pass
+
+
 
 
 # Characters that are often confused: O/0, l/I/1, etc.
