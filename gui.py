@@ -269,7 +269,9 @@ class MainWindow:
             columns,
             (_("Entry"), _("Tags"), _("Website or application path"), _("Username"), _("Password"))
         ):
-            self.tree.heading(c, text=text)
+            self.tree.heading(c, text=text, command=lambda col=c: self.sort_by_column(col))
+
+
             self.tree.column(
                 c,
                 width=column_widths.get(c, 150),
@@ -281,6 +283,24 @@ class MainWindow:
         self.status_var = tk.StringVar(value="")
         status = tk.Label(self.primary_main, textvariable=self.status_var, anchor="w")
         status.pack(fill="x", padx=8, pady=(2, 6))
+
+        # Sort state: remember the ascending/descending order of the column. Works by column's id.
+        self.sort_reverse = {
+            "name": False,
+            "website": False,
+            "username": False,
+            "password": False,
+            "tags": False,
+        }
+
+        # Helpful mapping: column id -> index in values tuple.
+        self.col_index = {
+            "Entry": 0,
+            "Tags": 1,
+            "Website or application path": 2,
+            "Username": 3,
+            "Password": 4,
+        }
 
         # Buttons
         button_frame = tk.Frame(primary_main)
@@ -1019,6 +1039,13 @@ class MainWindow:
             gen.geometry(f"+{x}+{y}")
         except Exception:
             pass
+
+    def sort_by_column(self, col_id: str):
+        """
+        Sort the treeview row by column id.
+        The id of the column is one of : Entry, Tags, Website or application path, Username and Password.
+        """
+
 
 
 
