@@ -116,7 +116,7 @@ class WindowLogin:
         self.vault = None
 
         self.login_root.title(_("Connection - Password manager"))
-        self.login_root.geometry("300x200")
+        self.login_root.geometry("300x150")
         self.login_root.resizable(False, False)
 
         # Main text
@@ -362,7 +362,7 @@ class MainWindow:
         tk.Label(popup, text=_("Password :")).pack(pady=(30, 5))
         new_password_entry = tk.Entry(popup, show="*"); new_password_entry.pack()
         ttk.Button(popup, text=_("Generate password"),
-                   command=lambda: self.open_password_generator(popup, new_password_entry))
+                   command=lambda: self.open_password_generator(popup, new_password_entry)).pack(pady=(5, 10))
 
         # "Save" button.
         def save():
@@ -463,6 +463,9 @@ class MainWindow:
         password_input = tk.Entry(popup, show="*")
         password_input.insert(0, pwd_old)
         password_input.pack()
+
+        tk.Button(popup, text=_("Generate password"),
+                  command=lambda: self.open_password_generator(popup, password_input)).pack(pady=(5, 10))
 
         # Function for saving modifications.
         def entry_save():
@@ -580,6 +583,7 @@ class MainWindow:
             return
 
         self.load_data()
+        self.apply_live_search()
         self.set_status(_(f"Entry {entry_to_delete} deleted."))
 
     def show_password(self):
@@ -607,7 +611,7 @@ class MainWindow:
 
         # Display the cleared password in the cell.
         try:
-            self.tree.set(item_id, "password", clear_pwd)
+            self.tree.set(item_id, "Password", clear_pwd)
         except tk.TclError:
             return
         self.status_var.set(_(f"Password for {entry_to_show} is shown for {self.show_timeout_ms}ms."))
@@ -615,7 +619,7 @@ class MainWindow:
         # Reprogramming of masking.
         def hide_again():
             try:
-                self.tree.set(item_id, "password", mask)
+                self.tree.set(item_id, "Password", mask)
             except tk.TclError:
                 pass # In case of line disappear.
             if self.status_var.get().startswith("Password displayed"):
@@ -910,7 +914,7 @@ class MainWindow:
         """
         gen = tk.Toplevel(parent)
         gen.title(_("Password generator"))
-        gen.geometry("300x150")
+        gen.geometry("420x200")
         gen.resizable(False, False)
         gen.transient(parent)
         gen.grab_set()
@@ -942,7 +946,7 @@ class MainWindow:
         ttk.Checkbutton(cats, text=_("Uppercase (A-Z)"), variable=var_upper).grid(row=0, column=1, sticky="w", padx=12)
         ttk.Checkbutton(cats, text=_("Digits (0-9"), variable=var_digits).grid(row=1, column=0, sticky="w", padx=2, pady=(4,0))
         ttk.Checkbutton(cats, text=_("Symbols (!@#...)"), variable=var_symbols).grid(row=1, column=1, sticky="w", padx=12, pady=(4,0))
-        ttk.Checkbutton(cats, text=_("Avoid common words and ambiguous characters (0/O, l/1/I"), variable=var_avoid).pack(anchor="w", pady=(6.4))
+        ttk.Checkbutton(cats, text=_("Avoid common words and ambiguous characters (0/O, l/1/I"), variable=var_avoid)# .pack(anchor="w", pady=(6.4))
 
         # Output field for users.
         out_row = ttk.Frame(frm)
