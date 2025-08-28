@@ -286,11 +286,11 @@ class MainWindow:
 
         # Sort state: remember the ascending/descending order of the column. Works by column's id.
         self.sort_reverse = {
-            "name": False,
-            "website": False,
-            "username": False,
-            "password": False,
-            "tags": False,
+            "Entry": False,
+            "Tags": False,
+            "Website or application path": False,
+            "Username": False,
+            "Password": False,
         }
 
         # Helpful mapping: column id -> index in values tuple.
@@ -328,6 +328,7 @@ class MainWindow:
         tk.Button(button_frame, text=_("Copy"), command=self.copy_password).pack(side="left", padx=10)
         tk.Button(button_frame, text=_("Hide all"), command=self.hide_all_passwords).pack(side="left", padx=10)
 
+        self.setup_shortcuts()
         self.load_data()
 
     def load_data(self):
@@ -438,6 +439,8 @@ class MainWindow:
             self.load_data()
 
         tk.Button(popup, text=_("Save"), command=save).pack(pady=(30, 5))
+        popup.bind("<Return>", lambda e: save())
+        popup.bind("<Escape>", lambda e: popup.destroy())
 
     def edit_entry(self):
         """
@@ -548,6 +551,8 @@ class MainWindow:
             self.load_data()
 
         tk.Button(popup, text=_("Update entry"), command=entry_save).pack(pady=20)
+        popup.bind("<Return>", lambda e: entry_save())
+        popup.bind("<Escape>", lambda e: popup.destroy())
 
 
     def delete_entry(self):
@@ -1045,8 +1050,45 @@ class MainWindow:
         Sort the treeview row by column id.
         The id of the column is one of : Entry, Tags, Website or application path, Username and Password.
         """
+        idx = self.col_index[col_id]
+        reverse = self.sort_reverse.get(col_id, False)
 
+        # Collect current rows.
+        rows = []
+        for item_id in self.tree.get_children():
+            values = self.tree.item(item_id, "values")
+            val = values[idx] if idx < len(values) else ""
+            rows.append((val, item_id))
 
+        # Case-insensitive sort.
+        rows.sort(key=lambda item: (item[0] or "").lower(), reverse=reverse)
+
+        # Reorder items.
+        for newpos, (_value, _item_id) in enumerate(rows):
+            self.tree.move(_item_id, "", newpos)
+
+        # Toggle the direction of a new click.
+        self.sort_reverse[col_id] = not reverse
+
+        # Status feedback (optional).
+        self.set_status(_("Sorted by '{}' ({}).").format(col_id, "desc" if reverse else "asc"))
+
+    def setup_shortcuts(self):
+        """
+        For registering keyboard shortcuts.
+        """
+        self.primary_main.bind_all("<Control-n>",    lambda e: self.add_entry())
+        self.primary_main.bind_all("<Control-e>",   lambda e: self.edit_entry())
+        self.primary_main.bind_all("<F2>",          lambda e: self.edit_entry())
+        self.primary_main.bind_all("<Delete>",      lambda e: self.delete_entry())
+
+        # Password actions.
+        self.primary_main.bind_all("<Control-c>",   lambda e: self.copy_password())
+        self.primary_main.bind_all("<Control-s>",   lambda e: self.show_password())
+
+        # Navigation / focus actions.
+        self.primary_main.bind_all("<Control-f>",   lambda e: (self.search_var.set(""), self.search_entries.focus_set()))
+        self.primary_main.bind_all("<Control-l>",   lambda e: self.tag_filter.focus_set())
 
 
 
@@ -1103,3 +1145,4 @@ def secure_generate_password(
     # Shuffle for avoiding the predictable position of characters.
     secrets.SystemRandom().shuffle(password_chars)
     return "".join(password_chars)
+
