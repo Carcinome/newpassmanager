@@ -42,6 +42,13 @@ class Vault:
             raise KeyError(f"Entry {name} not found.")
         del self._items[name]
 
+    def iter_vault_entries(self):
+        """
+        Iterate over all stored entries.
+        Returns a dynamic view over the Entry objects.
+        """
+        return self._items.values()
+
     def to_dict_entry(self) -> Dict[str, dict]:
         return {
             name: {

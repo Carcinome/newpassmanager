@@ -1,0 +1,57 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: passmanager 0.2\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: fr\n"
+
+# gui.py
+msgid "Password manager"
+msgstr "Gestionnaire de mots de passe"
+
+msgid "Add"
+msgstr "Ajouter"
+
+msgid "Edit"
+msgstr "Modifier"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "Show"
+msgstr "Afficher"
+
+msgid "Copy"
+msgstr "Copier"
+
+msgid "Hide all"
+msgstr "Tout masquer"
+
+msgid "Help"
+msgstr "Aide"
+
+msgid "Sticky notes"
+msgstr "Pense-bête"
+
+msgid "About"
+msgstr "A propos"
+
+msgid "No selection"
+msgstr "Aucune selection"
+
+msgid "Please select a line first."
+msgstr "Veuillez d'abord sélectionner une ligne."
+
+msgid "Error"
+msgstr "Erreur"
+
+msgid "Entry not found."
+msgstr "Entrée introuvable."
+
+msgid "Password copied"
+msgstr "Mot de passe copié"
+
+msgid "Password for '{entry_to_copy}' is copied to clipboard."
+msgstr "Le mot de passe pour '{entry_to_copy}' est copié dans le presse-papiers."
+
+msgid "Password for {entry_to_show} is shown for {self.show_timeout_ms}ms."
+msgstr "Le mot de passe pour '{entry_to_show}' est affiché pendant {self.show_timeout_ms}ms."
