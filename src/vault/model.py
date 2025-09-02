@@ -7,10 +7,11 @@ from typing import Dict, Optional, List
 @dataclass
 class Entry:
     name: str
+    tags: List[str] = field(default_factory=list)
     website: str = ""
     username: str = ""
     password: str = ""
-    tags: List[str] = field(default_factory=list)
+
 
 
 class Vault:
@@ -47,7 +48,7 @@ class Vault:
         Iterate over all stored entries.
         Returns a dynamic view over the Entry objects.
         """
-        return self._items.values()
+        return self._items
 
     def to_dict_entry(self) -> Dict[str, dict]:
         return {

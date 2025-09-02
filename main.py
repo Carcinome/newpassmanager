@@ -1,4 +1,7 @@
-"""Here, the main code for the passwords' manager."""
+"""
+Here, the main code for the passwords' manager.
+"""
+
 
 import os
 import tkinter as tk
@@ -8,6 +11,7 @@ from i18n import setup_language
 # path to the primary password storage file from utils.py and gui.py.
 from utils import create_data_dir, PRIMARY_PASSWORD_FILE
 from gui import InitiatePrimaryWindow, WindowLogin
+
 
 # Auto-detect system language (default).
 _, LANG = setup_language()

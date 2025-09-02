@@ -1,4 +1,6 @@
-"""This file si for making a Graphic User Interface, for avoid command lines interface for customers."""
+"""
+This file si for making a Graphic User Interface, for avoid command lines interface for customers.
+"""
 
 
 import tkinter as tk
@@ -21,6 +23,7 @@ from src.vault import (load_encrypted_vault,
 )
 
 from i18n import _
+
 
 VAULT_PATH = Path("data") / "vault.enc"
 LOG_PATH = os.path.join("data", "app.log")

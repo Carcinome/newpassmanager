@@ -1,4 +1,7 @@
-"""Here, the core of security and persistence for the passwords' manager."""
+"""
+Here, the core of security and persistence for the passwords' manager.
+"""
+
 
 import os
 import json
