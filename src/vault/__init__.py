@@ -1,3 +1,2 @@
-from .model import Vault, Entry
-from .storage import save_encrypted_vault, load_encrypted_vault
-
+from .model import Entry, Vault
+from .storage import load_encrypted_vault, save_encrypted_vault

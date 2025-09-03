@@ -1,0 +1,67 @@
+F823 Local variable `_` referenced before assignment
+    --> gui.py:1133:26
+     |
+1131 |     """
+1132 |     if length < 8:
+1133 |         raise ValueError(_("Length must be at least 8."))
+     |                          ^
+1134 |
+1135 |     # Build the character's group.
+     |
+
+F402 Import `_` from line 15 shadowed by loop variable
+    --> gui.py:1164:9
+     |
+1163 |     # Fill the remaining length from the pool.
+1164 |     for _ in range(length - len(password_chars)):
+     |         ^
+1165 |         password_chars.append(secrets.choice(pool))
+     |
+
+F401 `.model.Entry` imported but unused; consider removing, adding to `__all__`, or using a redundant alias
+ --> src/vault/__init__.py:1:20
+  |
+1 | from .model import Entry, Vault
+  |                    ^^^^^
+2 | from .storage import load_encrypted_vault, save_encrypted_vault
+  |
+help: Use an explicit re-export: `Entry as Entry`
+
+F401 `.model.Vault` imported but unused; consider removing, adding to `__all__`, or using a redundant alias
+ --> src/vault/__init__.py:1:27
+  |
+1 | from .model import Entry, Vault
+  |                           ^^^^^
+2 | from .storage import load_encrypted_vault, save_encrypted_vault
+  |
+help: Use an explicit re-export: `Vault as Vault`
+
+F401 `.storage.load_encrypted_vault` imported but unused; consider removing, adding to `__all__`, or using a redundant alias
+ --> src/vault/__init__.py:2:22
+  |
+1 | from .model import Entry, Vault
+2 | from .storage import load_encrypted_vault, save_encrypted_vault
+  |                      ^^^^^^^^^^^^^^^^^^^^
+  |
+help: Use an explicit re-export: `load_encrypted_vault as load_encrypted_vault`
+
+F401 `.storage.save_encrypted_vault` imported but unused; consider removing, adding to `__all__`, or using a redundant alias
+ --> src/vault/__init__.py:2:44
+  |
+1 | from .model import Entry, Vault
+2 | from .storage import load_encrypted_vault, save_encrypted_vault
+  |                                            ^^^^^^^^^^^^^^^^^^^^
+  |
+help: Use an explicit re-export: `save_encrypted_vault as save_encrypted_vault`
+
+B904 Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling
+   --> utils.py:110:9
+    |
+108 |         _ = fernet.decrypt(verifier.encode("utf-8"))
+109 |     except InvalidToken:
+110 |         raise InvalidToken("Wrong primary password (cannot decrypt verifier).")
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+111 |     return fernet
+    |
+
+Found 7 errors.

@@ -1,26 +1,23 @@
-"""This file si for making a Graphic User Interface, for avoid command lines interface for customers."""
+"""
+This file si for making a Graphic User Interface, for avoid command lines interface for customers.
+"""
 
-
+import logging
+import os
+import secrets
+import string
 import tkinter as tk
 from pathlib import Path
 from tkinter import messagebox, ttk
-import logging, os, string, secrets
-
 
 from cryptography.fernet import InvalidToken
 
-from utils import (
-    write_primary_verifier,
-    verify_primary_password_and_get_key,
-)
-
-from src.vault import (load_encrypted_vault,
-                       save_encrypted_vault,
-                       Vault,
-                       Entry
-)
-
 from i18n import _
+from src.vault import Entry, Vault, load_encrypted_vault, save_encrypted_vault
+from utils import (
+    verify_primary_password_and_get_key,
+    write_primary_verifier,
+)
 
 VAULT_PATH = Path("data") / "vault.enc"
 LOG_PATH = os.path.join("data", "app.log")
@@ -28,11 +25,10 @@ LOG_PATH = os.path.join("data", "app.log")
 
 # Logging users errors.
 logging.basicConfig(
-    filename=LOG_PATH,
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s [%(name)s] %(message)s"
+    filename=LOG_PATH, level=logging.INFO, format="%(asctime)s %(levelname)s [%(name)s] %(message)s"
 )
 logger = logging.getLogger("gui")
+
 
 def show_error(title: str, message: str, details: str | None = None):
     """
@@ -49,11 +45,13 @@ def show_error(title: str, message: str, details: str | None = None):
         logging.error("%s - %s", title, message)
         messagebox.showerror(title, message)
 
+
 class InitiatePrimaryWindow:
     """
     For creating a primary password if it doesn't exist.
     Display two fields (password and confirmation) and one 'create' button.
     """
+
     def __init__(self, primary):
 
         self.primary = primary
@@ -110,6 +108,7 @@ class WindowLogin:
     """
     Login screen. Ask for the primary password.
     """
+
     def __init__(self, login_root):
         self.login_root = login_root
         self.fernet = None
@@ -121,7 +120,8 @@ class WindowLogin:
 
         # Main text
         tk.Label(login_root, text=_("Enter your primary password :")).pack(pady=(30, 5))
-        self.password_entry = tk.Entry(login_root, show="*", width=30); self.password_entry.pack()
+        self.password_entry = tk.Entry(login_root, show="*", width=30)
+        self.password_entry.pack()
         tk.Button(login_root, text=_("Login"), command=self.check_password).pack(pady=20)
 
     def check_password(self):
@@ -138,21 +138,17 @@ class WindowLogin:
             self.fernet = verify_primary_password_and_get_key(entered_password)
         except FileNotFoundError:
             show_error(
-                _("No primary password"),
-                _("No primary password found. Please create one first.")
+                _("No primary password"), _("No primary password found. Please create one first.")
             )
             return
         except InvalidToken:
-            show_error(
-                _("Invalid password"),
-                _("The primary password entered is incorrect.")
-            )
+            show_error(_("Invalid password"), _("The primary password entered is incorrect."))
             return
         except Exception as exc:
             show_error(
                 _("Unexpected error"),
                 _("An unexpected error occurred while checking your password."),
-            details=str(exc)
+                details=str(exc),
             )
             return
 
@@ -165,21 +161,21 @@ class WindowLogin:
                 _("Vault error"),
                 _("The vault can't be decrypted with this key or is corrupted.\n"),
                 _("Make sure you type the correct primary password."),
-                details=str(VAULT_PATH)
+                details=str(VAULT_PATH),
             )
             return
         except PermissionError as exc:
             show_error(
                 _("Permission denied"),
                 _("The application can't read the vault file. Please check file permissions."),
-                details=str(exc)
+                details=str(exc),
             )
             return
         except Exception as exc:
             show_error(
                 _("Unexpected error"),
                 _("An unexpected error occurred while reading the vault."),
-                details=str(exc)
+                details=str(exc),
             )
             return
 
@@ -195,11 +191,12 @@ class MainWindow:
     - Display all credentials/passwords.
     - Possibility to add, modify, remove and show a password.
     """
+
     def __init__(self, primary_main, fernet, vault, vault_path):
         self.primary_main = primary_main
-        self.fernet = fernet            # Fernet key (already validated on login).
-        self.vault = vault              # Vault in RAM (cleared).
-        self.vault_path = vault_path    # Path of the encrypted vault.
+        self.fernet = fernet  # Fernet key (already validated on login).
+        self.vault = vault  # Vault in RAM (cleared).
+        self.vault_path = vault_path  # Path of the encrypted vault.
         self.clipboard_timeout_ms = 30_000
         self.show_timeout_ms = 15_000
         self.remask_jobs = {}
@@ -226,10 +223,7 @@ class MainWindow:
 
         self.tag_filter_var = tk.StringVar(value="All tags")
         self.tag_filter = ttk.Combobox(
-            search_frame,
-            textvariable=self.tag_filter_var,
-            state="readonly",
-            width=18
+            search_frame, textvariable=self.tag_filter_var, state="readonly", width=18
         )
         self.tag_filter.pack(side="left", padx=(6, 0))
         # When a user picks a tag, re-run the live search immediately.
@@ -267,16 +261,13 @@ class MainWindow:
 
         for c, text in zip(
             columns,
-            (_("Entry"), _("Tags"), _("Website or application path"), _("Username"), _("Password"))
+            (_("Entry"), _("Tags"), _("Website or application path"), _("Username"), _("Password")),
+                strict=False,
         ):
             self.tree.heading(c, text=text, command=lambda col=c: self.sort_by_column(col))
 
-
             self.tree.column(
-                c,
-                width=column_widths.get(c, 150),
-                stretch=column_stretch.get(c, False),
-                anchor="w"
+                c, width=column_widths.get(c, 150), stretch=column_stretch.get(c, False), anchor="w"
             )
 
         self.tree.pack(fill="both", expand=True, pady=(10, 0))
@@ -318,15 +309,23 @@ class MainWindow:
 
         self.primary_main.bind_all("<Control-h>", lambda e: self.show_help())
         self.primary_main.bind_all("<Control-H>", lambda e: self.show_help())
-        self.primary_main.bind_all("<F1>",      lambda e: self.show_help())
+        self.primary_main.bind_all("<F1>", lambda e: self.show_help())
         self.tree.bind("<Double-1>", self.on_row_double_click)
 
         tk.Button(button_frame, text=_("Add"), command=self.add_entry).pack(side="left", padx=10)
         tk.Button(button_frame, text=_("Edit"), command=self.edit_entry).pack(side="left", padx=10)
-        tk.Button(button_frame, text=_("Delete"), command=self.delete_entry).pack(side="left", padx=10)
-        tk.Button(button_frame, text=_("Show"), command=self.show_password).pack(side="left", padx=10)
-        tk.Button(button_frame, text=_("Copy"), command=self.copy_password).pack(side="left", padx=10)
-        tk.Button(button_frame, text=_("Hide all"), command=self.hide_all_passwords).pack(side="left", padx=10)
+        tk.Button(button_frame, text=_("Delete"), command=self.delete_entry).pack(
+            side="left", padx=10
+        )
+        tk.Button(button_frame, text=_("Show"), command=self.show_password).pack(
+            side="left", padx=10
+        )
+        tk.Button(button_frame, text=_("Copy"), command=self.copy_password).pack(
+            side="left", padx=10
+        )
+        tk.Button(button_frame, text=_("Hide all"), command=self.hide_all_passwords).pack(
+            side="left", padx=10
+        )
 
         self.setup_shortcuts()
         self.load_data()
@@ -349,7 +348,9 @@ class MainWindow:
             username = info.get("username", "")
             cleared_password = info.get("password", "")
             masked_password = self.mask_for(cleared_password)
-            self.tree.insert("", "end", values=(entry, tags_text, website, username, masked_password))
+            self.tree.insert(
+                "", "end", values=(entry, tags_text, website, username, masked_password)
+            )
 
         # refresh tag filter options after (re)loading.
         all_tags = self.collect_all_tags() or []
@@ -373,48 +374,53 @@ class MainWindow:
 
         # Fields.
         tk.Label(popup, text=_("Entry :")).pack(pady=(30, 5))
-        new_entry_entry = tk.Entry(popup); new_entry_entry.pack()
+        new_entry_entry = tk.Entry(popup)
+        new_entry_entry.pack()
         tk.Label(popup, text=_("Tags :")).pack(pady=(30, 5))
-        new_tag_entry = tk.Entry(popup); new_tag_entry.pack()
+        new_tag_entry = tk.Entry(popup)
+        new_tag_entry.pack()
         tk.Label(popup, text=_("Website or application path :")).pack(pady=(30, 5))
-        new_website_entry = tk.Entry(popup); new_website_entry.pack()
+        new_website_entry = tk.Entry(popup)
+        new_website_entry.pack()
         tk.Label(popup, text=_("Username :")).pack(pady=(30, 5))
-        new_username_entry = tk.Entry(popup); new_username_entry.pack()
+        new_username_entry = tk.Entry(popup)
+        new_username_entry.pack()
         tk.Label(popup, text=_("Password :")).pack(pady=(30, 5))
-        new_password_entry = tk.Entry(popup, show="*"); new_password_entry.pack()
-        ttk.Button(popup, text=_("Generate password"),
-                   command=lambda: self.open_password_generator(popup, new_password_entry)).pack(pady=(5, 10))
+        new_password_entry = tk.Entry(popup, show="*")
+        new_password_entry.pack()
+        ttk.Button(
+            popup,
+            text=_("Generate password"),
+            command=lambda: self.open_password_generator(popup, new_password_entry),
+        ).pack(pady=(5, 10))
 
         # "Save" button.
         def save():
-            entry       = new_entry_entry.get().strip()
-            raw_tags    = new_tag_entry.get().strip()
-            tag_list    = [t.strip() for t in raw_tags.split(",") if t.strip()] if raw_tags else []
-            website     = new_website_entry.get().strip()
-            username    = new_username_entry.get().strip()
-            pwd         = new_password_entry.get().strip()
+            entry = new_entry_entry.get().strip()
+            raw_tags = new_tag_entry.get().strip()
+            tag_list = [t.strip() for t in raw_tags.split(",") if t.strip()] if raw_tags else []
+            website = new_website_entry.get().strip()
+            username = new_username_entry.get().strip()
+            pwd = new_password_entry.get().strip()
 
             if not (entry and website and username and pwd):
-                messagebox.showerror(_("Fields must be filled!"), _("Please fill all fields before saving."))
+                messagebox.showerror(
+                    _("Fields must be filled!"), _("Please fill all fields before saving.")
+                )
                 return
             # Construct the Entry object (cleared in RAM).
-            clear_memory_obj = Entry(name=entry, tags=tag_list, website=website, username=username, password=pwd)
+            clear_memory_obj = Entry(
+                name=entry, tags=tag_list, website=website, username=username, password=pwd
+            )
 
             # Add the Entry object to the vault (start the rule "no double").
             try:
                 self.vault.add_vault_entry(clear_memory_obj)
             except ValueError as err:
-                show_error(
-                    _("Duplicate entry"),
-                    str(err)
-                )
+                show_error(_("Duplicate entry"), str(err))
                 return
             except Exception as exc:
-                show_error(
-                    _("Unexpected error"),
-                    _("Couldn't add the entry."),
-                    details=str(exc)
-                )
+                show_error(_("Unexpected error"), _("Couldn't add the entry."), details=str(exc))
                 return
 
             # Crypted save from the entire vault.
@@ -424,14 +430,12 @@ class MainWindow:
                 show_error(
                     _("Permission denied"),
                     _("Can't write the encrypted vault file."),
-                    details=str(exc)
+                    details=str(exc),
                 )
                 return
             except Exception as exc:
                 show_error(
-                    _("Unexpected error"),
-                    _("Couldn't save the encrypted vault."),
-                    details=str(exc)
+                    _("Unexpected error"), _("Couldn't save the encrypted vault."), details=str(exc)
                 )
                 return
 
@@ -454,7 +458,9 @@ class MainWindow:
             return
 
         # Take values from the selected line.
-        entry_old, tag_old, website_old, username_old, pwd_old = self.tree.item(selected_entry, "values")
+        entry_old, tag_old, website_old, username_old, pwd_old = self.tree.item(
+            selected_entry, "values"
+        )
         # Popup creation.
         popup = tk.Toplevel(self.primary_main)
         popup.title(_("Edit entry"))
@@ -487,47 +493,55 @@ class MainWindow:
         password_input.insert(0, pwd_old)
         password_input.pack()
 
-        tk.Button(popup, text=_("Generate password"),
-                  command=lambda: self.open_password_generator(popup, password_input)).pack(pady=(5, 10))
+        tk.Button(
+            popup,
+            text=_("Generate password"),
+            command=lambda: self.open_password_generator(popup, password_input),
+        ).pack(pady=(5, 10))
 
         # Function for saving modifications.
         def entry_save():
             # Read the new fields.
-            entry_new       = entry_input.get().strip()
-            raw_tags_new    = tag_input.get().strip()
-            tags_list_new    = [t.strip() for t in raw_tags_new.split(",") if t.strip()] if raw_tags_new else []
-            website_new     = website_input.get().strip()
-            username_new    = username_input.get().strip()
-            pwd_new         = password_input.get().strip()
+            entry_new = entry_input.get().strip()
+            raw_tags_new = tag_input.get().strip()
+            tags_list_new = (
+                [t.strip() for t in raw_tags_new.split(",") if t.strip()] if raw_tags_new else []
+            )
+            website_new = website_input.get().strip()
+            username_new = username_input.get().strip()
+            pwd_new = password_input.get().strip()
 
             if entry_new != entry_old:
                 # If the name of the entry change.
                 try:
                     self.vault.delete_vault_entry(entry_old)
-                    self.vault.add(Entry(name=entry_new, tags=tags_list_new, website=website_new, username=username_new, password=pwd_new))
-                except KeyError as err:
-                    show_error(
-                        _("Entry not found"),
-                        _(f"Cannot edit {err}")
+                    self.vault.add(
+                        Entry(
+                            name=entry_new,
+                            tags=tags_list_new,
+                            website=website_new,
+                            username=username_new,
+                            password=pwd_new,
+                        )
                     )
+                except KeyError as err:
+                    show_error(_("Entry not found"), _(f"Cannot edit {err}"))
                     return
                 except ValueError as err:
-                    show_error(
-                        _("Duplicate entry"),
-                        str(err))
+                    show_error(_("Duplicate entry"), str(err))
                     return
             else:
                 # If the name of the entry doesn't change, just a field update.
                 try:
-                    self.vault.update_vault_entry(entry_old,
-                                                  tags=tags_list_new,
-                                                  website=website_new,
-                                                  username=username_new,
-                                                  password=pwd_new)
+                    self.vault.update_vault_entry(
+                        entry_old,
+                        tags=tags_list_new,
+                        website=website_new,
+                        username=username_new,
+                        password=pwd_new,
+                    )
                 except KeyError as err:
-                    show_error(
-                        _("Entry not found"),
-                        _(f"Cannot edit {err}"))
+                    show_error(_("Entry not found"), _(f"Cannot edit {err}"))
                     return
 
             try:
@@ -536,14 +550,12 @@ class MainWindow:
                 show_error(
                     _("Permission denied"),
                     _("Can't write the encrypted vault file."),
-                    details=str(exc)
+                    details=str(exc),
                 )
                 return
             except Exception as exc:
                 show_error(
-                    _("Unexpected error"),
-                    _("Couldn't save the encrypted vault."),
-                    details=str(exc)
+                    _("Unexpected error"), _("Couldn't save the encrypted vault."), details=str(exc)
                 )
                 return
 
@@ -553,7 +565,6 @@ class MainWindow:
         tk.Button(popup, text=_("Update entry"), command=entry_save).pack(pady=20)
         popup.bind("<Return>", lambda e: entry_save())
         popup.bind("<Escape>", lambda e: popup.destroy())
-
 
     def delete_entry(self):
         """
@@ -568,8 +579,7 @@ class MainWindow:
 
         deleting_confirmation = messagebox.askyesno(
             _("Please confirm deletion"),
-            _(f"Deleting {entry_to_delete}?\n"
-            "This action can't be undone.")
+            _(f"Deleting {entry_to_delete}?\n" "This action can't be undone."),
         )
         if not deleting_confirmation:
             self.set_status(_("Deletion cancelled."))
@@ -578,32 +588,22 @@ class MainWindow:
         try:
             self.vault.delete_vault_entry(entry_to_delete)
         except KeyError:
-            show_error(
-                _("entry not found"),
-                _(f"Entry {entry_to_delete} not found."))
+            show_error(_("entry not found"), _(f"Entry {entry_to_delete} not found."))
             return
         except Exception as exc:
-            show_error(
-                _("Unexpected error"),
-                _("Couldn't delete the entry."),
-                details=str(exc)
-            )
+            show_error(_("Unexpected error"), _("Couldn't delete the entry."), details=str(exc))
             return
 
         try:
             save_encrypted_vault(self.vault, self.fernet, self.vault_path)
         except PermissionError as exc:
             show_error(
-                _("Permission denied"),
-                _("Can't write the encrypted vault file."),
-                details=str(exc)
+                _("Permission denied"), _("Can't write the encrypted vault file."), details=str(exc)
             )
             return
         except Exception as exc:
             show_error(
-                _("Unexpected error"),
-                _("Couldn't save the encrypted vault."),
-                details=str(exc)
+                _("Unexpected error"), _("Couldn't save the encrypted vault."), details=str(exc)
             )
             return
 
@@ -639,14 +639,16 @@ class MainWindow:
             self.tree.set(item_id, "Password", clear_pwd)
         except tk.TclError:
             return
-        self.status_var.set(_(f"Password for {entry_to_show} is shown for {self.show_timeout_ms}ms."))
+        self.status_var.set(
+            _(f"Password for {entry_to_show} is shown for {self.show_timeout_ms}ms.")
+        )
 
         # Reprogramming of masking.
         def hide_again():
             try:
                 self.tree.set(item_id, "Password", mask)
             except tk.TclError:
-                pass # In case of line disappear.
+                pass  # In case of line disappear.
             if self.status_var.get().startswith("Password displayed"):
                 self.status_var.set("")
             self.remask_jobs.pop(item_id, None)
@@ -654,7 +656,6 @@ class MainWindow:
         after_id = self.primary_main.after(self.show_timeout_ms, hide_again)
         self.remask_jobs[item_id] = after_id
         self.set_status(_(f"Password displayed for {self.show_timeout_ms}ms."))
-
 
     def copy_password(self):
         """
@@ -672,14 +673,17 @@ class MainWindow:
             messagebox.showerror(_("Error"), _(f"Entry '{entry_to_copy}' not found."))
             return
 
-        clear_pwd = entry_to_get.password # In the RAM, cleared, just for GUI.
+        clear_pwd = entry_to_get.password  # In the RAM, cleared, just for GUI.
 
         # Copy the password in the Tkinter's clipboard.
         # Remplace the copied data and add the password after.
         self.primary_main.clipboard_clear()
         self.primary_main.clipboard_append(clear_pwd)
         # Notify the user.
-        messagebox.showinfo(_("Password copied to clipboard"), _(f"Password for '{entry_to_copy}' is copied to clipboard."))
+        messagebox.showinfo(
+            _("Password copied to clipboard"),
+            _(f"Password for '{entry_to_copy}' is copied to clipboard."),
+        )
         # Auto clear clipboard.
         self.schedule_clipboard_clear()
         self.set_status(_(f"Password for '{entry_to_copy}' copied to clipboard"))
@@ -689,16 +693,13 @@ class MainWindow:
         Double-clik on a row copies the password to the clipboard.
         """
         item_id = self.tree.identify_row(event.y)
-        if not item_id: # Clicked on the empty space or header.
+        if not item_id:  # Clicked on the empty space or header.
             return
 
         name = self.tree.item(item_id, "values")[0]
         entry = self.vault.get_vault_entry(name)
         if not entry:
-            show_error(
-                _("Entry not found"),
-                _(f"Entry '{name}' not found.")
-            )
+            show_error(_("Entry not found"), _(f"Entry '{name}' not found."))
             return
 
         clear_pwd = entry.password
@@ -707,26 +708,24 @@ class MainWindow:
             self.primary_main.clipboard_clear()
             self.primary_main.clipboard_append(clear_pwd)
         except tk.TclError:
-            show_error(
-                _("Error"),
-                _(f"Couldn't copy the password to clipboard.")
-            )
+            show_error(_("Error"), _("Couldn't copy the password to clipboard."))
             return
 
         self.schedule_clipboard_clear()
         self.set_status(_(f"Password for '{name}' copied to clipboard"))
-
 
     # Enhanced security: clear the clipboard.
     def schedule_clipboard_clear(self):
         """
         Clear the clipboard after select.clipboard_timeout_ms.
         """
+
         def clear_clipboard():
             try:
                 self.primary_main.clipboard_clear()
             except tk.TclError:
                 pass
+
         self.primary_main.after(self.clipboard_timeout_ms, clear_clipboard)
 
     def mask_for(self, clear_pwd: str) -> str:
@@ -745,13 +744,15 @@ class MainWindow:
                 self.primary_main.after_cancel(job)
             except Exception:
                 pass
-    
+
     def hide_all_passwords(self):
         """
         Automatically hide all password entries and cancel all timers.
         """
         for item_id in self.tree.get_children():
-            values = list(self.tree.item(item_id, "values")) # values = [entry, website, username, password]
+            values = list(
+                self.tree.item(item_id, "values")
+            )  # values = [entry, website, username, password]
             name = values[0]
             entry = self.vault.get_vault_entry(name)
             if entry:
@@ -775,7 +776,7 @@ class MainWindow:
         txt = tk.Text(top, width=80, height=18, wrap="word")
         txt.pack(fill="both", expand=True, padx=10, pady=10)
 
-        content = (_(
+        content = _(
             "• The vault is crypted (Fernet) on data/vault.enc.\n"
             "• The passwords are in clean text in RAM only when the execution of the program.\n"
             "• 'Show' displays the password in the selected cell, and remask it automatically.\n"
@@ -785,29 +786,32 @@ class MainWindow:
             "• Salt is in data/salt.bin\n"
             "• A primary password is essential.\n"
             "• All modifications (GRUD) is persistant with save_encrypted_vault().\n"
-            "• In case of error 'Vault is corrupted', please verify the primary password and the files.\n"
-        ))
+            "• In case of error 'Vault is corrupted', "
+            "please verify the primary password and the files.\n"
+        )
         txt.insert("1.0", content)
         txt.configure(state="disabled")
 
     def show_about(self):
-        messagebox.showinfo(_(
-            "About"),
-            _("Password manager\n"
-            "Vault crypted with Fernet (cryptography).\n"
-            "Version : 0.2 (Phase 2)\n"
-            "Author : Clément 'Carcinome' Aicardi"
-        ))
+        messagebox.showinfo(
+            _("About"),
+            _(
+                "Password manager\n"
+                "Vault crypted with Fernet (cryptography).\n"
+                "Version : 0.2 (Phase 2)\n"
+                "Author : Clément 'Carcinome' Aicardi"
+            ),
+        )
 
     def set_status(self, text: str, timout_ms: int = 3000):
-        """Show a temporary status message in the bottom bar.
-        """
+        """Show a temporary status message in the bottom bar."""
         self.status_var.set(text)
 
         def clear():
             # Clear only if it wasn't updated by something else since.
-            if self.status_var.get()  == text:
+            if self.status_var.get() == text:
                 self.status_var.set("")
+
         self.primary_main.after(timout_ms, clear)
 
     def search_entries(self):
@@ -826,12 +830,16 @@ class MainWindow:
         # Filter entries.
         entries = self.vault.iter_vault_entries()
         for entry in entries():
-            if (query in entry.name.lower() or
-                query in entry.website.lower() or
-                query in entry.username.lower()):
+            if (
+                query in entry.name.lower()
+                or query in entry.website.lower()
+                or query in entry.username.lower()
+            ):
                 tag_text = ", ".join(entry.tags or [])
                 masked = self.mask_for(entry.password)
-                self.tree.insert("", "end", values=(entry.name, tag_text, entry.website, entry.username, masked))
+                self.tree.insert(
+                    "", "end", values=(entry.name, tag_text, entry.website, entry.username, masked)
+                )
         self.set_status(_(f"Results for '{query}"))
 
     def reset_search(self):
@@ -850,7 +858,6 @@ class MainWindow:
         self.load_data()
         self.set_status(_("Search cleared. Showing all entries."))
 
-
     def schedule_live_search(self):
         """
         Debounce live search: schedule apply after a short delay.
@@ -863,9 +870,7 @@ class MainWindow:
             self.search_job = None
 
         # Schedule a fresh job.
-        self.search_job = self.primary_main.after(
-            self.search_debounce_ms, self.apply_live_search
-        )
+        self.search_job = self.primary_main.after(self.search_debounce_ms, self.apply_live_search)
 
     def apply_live_search(self):
         """
@@ -874,7 +879,7 @@ class MainWindow:
         self.search_job = None
         query = (self.search_var.get() or "").strip().lower()
         selected_tag = (self.tag_filter_var.get() or "All tags").strip()
-        tag_filter_active = (selected_tag != "All tags")
+        tag_filter_active = selected_tag != "All tags"
         selected_tag_lc = selected_tag.lower()
 
         # Clear the table.
@@ -906,7 +911,9 @@ class MainWindow:
             if matches(entry):
                 masked = self.mask_for(entry.password)
                 tags_text = ", ".join(entry.tags or [])
-                self.tree.insert("", "end", values=(entry.name, tags_text, entry.website, entry.username, masked))
+                self.tree.insert(
+                    "", "end", values=(entry.name, tags_text, entry.website, entry.username, masked)
+                )
 
         # Status.
         if query or tag_filter_active:
@@ -959,30 +966,42 @@ class MainWindow:
 
         # Length.
         row = ttk.Frame(frm)
-        row.pack(fill="x", pady=(0,6))
+        row.pack(fill="x", pady=(0, 6))
         ttk.Label(row, text=_("Length")).pack(side="left")
         sp = ttk.Spinbox(row, from_=8, to=64, textvariable=var_len, width=5)
-        sp.pack(side="left", padx=(6,0))
+        sp.pack(side="left", padx=(6, 0))
 
         # Categories.
         cats = ttk.Frame(frm)
         cats.pack(fill="x")
-        ttk.Checkbutton(cats, text=_("Lowercase (a_z)"), variable=var_lower).grid(row=0, column=0, sticky="w", padx=2)
-        ttk.Checkbutton(cats, text=_("Uppercase (A-Z)"), variable=var_upper).grid(row=0, column=1, sticky="w", padx=12)
-        ttk.Checkbutton(cats, text=_("Digits (0-9"), variable=var_digits).grid(row=1, column=0, sticky="w", padx=2, pady=(4,0))
-        ttk.Checkbutton(cats, text=_("Symbols (!@#...)"), variable=var_symbols).grid(row=1, column=1, sticky="w", padx=12, pady=(4,0))
-        ttk.Checkbutton(cats, text=_("Avoid common words and ambiguous characters (0/O, l/1/I"), variable=var_avoid)# .pack(anchor="w", pady=(6.4))
+        ttk.Checkbutton(cats, text=_("Lowercase (a_z)"), variable=var_lower).grid(
+            row=0, column=0, sticky="w", padx=2
+        )
+        ttk.Checkbutton(cats, text=_("Uppercase (A-Z)"), variable=var_upper).grid(
+            row=0, column=1, sticky="w", padx=12
+        )
+        ttk.Checkbutton(cats, text=_("Digits (0-9"), variable=var_digits).grid(
+            row=1, column=0, sticky="w", padx=2, pady=(4, 0)
+        )
+        ttk.Checkbutton(cats, text=_("Symbols (!@#...)"), variable=var_symbols).grid(
+            row=1, column=1, sticky="w", padx=12, pady=(4, 0)
+        )
+        ttk.Checkbutton(
+            cats,
+            text=_("Avoid common words and ambiguous characters (0/O, l/1/I"),
+            variable=var_avoid,
+        )  # .pack(anchor="w", pady=(6.4))
 
         # Output field for users.
         out_row = ttk.Frame(frm)
-        out_row.pack(fill="x", pady=(6,6))
+        out_row.pack(fill="x", pady=(6, 6))
         ttk.Label(out_row, text=_("Generated password:")).pack(anchor="w")
         out_entry = ttk.Entry(out_row, textvariable=var_out, width=42)
         out_entry.pack(fill="x")
 
         # Actions.
         btn_row = ttk.Frame(frm)
-        btn_row.pack(fill="x", pady=(8,0))
+        btn_row.pack(fill="x", pady=(8, 0))
 
         def do_generate():
             try:
@@ -1013,8 +1032,8 @@ class MainWindow:
         def do_copy():
             pwd = var_out.get()
             if not pwd:
-               messagebox.showwarning(_("No password"), _("Please generate a password first."))
-               return
+                messagebox.showwarning(_("No password"), _("Please generate a password first."))
+                return
             try:
                 self.primary_main.clipboard_clear()
                 self.primary_main.clipboard_append(pwd)
@@ -1026,21 +1045,21 @@ class MainWindow:
                 messagebox.showerror(_("Error"), _("Couldn't copy the password to clipboard."))
 
         ttk.Button(btn_row, text=_("Generate"), command=do_generate).pack(side="left")
-        ttk.Button(btn_row, text=_("Use this"), command=do_use_this).pack(side="left", padx=(6,0))
-        ttk.Button(btn_row, text=_("Copy"), command=do_copy).pack(side="left", padx=(6,0))
+        ttk.Button(btn_row, text=_("Use this"), command=do_use_this).pack(side="left", padx=(6, 0))
+        ttk.Button(btn_row, text=_("Copy"), command=do_copy).pack(side="left", padx=(6, 0))
         ttk.Button(btn_row, text=_("Close"), command=gen.destroy).pack(side="right")
 
         # 1rst generation is for convenience.
         do_generate()
 
         # Keyboard shortcuts, press ctrl+g to generate a password automatically.
-        gen.bind("<Control-g>", lambda e:do_generate())
+        gen.bind("<Control-g>", lambda e: do_generate())
 
         # Centering.
         gen.update_idletasks()
         try:
-            x = parent.winfo_rootx() + (parent.winfo_width() //2) - (gen.winfo_width() // 2)
-            y = parent.winfo_rooty() + (parent.winfo_height() //2) - (gen.winfo_height() // 2)
+            x = parent.winfo_rootx() + (parent.winfo_width() // 2) - (gen.winfo_width() // 2)
+            y = parent.winfo_rooty() + (parent.winfo_height() // 2) - (gen.winfo_height() // 2)
             gen.geometry(f"+{x}+{y}")
         except Exception:
             pass
@@ -1048,7 +1067,8 @@ class MainWindow:
     def sort_by_column(self, col_id: str):
         """
         Sort the treeview row by column id.
-        The id of the column is one of : Entry, Tags, Website or application path, Username and Password.
+        The id of the column is one of : Entry, Tags, Website or application path,
+        Username and Password.
         """
         idx = self.col_index[col_id]
         reverse = self.sort_reverse.get(col_id, False)
@@ -1077,31 +1097,33 @@ class MainWindow:
         """
         For registering keyboard shortcuts.
         """
-        self.primary_main.bind_all("<Control-n>",    lambda e: self.add_entry())
-        self.primary_main.bind_all("<Control-e>",   lambda e: self.edit_entry())
-        self.primary_main.bind_all("<F2>",          lambda e: self.edit_entry())
-        self.primary_main.bind_all("<Delete>",      lambda e: self.delete_entry())
+        self.primary_main.bind_all("<Control-n>", lambda e: self.add_entry())
+        self.primary_main.bind_all("<Control-e>", lambda e: self.edit_entry())
+        self.primary_main.bind_all("<F2>", lambda e: self.edit_entry())
+        self.primary_main.bind_all("<Delete>", lambda e: self.delete_entry())
 
         # Password actions.
-        self.primary_main.bind_all("<Control-c>",   lambda e: self.copy_password())
-        self.primary_main.bind_all("<Control-s>",   lambda e: self.show_password())
+        self.primary_main.bind_all("<Control-c>", lambda e: self.copy_password())
+        self.primary_main.bind_all("<Control-s>", lambda e: self.show_password())
 
         # Navigation / focus actions.
-        self.primary_main.bind_all("<Control-f>",   lambda e: (self.search_var.set(""), self.search_entries.focus_set()))
-        self.primary_main.bind_all("<Control-l>",   lambda e: self.tag_filter.focus_set())
-
+        self.primary_main.bind_all(
+            "<Control-f>", lambda e: (self.search_var.set(""), self.search_entries.focus_set())
+        )
+        self.primary_main.bind_all("<Control-l>", lambda e: self.tag_filter.focus_set())
 
 
 # Characters that are often confused: O/0, l/I/1, etc.
 AMBIGUOUS_CHARS = set("O0oIl1")
 
+
 def secure_generate_password(
-        length: int = 16,
-        use_lower: bool = True,
-        use_upper: bool = True,
-        use_digits: bool = True,
-        use_symbols : bool = True,
-        avoid_ambiguous: bool = True
+    length: int = 16,
+    use_lower: bool = True,
+    use_upper: bool = True,
+    use_digits: bool = True,
+    use_symbols: bool = True,
+    avoid_ambiguous: bool = True,
 ) -> str:
     """
     Generate a cryptographically secure password.
@@ -1145,4 +1167,3 @@ def secure_generate_password(
     # Shuffle for avoiding the predictable position of characters.
     secrets.SystemRandom().shuffle(password_chars)
     return "".join(password_chars)
-
