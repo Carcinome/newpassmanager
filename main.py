@@ -9,7 +9,15 @@ from gui import InitiatePrimaryWindow, WindowLogin
 from i18n import setup_language
 
 # path to the primary password storage file from utils.py and gui.py.
-from utils import PRIMARY_PASSWORD_FILE, create_data_dir
+from utils import PRIMARY_PASSWORD_FILE, create_data_dir, user_data_dir
+
+# For packaging and defining paths.
+DATA_DIR = user_data_dir()
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+VAULT_PATH = DATA_DIR / "vault.enc"
+SALT_PATH = DATA_DIR / "salt.bin"
+PRIMARY_PATH = DATA_DIR / "primary_password.json"
 
 # Auto-detect system language (default).
 _, LANG = setup_language()

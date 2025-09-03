@@ -4,7 +4,8 @@ Here, the core of security and persistence for the passwords' manager.
 
 import base64
 import json
-import os
+import sys, os
+from pathlib import Path
 
 from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.primitives import hashes
@@ -16,6 +17,33 @@ DATA_DIR = "data"
 PRIMARY_PASSWORD_FILE = os.path.join(DATA_DIR, "primary_password.json")
 PASSWORDS_FILE = os.path.join(DATA_DIR, "passwords.json")
 SALT_FILE = os.path.join(DATA_DIR, "salt.bin")
+
+
+def ressource_path(relative: str) -> str:
+    """
+    Return absolute path to resource, works for dev and for PyInstaller.
+    """
+    base = getattr(sys, "_MEIPASS", None)
+    if base:
+        return str(Path(base) / relative)
+    # For dev: relative to the project's root or current file.
+    return str(Path(__file__).resolve().parent / relative)
+
+
+def user_data_dir(app_name: str = "PasswordManager") -> Path:
+    """
+    Cross-platform user data directory. You find it for:
+    - Windows: %APPDATA%\PasswordManager
+    - macOS: ~/Library/Application Support/PasswordManager
+    - Linux: ~/.local/share/PasswordManager
+    """
+    if sys.platform.startswith("win"):
+        base = os.getenv("APPDATA", Path.home() / "AppData" / "Roaming")
+        return Path(base) / app_name
+    elif sys.platform == "darwin":
+        return Path.home() / "Library" / "Application Support" /app_name
+    else:
+        return Path.home() / ".local" / "share" / app_name
 
 
 def get_or_create_salt():

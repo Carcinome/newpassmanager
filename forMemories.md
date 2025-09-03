@@ -52,7 +52,7 @@ Les bases de la syntaxe dans le jargon :
 * : (deux-points) : indique à Python “attention, ce qui suit sur les lignes indentées forme un bloc”.
 
 
-![img.png](data/load_password_explanation.png)
+![img.png](env.work/dev_to_keep/load_password_explanation.png)
 
 Classe :
 
