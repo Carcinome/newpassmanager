@@ -5,19 +5,35 @@ Encrypted round-trip tests:
 For comparing snapshots to ensure exact persistence.
 """
 
-
 import pytest
 from cryptography.fernet import Fernet, InvalidToken
 
-from src.vault.model import Vault, Entry
-from src.vault.storage import save_encrypted_vault, load_encrypted_vault
+from src.vault.model import Entry, Vault
+from src.vault.storage import load_encrypted_vault, save_encrypted_vault
 
 
 def make_test_vault():
     v = Vault()
-    v.add_vault_entry(Entry(name="gmail", tags=["email"], website="https://www.gmail.com", username="carci", password="gm@ilpassw0rd"))
-    v.add_vault_entry(Entry(name="Github", tags=["code"], website="https://www.github.com", username="carci", password="GitP@ssw0rd"))
+    v.add_vault_entry(
+        Entry(
+            name="gmail",
+            tags=["email"],
+            website="https://www.gmail.com",
+            username="carci",
+            password="gm@ilpassw0rd",
+        )
+    )
+    v.add_vault_entry(
+        Entry(
+            name="Github",
+            tags=["code"],
+            website="https://www.github.com",
+            username="carci",
+            password="GitP@ssw0rd",
+        )
+    )
     return v
+
 
 def test_roundtrip_with_random_key(tmp_path):
     # Fresh Fernet key used for the test (not modify or use KDF or salt).
@@ -33,6 +49,7 @@ def test_roundtrip_with_random_key(tmp_path):
     loaded = load_encrypted_vault(fernet, str(p))
 
     assert loaded.to_dict_entry() == original.to_dict_entry()
+
 
 def test_wrong_key_cant_decrypt(tmp_path):
     p = tmp_path / "vault_test.enc"

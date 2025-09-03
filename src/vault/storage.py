@@ -2,11 +2,13 @@
 Here, the gestion of the encrypted vault.
 """
 
-
 from __future__ import annotations
+
 import json
 from pathlib import Path
-from cryptography.fernet import Fernet, InvalidToken
+
+from cryptography.fernet import Fernet
+
 from .model import Vault
 
 
@@ -21,6 +23,7 @@ def save_encrypted_vault(vault: Vault, fernet: Fernet, path: str) -> None:
     p = Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_bytes(token)
+
 
 def load_encrypted_vault(fernet: Fernet, path: str) -> Vault:
     """

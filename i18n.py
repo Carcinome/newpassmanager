@@ -5,11 +5,12 @@ locales/<lang>/LC_MESSAGES/passmanager.mo
 """
 
 from __future__ import annotations
+
 import builtins
 import gettext
 import locale
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 APP_NAME = "passmanager"
 LOCALES_DIR = Path(__file__).parent / "locales"
@@ -22,6 +23,7 @@ class LazyTranslator:
     """
     Callable proxy that delegates to the current translator each call.
     """
+
     def __call__(self, message: str) -> str:
         # Each call is resolved using the current translator.
         return _current_gettext(message)
@@ -49,12 +51,12 @@ def setup_language(lang_code: str | None = None):
 
     try:
         translation = gettext.translation(
-        APP_NAME,
-        localedir=str(LOCALES_DIR),
-        languages=[lang_code],
-    )
+            APP_NAME,
+            localedir=str(LOCALES_DIR),
+            languages=[lang_code],
+        )
         translator = translation.gettext
-        translation.install() # sets builtins._ as well.
+        translation.install()  # sets builtins._ as well.
     except FileNotFoundError:
         # Fallback to English (source strings) if translations are missing.
         translator = gettext.gettext
